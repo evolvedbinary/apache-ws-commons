@@ -1,0 +1,84 @@
+<!--
+ * Copyright 2002-2004  The Apache Software Foundation
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+-->
+<project name="ws-commons-util" default="all">
+	<property name="debug" value="true"/>
+	<property name="optimize" value="true"/>
+	<property name="source.version" value="1.2"/>
+	<property name="target.version" value="1.2"/>
+	<property name="build" location="build"/>
+	<property name="build.classes" location="${build}/classes"/>
+	<property name="build.dist" location="${build}/dist"/>
+	<property name="build.test" location="${build}/test"/>
+	<property name="build.test.classes" location="${build.test}/classes"/>
+	<property name="build.test.reports" location="${build.test}/reports"/>
+	<property name="util.jar" location="${build.dist}/ws-commons-util.jar"/>
+	<property name="util-src.zip" location="${build.dist}/ws-commons-util-src.zip"/>
+
+	<path id="class.path">
+		<pathelement location="${java5.jar}"/>
+		<pathelement location="lib/junit-3.8.1.jar"/>
+	</path>
+
+	<path id="test.path">
+		<path refid="class.path"/>
+		<pathelement location="${util.jar}"/>
+	</path>
+
+	<target name="clean" description="Cleans the build directory">
+		<mkdir dir="${build}"/>
+	</target>
+
+	<target name="compile">
+		<mkdir dir="${build.classes}"/>
+		<javac debug="${debug}" optimize="${optimize}"
+				source="${source.version}" target="${target.version}"
+				srcdir="src/java" destdir="${build.classes}"
+				classpathref="class.path"/>
+	</target>
+
+	<target name="jar" depends="compile">
+		<mkdir dir="${build.dist}"/>
+		<jar destfile="${util.jar}">
+			<fileset dir="${build.classes}"/>
+		</jar>
+		<zip destfile="${util-src.zip}">
+			<fileset dir="src/java"/>
+		</zip>
+	</target>
+
+	<target name="all" depends="jar" description="Builds everything"/>
+
+	<target name="test" depends="all" description="Runs the test suite">
+		<mkdir dir="${build.test.classes}"/>
+		<javac debug="${debug}" optimize="${optimize}"
+				source="${source.version}" target="${target.version}"
+				srcdir="src/test" destdir="${build.test.classes}"
+				classpathref="test.path"/>
+		<mkdir dir="${build.test.reports}"/>
+		<junit printSummary="yes">
+	    	<formatter type="plain"/>
+			<classpath>
+				<path refid="test.path"/>
+				<pathelement location="${build.test.classes}"/>
+			</classpath>
+	        <batchtest todir="${build.test.reports}">
+		        <fileset dir="${build.test.classes}">
+					<include name="**/*Test.class"/>
+		        </fileset>
+			</batchtest>
+	    </junit>
+	</target>
+</project>
