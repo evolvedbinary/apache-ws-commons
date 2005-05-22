@@ -55,4 +55,10 @@
 		<subproject dir="java5"/>
 		<subproject dir="util"/>
 	</target>
+
+	<target name="test" description="Builds and tests all subprojects">
+		<mkdir dir="${build.dist}"/>
+		<subproject dir="java5" target="test"/>
+		<subproject dir="util" target="test"/>
+	</target>
 </project>
