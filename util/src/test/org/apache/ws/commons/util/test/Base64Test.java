@@ -38,8 +38,9 @@ public class Base64Test extends TestCase {
 			for (int j = 0;  j < i;  j++) {
 				bytes[j] = (byte) j;
 			}
-			char[] chars = Base64.encode(bytes);
-			byte[] result = Base64.decode(chars);
+			String s = Base64.encode(bytes);
+			System.out.println(s);
+			byte[] result = Base64.decode(s);
 			assertTrue(Arrays.equals(bytes, result));
 		}
 	}
@@ -59,7 +60,7 @@ public class Base64Test extends TestCase {
 					sw.write(pChars, pOffset, pLen);
 				}
 			};
-			Base64.SAXEncoder encoder = new Base64.SAXEncoder(1024, ch);
+			Base64.SAXEncoder encoder = new Base64.SAXEncoder(new char[4096], 0, null, ch);
 			Base64.EncoderOutputStream eos = new Base64.EncoderOutputStream(encoder);
 			eos.write(bytes);
 			eos.close();
