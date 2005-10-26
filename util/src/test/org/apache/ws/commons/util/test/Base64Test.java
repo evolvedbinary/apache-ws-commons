@@ -39,7 +39,6 @@ public class Base64Test extends TestCase {
 				bytes[j] = (byte) j;
 			}
 			String s = Base64.encode(bytes);
-			System.out.println(s);
 			byte[] result = Base64.decode(s);
 			assertTrue(Arrays.equals(bytes, result));
 		}
