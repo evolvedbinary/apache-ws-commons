@@ -17,13 +17,13 @@
  */
  -->
 <project>
-    <name>HTTP Tracer</name>
+    <name>tcpmon</name>
 	<pomVersion>3</pomVersion>
 	<!-- a unique name for this project -->
-	<name>Apache HTTP Tracer</name>
-	<id>HTTPtracer</id>
+	<name>Apache TCPMon</name>
+	<id>tcpmon</id>
 	<groupId>ws-commons</groupId>
-	<package>org.apache.ws.commons.tracer</package>
+	<package>org.apache.ws.commons.tcpmon</package>
 	<currentVersion>${tracer.version}</currentVersion>
 	<!-- details about the organization that 'owns' the project -->
 	<organization>
@@ -32,16 +32,15 @@
 		<logo>http://www.apache.org/images/asf-logo.gif</logo>
 	</organization>
 	<inceptionYear>2004</inceptionYear>
-	<package>org.apache.ws.commons.tracer</package>
 	<logo>http://www.apache.org/images/asf-logo.gif</logo>
-	<description>HTTP tracer is a utility that allows the messages to be viewed and resent. It is very much useful
+	<description>TCPMon is a utility that allows the messages to be viewed and resent. It is very much useful
 	as a debug tool. It has originally being part of Axis1</description>
 	<shortDescription>HTTPTracer</shortDescription>
 	<!-- the project home page -->
-	<url>http://ws.apache.org/commons/tracer</url>
+	<url>http://ws.apache.org/commons/tcpmon</url>
 	<issueTrackingUrl>http://issues.apache.org/jira/browse/WS-Commons</issueTrackingUrl>
-	<siteAddress>ws.apache.org/commons/tracer</siteAddress>
-	<siteDirectory>/www/ws.apache.org/commons/tracer/</siteDirectory>
+	<siteAddress>ws.apache.org/commons/tcpmon</siteAddress>
+	<siteDirectory>/www/ws.apache.org/commons/tcpmon/</siteDirectory>
 	<distributionDirectory>/www/ws.apache.org/builds/</distributionDirectory>
 
     <!-- ========== -->
