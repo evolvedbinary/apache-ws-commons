@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tracer;
+package org.apache.ws.commons.tcpmon;
 
 import javax.swing.JTextArea;
 import javax.swing.table.TableModel;
@@ -157,7 +157,7 @@ class SocketRR extends Thread {
             int thisIndent = -1, nextIndent = -1, previousIndent = -1;
             if (tmodel != null) {
                 String tmpStr = (String) tmodel.getValueAt(tableIndex,
-                		HTTPTracer.REQ_COLUMN);
+                		TCPMon.REQ_COLUMN);
                 if (!"".equals(tmpStr)) {
                     reqSaved = tmpStr.length();
                 }
@@ -215,7 +215,7 @@ class SocketRR extends Thread {
                 
                 if ((tmodel != null) && (reqSaved < 50)) {
                     String old = (String) tmodel.getValueAt(tableIndex,
-                    		HTTPTracer.REQ_COLUMN);
+                    		TCPMon.REQ_COLUMN);
                     old = old + new String(buffer, saved, len);
                     if (old.length() > 50) {
                         old = old.substring(0, 50);
@@ -225,7 +225,7 @@ class SocketRR extends Thread {
                         old = old.substring(0, i - 1);
                         reqSaved = 50;
                     }
-                    tmodel.setValueAt(old, tableIndex, HTTPTracer.REQ_COLUMN);
+                    tmodel.setValueAt(old, tableIndex, TCPMon.REQ_COLUMN);
                 }
                 
                 

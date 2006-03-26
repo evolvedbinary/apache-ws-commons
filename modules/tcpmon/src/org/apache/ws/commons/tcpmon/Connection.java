@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tracer;
+package org.apache.ws.commons.tcpmon;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -191,13 +191,13 @@ class Connection extends Thread {
             } else {
                 fromHost = "resend";
             }
-            String dateformat = HTTPTracer.getMessage("dateformat00", "yyyy-MM-dd HH:mm:ss");
+            String dateformat = TCPMon.getMessage("dateformat00", "yyyy-MM-dd HH:mm:ss");
             DateFormat df = new SimpleDateFormat(dateformat);
             time = df.format(new Date());
             int count = listener.connections.size();
             listener.tableModel.insertRow(count + 1,
                     new Object[]{
-                        HTTPTracer.getMessage("active00","Active"),
+                        TCPMon.getMessage("active00","Active"),
                         time,
                         fromHost,
                         listener.hostField.getText(),
@@ -281,7 +281,7 @@ class Connection extends Thread {
                         }
                         listener.tableModel.setValueAt(targetHost,
                                 index + 1,
-                                HTTPTracer.OUTHOST_COLUMN);
+                                TCPMon.OUTHOST_COLUMN);
                         bufferedData = bufferedData.substring(0, start)
                                 + url.getFile()
                                 + bufferedData.substring(end);
@@ -290,7 +290,7 @@ class Connection extends Thread {
                                 + targetPort + "/" + urlString);
                         listener.tableModel.setValueAt(targetHost,
                                 index + 1,
-                                HTTPTracer.OUTHOST_COLUMN);
+                                TCPMon.OUTHOST_COLUMN);
                         bufferedData = bufferedData.substring(0, start)
                                 + url.toExternalForm()
                                 + bufferedData.substring(end);
@@ -363,7 +363,7 @@ class Connection extends Thread {
                             + "                       ";
                     s1 = s1.substring(0, 51);
                     listener.tableModel.setValueAt(s1, index + 1,
-                    		HTTPTracer.REQ_COLUMN);
+                    		TCPMon.REQ_COLUMN);
                 }
             }
             if (targetPort == -1) {
@@ -396,7 +396,7 @@ class Connection extends Thread {
             while ((rr1 != null) || (rr2 != null)) {
 
             		if (rr2 != null) {
-            			listener.tableModel.setValueAt(rr2.getElapsed(), 1 + index, HTTPTracer.ELAPSED_COLUMN);
+            			listener.tableModel.setValueAt(rr2.getElapsed(), 1 + index, TCPMon.ELAPSED_COLUMN);
             		}
             		
                 // Only loop as long as the connection to the target
@@ -407,8 +407,8 @@ class Connection extends Thread {
                 if ((null != rr1) && rr1.isDone()) {
                     if ((index >= 0) && (rr2 != null)) {
                         listener.tableModel.setValueAt(
-                                HTTPTracer.getMessage("resp00", "Resp"), 1 + index,
-                                HTTPTracer.STATE_COLUMN);
+                                TCPMon.getMessage("resp00", "Resp"), 1 + index,
+                                TCPMon.STATE_COLUMN);
                     }
                     rr1 = null;
                 }
@@ -416,8 +416,8 @@ class Connection extends Thread {
                 if ((null != rr2) && rr2.isDone()) {
                     if ((index >= 0) && (rr1 != null)) {
                         listener.tableModel.setValueAt(
-                                HTTPTracer.getMessage("req00", "Req"), 1 + index,
-                                HTTPTracer.STATE_COLUMN);
+                                TCPMon.getMessage("req00", "Req"), 1 + index,
+                                TCPMon.STATE_COLUMN);
                     }
                     rr2 = null;
                 }
@@ -431,8 +431,8 @@ class Connection extends Thread {
 
             if (index >= 0) {
                 listener.tableModel.setValueAt(
-                        HTTPTracer.getMessage("done00", "Done"),
-                        1 + index, HTTPTracer.STATE_COLUMN);
+                        TCPMon.getMessage("done00", "Done"),
+                        1 + index, TCPMon.STATE_COLUMN);
             }
 
         } catch (Exception e) {
@@ -441,8 +441,8 @@ class Connection extends Thread {
             int index = listener.connections.indexOf(this);
             if (index >= 0) {
                 listener.tableModel.setValueAt(
-                        HTTPTracer.getMessage("error00", "Error"), 1 + index,
-                        HTTPTracer.STATE_COLUMN);
+                        TCPMon.getMessage("error00", "Error"), 1 + index,
+                        TCPMon.STATE_COLUMN);
             }
             e.printStackTrace(wr);
             wr.close();

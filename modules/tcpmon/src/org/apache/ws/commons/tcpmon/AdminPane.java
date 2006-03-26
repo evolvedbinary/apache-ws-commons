@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tracer;
+package org.apache.ws.commons.tcpmon;
 
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
@@ -125,8 +125,8 @@ class AdminPane extends JPanel {
         mainPane = new JPanel(layout);
         c.anchor = GridBagConstraints.WEST;
         c.gridwidth = GridBagConstraints.REMAINDER;
-        mainPane.add(new JLabel(HTTPTracer.getMessage("newTCP00",
-                "Create a new HTTP tracer...")
+        mainPane.add(new JLabel(TCPMon.getMessage("newTCP00",
+                "Create a new TCPMon...")
                 + " "), c);
 
         // Add some blank space
@@ -137,7 +137,7 @@ class AdminPane extends JPanel {
         JPanel tmpPanel = new JPanel(new GridBagLayout());
         c.anchor = GridBagConstraints.WEST;
         c.gridwidth = 1;
-        tmpPanel.add(new JLabel(HTTPTracer.getMessage("listenPort00",
+        tmpPanel.add(new JLabel(TCPMon.getMessage("listenPort00",
                 "Listen Port #")
                 + " "), c);
         c.anchor = GridBagConstraints.WEST;
@@ -150,13 +150,13 @@ class AdminPane extends JPanel {
         ButtonGroup btns = new ButtonGroup();
         c.anchor = GridBagConstraints.WEST;
         c.gridwidth = GridBagConstraints.REMAINDER;
-        mainPane.add(new JLabel(HTTPTracer.getMessage("actAs00", "Act as a...")), c);
+        mainPane.add(new JLabel(TCPMon.getMessage("actAs00", "Act as a...")), c);
 
         // Target Host/Port section
         // /////////////////////////////////////////////////////////////////
         c.anchor = GridBagConstraints.WEST;
         c.gridwidth = GridBagConstraints.REMAINDER;
-        final String listener = HTTPTracer.getMessage("listener00", "Listener");
+        final String listener = TCPMon.getMessage("listener00", "Listener");
         mainPane.add(listenerButton = new JRadioButton(listener), c);
         btns.add(listenerButton);
         listenerButton.setSelected(true);
@@ -179,31 +179,31 @@ class AdminPane extends JPanel {
         c.gridwidth = 1;
         mainPane.add(Box.createRigidArea(new Dimension(25, 0)));
         mainPane.add(hostLabel =
-                new JLabel(HTTPTracer.getMessage("targetHostname00",
+                new JLabel(TCPMon.getMessage("targetHostname00",
                         "Target Hostname")
                 + " "), c);
         c.anchor = GridBagConstraints.WEST;
         c.gridwidth = GridBagConstraints.REMAINDER;
         host = new HostnameField(30);
         mainPane.add(host, c);
-        host.setText(HTTPTracer.DEFAULT_HOST);
+        host.setText(TCPMon.DEFAULT_HOST);
         c.anchor = GridBagConstraints.WEST;
         c.gridwidth = 1;
         mainPane.add(Box.createRigidArea(new Dimension(25, 0)));
         mainPane.add(tportLabel =
-                new JLabel(HTTPTracer.getMessage("targetPort00", "Target Port #")
+                new JLabel(TCPMon.getMessage("targetPort00", "Target Port #")
                 + " "), c);
         c.anchor = GridBagConstraints.WEST;
         c.gridwidth = GridBagConstraints.REMAINDER;
         tport = new NumberField(4);
         mainPane.add(tport, c);
-        tport.setValue(HTTPTracer.DEFAULT_PORT);
+        tport.setValue(TCPMon.DEFAULT_PORT);
 
         // Act as proxy section
         // /////////////////////////////////////////////////////////////////
         c.anchor = GridBagConstraints.WEST;
         c.gridwidth = GridBagConstraints.REMAINDER;
-        final String proxy = HTTPTracer.getMessage("proxy00", "Proxy");
+        final String proxy = TCPMon.getMessage("proxy00", "Proxy");
         mainPane.add(proxyButton = new JRadioButton(proxy), c);
         btns.add(proxyButton);
         proxyButton.addActionListener(new ActionListener() {
@@ -231,7 +231,7 @@ class AdminPane extends JPanel {
         // Options section
         // /////////////////////////////////////////////////////////////////
         JPanel opts = new JPanel(new GridBagLayout());
-        opts.setBorder(new TitledBorder(HTTPTracer.getMessage("options00",
+        opts.setBorder(new TitledBorder(TCPMon.getMessage("options00",
                 "Options")));
         c.anchor = GridBagConstraints.WEST;
         c.gridwidth = GridBagConstraints.REMAINDER;
@@ -241,13 +241,13 @@ class AdminPane extends JPanel {
         // /////////////////////////////////////////////////////////////////
         c.anchor = GridBagConstraints.WEST;
         c.gridwidth = GridBagConstraints.REMAINDER;
-        final String proxySupport = HTTPTracer.getMessage("proxySupport00",
+        final String proxySupport = TCPMon.getMessage("proxySupport00",
                 "HTTP Proxy Support");
         opts.add(HTTPProxyBox = new JCheckBox(proxySupport), c);
         c.anchor = GridBagConstraints.WEST;
         c.gridwidth = 1;
         opts.add(HTTPProxyHostLabel =
-                new JLabel(HTTPTracer.getMessage("hostname00", "Hostname") + " "),
+                new JLabel(TCPMon.getMessage("hostname00", "Hostname") + " "),
                 c);
         HTTPProxyHostLabel.setForeground(Color.gray);
         c.anchor = GridBagConstraints.WEST;
@@ -257,7 +257,7 @@ class AdminPane extends JPanel {
         c.anchor = GridBagConstraints.WEST;
         c.gridwidth = 1;
         opts.add(HTTPProxyPortLabel =
-                new JLabel(HTTPTracer.getMessage("port00", "Port #") + " "), c);
+                new JLabel(TCPMon.getMessage("port00", "Port #") + " "), c);
         HTTPProxyPortLabel.setForeground(Color.gray);
         c.anchor = GridBagConstraints.WEST;
         c.gridwidth = GridBagConstraints.REMAINDER;
@@ -309,14 +309,14 @@ class AdminPane extends JPanel {
         opts.add(Box.createRigidArea(new Dimension(1, 10)), c);
         c.anchor = GridBagConstraints.WEST;
         c.gridwidth = GridBagConstraints.REMAINDER;
-        final String delaySupport = HTTPTracer.getMessage("delay00",
+        final String delaySupport = TCPMon.getMessage("delay00",
                 "Simulate Slow Connection");
         opts.add(delayBox = new JCheckBox(delaySupport), c);
 
         // bytes per pause
         c.anchor = GridBagConstraints.WEST;
         c.gridwidth = 1;
-        delayBytesLabel = new JLabel(HTTPTracer.getMessage("delay01",
+        delayBytesLabel = new JLabel(TCPMon.getMessage("delay01",
                 "Bytes per Pause"));
         opts.add(delayBytesLabel, c);
         delayBytesLabel.setForeground(Color.gray);
@@ -328,7 +328,7 @@ class AdminPane extends JPanel {
         // delay interval
         c.anchor = GridBagConstraints.WEST;
         c.gridwidth = 1;
-        delayTimeLabel = new JLabel(HTTPTracer.getMessage("delay02",
+        delayTimeLabel = new JLabel(TCPMon.getMessage("delay02",
                 "Delay in Milliseconds"));
         opts.add(delayTimeLabel, c);
         delayTimeLabel.setForeground(Color.gray);
@@ -361,7 +361,7 @@ class AdminPane extends JPanel {
         // /////////////////////////////////////////////////////////////////
         c.anchor = GridBagConstraints.WEST;
         c.gridwidth = GridBagConstraints.REMAINDER;
-        final String add = HTTPTracer.getMessage("add00", "Add");
+        final String add = TCPMon.getMessage("add00", "Add");
         mainPane.add(addButton = new JButton(add), c);
         this.add(new JScrollPane(mainPane), BorderLayout.CENTER);
 

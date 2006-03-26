@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tracer;
+package org.apache.ws.commons.tcpmon;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -212,7 +212,7 @@ class Listener extends JPanel {
                     SlowLinkSimulator slowLink) {
         notebook = _notebook;
         if (name == null) {
-            name = HTTPTracer.getMessage("port01", "Port") + " " + listenPort;
+            name = TCPMon.getMessage("port01", "Port") + " " + listenPort;
         }
 
         // set the slow link to the passed down link
@@ -230,21 +230,21 @@ class Listener extends JPanel {
         JPanel top = new JPanel();
         top.setLayout(new BoxLayout(top, BoxLayout.X_AXIS));
         top.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        final String start = HTTPTracer.getMessage("start00", "Start");
+        final String start = TCPMon.getMessage("start00", "Start");
         top.add(stopButton = new JButton(start));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
         top.add(new JLabel("  "
-                + HTTPTracer.getMessage("listenPort01", "Listen Port:")
+                + TCPMon.getMessage("listenPort01", "Listen Port:")
                 + " ", SwingConstants.RIGHT));
         top.add(portField = new JTextField("" + listenPort, 4));
-        top.add(new JLabel("  " + HTTPTracer.getMessage("host00", "Host:"),
+        top.add(new JLabel("  " + TCPMon.getMessage("host00", "Host:"),
                 SwingConstants.RIGHT));
         top.add(hostField = new JTextField(host, 30));
-        top.add(new JLabel("  " + HTTPTracer.getMessage("port02", "Port:") + " ",
+        top.add(new JLabel("  " + TCPMon.getMessage("port02", "Port:") + " ",
                 SwingConstants.RIGHT));
         top.add(tPortField = new JTextField("" + targetPort, 4));
         top.add(Box.createRigidArea(new Dimension(5, 0)));
-        top.add(isProxyBox = new JCheckBox(HTTPTracer.getMessage("proxy00", "Proxy")));
+        top.add(isProxyBox = new JCheckBox(TCPMon.getMessage("proxy00", "Proxy")));
         isProxyBox.addChangeListener(new BasicButtonListener(isProxyBox) {
             public void stateChanged(ChangeEvent event) {
                 JCheckBox box = (JCheckBox) event.getSource();
@@ -262,7 +262,7 @@ class Listener extends JPanel {
         tPortField.setMaximumSize(new Dimension(50, Short.MAX_VALUE));
         stopButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                if (HTTPTracer.getMessage("stop00",
+                if (TCPMon.getMessage("stop00",
                         "Stop").equals(event.getActionCommand())) {
                     stop();
                 }
@@ -277,14 +277,14 @@ class Listener extends JPanel {
         // and the request/response text areas on the bottom
         // ///////////////////////////////////////////////////////////////////
         tableModel = new DefaultTableModel(new String[]{
-            HTTPTracer.getMessage("state00", "State"),
-            HTTPTracer.getMessage("time00", "Time"),
-            HTTPTracer.getMessage("requestHost00", "Request Host"),
-            HTTPTracer.getMessage("targetHost", "Target Host"),
-            HTTPTracer.getMessage("request00", "Request..."),
-            HTTPTracer.getMessage("elapsed00", "Elapsed Time")}, 0);
+            TCPMon.getMessage("state00", "State"),
+            TCPMon.getMessage("time00", "Time"),
+            TCPMon.getMessage("requestHost00", "Request Host"),
+            TCPMon.getMessage("targetHost", "Target Host"),
+            TCPMon.getMessage("request00", "Request..."),
+            TCPMon.getMessage("elapsed00", "Elapsed Time")}, 0);
         tableModel.addRow(new Object[]{"---",
-                                       HTTPTracer.getMessage("mostRecent00",
+                                       TCPMon.getMessage("mostRecent00",
                                                "Most Recent"),
                                        "---", "---", "---", "---"});
         connectionTable = new JTable(1, 2);
@@ -294,9 +294,9 @@ class Listener extends JPanel {
 
         // Reduce the STATE column and increase the REQ column
         TableColumn col;
-        col = connectionTable.getColumnModel().getColumn(HTTPTracer.STATE_COLUMN);
+        col = connectionTable.getColumnModel().getColumn(TCPMon.STATE_COLUMN);
         col.setMaxWidth(col.getPreferredWidth() / 2);
-        col = connectionTable.getColumnModel().getColumn(HTTPTracer.REQ_COLUMN);
+        col = connectionTable.getColumnModel().getColumn(TCPMon.REQ_COLUMN);
         col.setPreferredWidth(col.getPreferredWidth() * 2);
         ListSelectionModel sel = connectionTable.getSelectionModel();
         sel.addListSelectionListener(new ListSelectionListener() {
@@ -312,7 +312,7 @@ class Listener extends JPanel {
                             new JLabel(
                                     " "
                             +
-                            HTTPTracer.getMessage("wait00",
+                            TCPMon.getMessage("wait00",
                                     "Waiting for Connection...")));
                     setRight(new JLabel(""));
                     removeButton.setEnabled(false);
@@ -327,7 +327,7 @@ class Listener extends JPanel {
                                     new JLabel(
                                             " "
                                     +
-                                    HTTPTracer.getMessage("wait00",
+                                    TCPMon.getMessage("wait00",
                                             "Waiting for connection...")));
                             setRight(new JLabel(""));
                             removeButton.setEnabled(false);
@@ -365,11 +365,11 @@ class Listener extends JPanel {
         JPanel buttons = new JPanel();
         buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
         buttons.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        final String removeSelected = HTTPTracer.getMessage("removeSelected00",
+        final String removeSelected = TCPMon.getMessage("removeSelected00",
                 "Remove Selected");
         buttons.add(removeButton = new JButton(removeSelected));
         buttons.add(Box.createRigidArea(new Dimension(5, 0)));
-        final String removeAll = HTTPTracer.getMessage("removeAll00", "Remove All");
+        final String removeAll = TCPMon.getMessage("removeAll00", "Remove All");
         buttons.add(removeAllButton = new JButton(removeAll));
         tablePane.add(buttons, BorderLayout.SOUTH);
         removeButton.setEnabled(false);
@@ -397,14 +397,14 @@ class Listener extends JPanel {
         leftPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
         leftPanel.setLayout(new BoxLayout(leftPanel, BoxLayout.Y_AXIS));
         leftPanel.add(new JLabel("  "
-                + HTTPTracer.getMessage("request01", "Request")));
+                + TCPMon.getMessage("request01", "Request")));
         leftPanel.add(new JLabel(" "
-                + HTTPTracer.getMessage("wait01",
+                + TCPMon.getMessage("wait01",
                         "Waiting for connection")));
         rightPanel = new JPanel();
         rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.Y_AXIS));
         rightPanel.add(new JLabel("  "
-                + HTTPTracer.getMessage("response00", "Response")));
+                + TCPMon.getMessage("response00", "Response")));
         rightPanel.add(new JLabel(""));
         outPane = new JSplitPane(0, leftPanel, rightPanel);
         outPane.setDividerSize(4);
@@ -416,18 +416,18 @@ class Listener extends JPanel {
                 5));
         bottomButtons.add(
                 xmlFormatBox =
-                new JCheckBox(HTTPTracer.getMessage("xmlFormat00", "XML Format")));
+                new JCheckBox(TCPMon.getMessage("xmlFormat00", "XML Format")));
         bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
-        final String save = HTTPTracer.getMessage("save00", "Save");
+        final String save = TCPMon.getMessage("save00", "Save");
         bottomButtons.add(saveButton = new JButton(save));
         bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
-        final String resend = HTTPTracer.getMessage("resend00", "Resend");
+        final String resend = TCPMon.getMessage("resend00", "Resend");
         bottomButtons.add(resendButton = new JButton(resend));
         bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
-        final String switchStr = HTTPTracer.getMessage("switch00", "Switch Layout");
+        final String switchStr = TCPMon.getMessage("switch00", "Switch Layout");
         bottomButtons.add(switchButton = new JButton(switchStr));
         bottomButtons.add(Box.createHorizontalGlue());
-        final String close = HTTPTracer.getMessage("close00", "Close");
+        final String close = TCPMon.getMessage("close00", "Close");
         bottomButtons.add(closeButton = new JButton(close));
         pane2.add(bottomButtons, BorderLayout.SOUTH);
         saveButton.setEnabled(false);
@@ -512,11 +512,11 @@ class Listener extends JPanel {
         int port = Integer.parseInt(portField.getText());
         portField.setText("" + port);
         int i = notebook.indexOfComponent(this);
-        notebook.setTitleAt(i, HTTPTracer.getMessage("port01", "Port") + " " + port);
+        notebook.setTitleAt(i, TCPMon.getMessage("port01", "Port") + " " + port);
         int tmp = Integer.parseInt(tPortField.getText());
         tPortField.setText("" + tmp);
         sw = new SocketWaiter(this, port);
-        stopButton.setText(HTTPTracer.getMessage("stop00", "Stop"));
+        stopButton.setText(TCPMon.getMessage("stop00", "Stop"));
         portField.setEditable(false);
         hostField.setEditable(false);
         tPortField.setEditable(false);
@@ -541,7 +541,7 @@ class Listener extends JPanel {
                 conn.halt();
             }
             sw.halt();
-            stopButton.setText(HTTPTracer.getMessage("start00", "Start"));
+            stopButton.setText(TCPMon.getMessage("start00", "Start"));
             portField.setEditable(true);
             hostField.setEditable(true);
             tPortField.setEditable(true);
@@ -601,23 +601,23 @@ class Listener extends JPanel {
                             && (lsm.getLeadSelectionIndex() == 0))) {
                         rc = Integer.parseInt(portField.getText());
                         out.write("\n==============\n".getBytes());
-                        out.write(((HTTPTracer.getMessage("listenPort01",
+                        out.write(((TCPMon.getMessage("listenPort01",
                                 "Listen Port:")
                                 + " " + rc + "\n")).getBytes());
-                        out.write((HTTPTracer.getMessage("targetHost01",
+                        out.write((TCPMon.getMessage("targetHost01",
                                 "Target Host:")
                                 + " " + hostField.getText()
                                 + "\n").getBytes());
                         rc = Integer.parseInt(tPortField.getText());
-                        out.write(((HTTPTracer.getMessage("targetPort01",
+                        out.write(((TCPMon.getMessage("targetPort01",
                                 "Target Port:")
                                 + " " + rc + "\n")).getBytes());
                         out.write((("==== "
-                                + HTTPTracer.getMessage("request01", "Request")
+                                + TCPMon.getMessage("request01", "Request")
                                 + " ====\n")).getBytes());
                         out.write(conn.inputText.getText().getBytes());
                         out.write((("==== "
-                                + HTTPTracer.getMessage("response00", "Response")
+                                + TCPMon.getMessage("response00", "Response")
                                 + " ====\n")).getBytes());
                         out.write(conn.outputText.getText().getBytes());
                         out.write("\n==============\n".getBytes());

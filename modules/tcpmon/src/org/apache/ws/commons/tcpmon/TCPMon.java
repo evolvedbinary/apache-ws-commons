@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tracer;
+package org.apache.ws.commons.tcpmon;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
@@ -26,7 +26,7 @@ import java.util.ResourceBundle;
  * Proxy that sniffs and shows HTTP messages and responses, both SOAP and plain HTTP.
  */
 
-public class HTTPTracer extends JFrame {
+public class TCPMon extends JFrame {
 
     /**
      * Field notebook
@@ -71,8 +71,8 @@ public class HTTPTracer extends JFrame {
      * @param targetPort
      * @param embedded
      */
-    public HTTPTracer(int listenPort, String targetHost, int targetPort, boolean embedded) {
-        super(getMessage("httptracer00","HTTPTracer"));
+    public TCPMon(int listenPort, String targetHost, int targetPort, boolean embedded) {
+        super(getMessage("httptracer00","TCPMon"));
         notebook = new JTabbedPane();
         this.getContentPane().add(notebook);
         new AdminPane(notebook, getMessage("admin00", "Admin"));
@@ -115,7 +115,7 @@ public class HTTPTracer extends JFrame {
      * @param targetHost
      * @param targetPort
      */
-    public HTTPTracer(int listenPort, String targetHost, int targetPort) {
+    public TCPMon(int listenPort, String targetHost, int targetPort) {
         this(listenPort, targetHost, targetPort, false);
     }
 
@@ -160,16 +160,16 @@ public class HTTPTracer extends JFrame {
             if (args.length == 3) {
                 int p1 = Integer.parseInt(args[0]);
                 int p2 = Integer.parseInt(args[2]);
-                new HTTPTracer(p1, args[1], p2);
+                new TCPMon(p1, args[1], p2);
             } else if (args.length == 1) {
                 int p1 = Integer.parseInt(args[0]);
-                new HTTPTracer(p1, null, 0);
+                new TCPMon(p1, null, 0);
             } else if (args.length != 0) {
                 System.err.println(
                         getMessage("usage00", "Usage:")
-                        + " HTTPTracer [listenPort targetHost targetPort]\n");
+                        + " TCPMon [listenPort targetHost targetPort]\n");
             } else {
-                new HTTPTracer(0, null, 0);
+                new TCPMon(0, null, 0);
             }
         } catch (Throwable exp) {
             exp.printStackTrace();
@@ -208,7 +208,7 @@ public class HTTPTracer extends JFrame {
      * verbose mode) then there is no need to read the properties file.
      */
     private static void initializeMessages() {
-        messages = ResourceBundle.getBundle("org.apache.ws.commons.tracer.httptracer");
+        messages = ResourceBundle.getBundle("org.apache.ws.commons.tcpmon.tcpmon");
     }
 
 }

@@ -1,4 +1,4 @@
-package org.apache.ws.commons.tracer;
+package org.apache.ws.commons.tcpmon;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -97,14 +97,14 @@ class Sender extends JPanel {
         bottomButtons.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         bottomButtons.add(
                 xmlFormatBox =
-                new JCheckBox(HTTPTracer.getMessage("xmlFormat00", "XML Format")));
+                new JCheckBox(TCPMon.getMessage("xmlFormat00", "XML Format")));
         bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
         bottomButtons.add(sendButton = new JButton("Send"));
         bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
-        final String switchStr = HTTPTracer.getMessage("switch00", "Switch Layout");
+        final String switchStr = TCPMon.getMessage("switch00", "Switch Layout");
         bottomButtons.add(switchButton = new JButton(switchStr));
         bottomButtons.add(Box.createHorizontalGlue());
-        final String close = HTTPTracer.getMessage("close00", "Close");
+        final String close = TCPMon.getMessage("close00", "Close");
         pane2.add(bottomButtons, BorderLayout.SOUTH);
         sendButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {

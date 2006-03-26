@@ -24,7 +24,7 @@
 	<id>tcpmon</id>
 	<groupId>ws-commons</groupId>
 	<package>org.apache.ws.commons.tcpmon</package>
-	<currentVersion>${tracer.version}</currentVersion>
+	<currentVersion>${tcpmon.version}</currentVersion>
 	<!-- details about the organization that 'owns' the project -->
 	<organization>
 		<name>Apache Software Foundation</name>
@@ -35,7 +35,7 @@
 	<logo>http://www.apache.org/images/asf-logo.gif</logo>
 	<description>TCPMon is a utility that allows the messages to be viewed and resent. It is very much useful
 	as a debug tool. It has originally being part of Axis1</description>
-	<shortDescription>HTTPTracer</shortDescription>
+	<shortDescription>TCPMon</shortDescription>
 	<!-- the project home page -->
 	<url>http://ws.apache.org/commons/tcpmon</url>
 	<issueTrackingUrl>http://issues.apache.org/jira/browse/WS-Commons</issueTrackingUrl>
@@ -164,22 +164,6 @@
 
 	</developers>
 	<contributors>
-
-		<contributor>
-			<name>Anushka Kumara</name>
-			<email>anushkakumar AT gmail.com</email>
-			<organization>Lanka Software Foundation / University of Moratuwa</organization>
-		</contributor>
-		<contributor>
-			<name>Chinthaka Thilakarathne</name>
-			<email/>
-			<organization>Lanka Software Foundation / University of Moratuwa</organization>
-		</contributor>
-		<contributor>
-			<name>Dharshana Dias</name>
-			<email/>
-			<organization>Lanka Software Foundation / University of Moratuwa</organization>
-		</contributor>
 		<contributor>
 			<name>Chatra Nakkawita</name>
 			<email>chatra AT WSO2.com</email>
@@ -190,16 +174,8 @@
 
 
     <build>
-        <nagEmailAddress></nagEmailAddress>
+        <nagEmailAddress>commons-dev@ws.apache.org</nagEmailAddress>
        <sourceDirectory>src</sourceDirectory>
      </build>
-    
-    <reports>
-        <!-- no reports for this -->
-    </reports>
-
-    <dependencies>
-        <!-- No external dependencies -->
-    </dependencies>
 
 </project>

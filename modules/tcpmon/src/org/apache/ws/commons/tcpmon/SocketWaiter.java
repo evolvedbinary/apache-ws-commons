@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tracer;
+package org.apache.ws.commons.tcpmon;
 
 import javax.swing.JLabel;
 import java.awt.Color;
@@ -66,7 +66,7 @@ class SocketWaiter extends Thread {
        try {
            listener.setLeft(
                    new JLabel(
-                		   HTTPTracer.getMessage("wait00",
+                		   TCPMon.getMessage("wait00",
                                    " Waiting for Connection...")));
            listener.repaint();
            sSocket = new ServerSocket(port);
