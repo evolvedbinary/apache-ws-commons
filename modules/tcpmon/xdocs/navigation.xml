@@ -1,5 +1,5 @@
 <project name="TCPMon">
-	<title>Web Services Commons : TCPMon Implemenation</title>
+	<title>Web Services Commons : TCPMon </title>
 	<body>
 		<menu name="TCPMon">
 			<item name="Home" href="index.html"/>

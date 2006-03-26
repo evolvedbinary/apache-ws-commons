@@ -17,7 +17,7 @@
  */
  -->
 <project>
-    <name>tcpmon</name>
+	<name>tcpmon</name>
 	<pomVersion>3</pomVersion>
 	<!-- a unique name for this project -->
 	<name>Apache TCPMon</name>
@@ -42,8 +42,7 @@
 	<siteAddress>ws.apache.org/commons/tcpmon</siteAddress>
 	<siteDirectory>/www/ws.apache.org/commons/tcpmon/</siteDirectory>
 	<distributionDirectory>/www/ws.apache.org/builds/</distributionDirectory>
-
-    <!-- ========== -->
+	<!-- ========== -->
 	<!-- Developers -->
 	<!-- ========== -->
 	<developers>
@@ -161,7 +160,6 @@
 			<email>chamil AT wso2.com</email>
 			<organization>WSO2</organization>
 		</developer>
-
 	</developers>
 	<contributors>
 		<contributor>
@@ -169,13 +167,9 @@
 			<email>chatra AT WSO2.com</email>
 			<organization>WSO2</organization>
 		</contributor>
-		
 	</contributors>
-
-
-    <build>
-        <nagEmailAddress>commons-dev@ws.apache.org</nagEmailAddress>
-       <sourceDirectory>src</sourceDirectory>
-     </build>
-
+	<build>
+		<nagEmailAddress>commons-dev@ws.apache.org</nagEmailAddress>
+		<sourceDirectory>src</sourceDirectory>
+	</build>
 </project>
