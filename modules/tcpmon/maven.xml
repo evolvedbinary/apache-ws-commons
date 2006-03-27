@@ -3,11 +3,12 @@
 <project default="jar" xmlns:j="jelly:core" xmlns:u="jelly:util" xmlns:maven="jelly:maven" xmlns:util="jelly:util" xmlns:deploy="deploy" xmlns:ant="jelly:ant">
 	<j:set var="javadoc.dir" value="target/apidocs"/>
 	<j:set var="site.javadoc.dir" value="target/docs/apidocs"/>
+	<j:set var="dist.temp.dir" value="target/dist/temp"/>
 	<!-- create javadocs as a post goal to the site and copy them to the 
            target/docs folder -->
-     <goal name="init-dist">
-         <ant:filter token="tcpmon_version" value="${tcpmon.version}"/>
-     </goal>
+	<goal name="init-dist">
+		<ant:filter token="tcpmon_version" value="${tcpmon.version}"/>
+	</goal>
 	<!-- goal to make the javadocs -->
 	<goal name="javadocs">
 		<ant:echo>+----------------------------------------------</ant:echo>
@@ -32,7 +33,7 @@
 		<ant:echo>+----------------------------------------------</ant:echo>
 		<ant:echo>| Creating: TCPMon Binary Distribution</ant:echo>
 		<ant:echo>+----------------------------------------------</ant:echo>
-		<property name="dist" value="target/dist/temp"/>
+		<property name="dist" value="${dist.temp.dir}/tcpmon-${tcpmon.version}-bin"/>
 		<mkdir dir="${dist}"/>
 		<mkdir dir="${dist}/apidocs"/>
 		<mkdir dir="${dist}/build"/>
@@ -53,7 +54,7 @@
 			</ant:fileset>
 		</ant:copy>
 		<!--add  other documents in Xdocs-->
-		<ant:copy toDir="${dist}/docs" filtering="true">
+		<ant:copy toDir="${dist}/docs">
 			<ant:fileset dir="xdocs">
 				<ant:exclude name="**/.svn/**"/>
 			</ant:fileset>
@@ -65,9 +66,7 @@
 			<ant:fileset file="LICENSE.txt"/>
 		</ant:copy>
 		<!--create the zip-->
-		<ant:zip file="target/dist/tcpmon-${tcpmon.version}-bin.zip">
-			<ant:fileset dir="${dist}/"/>
-		</ant:zip>
+		<ant:zip file="target/dist/tcpmon-${tcpmon.version}-bin.zip" basedir="${dist.temp.dir}"/>
 		<ant:delete dir="${dist}"/>
 	</goal>
 	<!-- code to create the source distribution -->
@@ -75,8 +74,10 @@
 		<ant:echo>+----------------------------------------------</ant:echo>
 		<ant:echo>| Creating: TCPMon Source Distribution</ant:echo>
 		<ant:echo>+----------------------------------------------</ant:echo>
-		<ant:property name="dist" value="target/dist/temp"/>
-		<ant:copy toDir="${dist}" filtering="true">
+		<ant:echo>${dist.temp.dir}</ant:echo>
+		<ant:property name="distsrc" value="${dist.temp.dir}/tcpmon-${tcpmon.version}-src"/>
+		
+		<ant:copy toDir="${distsrc}" filtering="true">
 			<ant:fileset dir=".">
 				<ant:exclude name="**/.svn/**"/>
 				<ant:include name="**/src/**"/>
@@ -84,19 +85,19 @@
 			</ant:fileset>
 		</ant:copy>
 		<!-- add scripts-->
-		<ant:copy toDir="${dist}/scripts">
+		<ant:copy toDir="${distsrc}/scripts">
 			<ant:fileset dir="scripts">
 				<ant:exclude name="**/.svn/**"/>
 			</ant:fileset>
 		</ant:copy>
 		<!-- add xdocs-->
-		<ant:copy toDir="${dist}/xdocs">
+		<ant:copy toDir="${distsrc}/xdocs">
 			<ant:fileset dir="xdocs">
 				<ant:exclude name="**/.svn/**"/>
 			</ant:fileset>
 		</ant:copy>
 		<!-- Copy the master maven files src distro -->
-		<ant:copy toDir="${dist}" filtering="true">
+		<ant:copy toDir="${distsrc}" filtering="true">
 			<ant:fileset file="maven.xml"/>
 			<ant:fileset file="project.xml"/>
 			<ant:fileset file="project.properties"/>
@@ -104,11 +105,11 @@
 			<ant:fileset file="LICENSE.txt"/>
 		</ant:copy>
 		<!-- Zip up -->
-		<ant:zip file="target/dist/tcpmon-${tcpmon.version}-src.zip">
-			<ant:fileset dir="${dist}/"/>
-		</ant:zip>
-		<ant:delete dir="${dist}"/>
+		<ant:zip file="target/dist/tcpmon-${tcpmon.version}-src.zip" basedir="${dist.temp.dir}"/>
+		<ant:delete dir="${distsrc}"/>
 	</goal>
 	<!-- dummy goal to create both the bin and source distributions -->
-	<goal name="release" prereqs="dist-bin,dist-src"/>
+	<goal name="release" prereqs="dist-bin,dist-src">
+	    <ant:delete dir="${dist.temp.dir}"/>
+	</goal>
 </project>
