@@ -1,5 +1,5 @@
 ======================================================
-Apache TCPMon 1.00 build  (March 27th, 2006)
+Apache TCPMon @tcpmon_version@ build 
 
 http://ws.apache.org/commons/tcpmon/
 ------------------------------------------------------
