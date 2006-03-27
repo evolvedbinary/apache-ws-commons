@@ -89,6 +89,12 @@
 				<ant:exclude name="**/.svn/**"/>
 			</ant:fileset>
 		</ant:copy>
+		<!-- add xdocs-->
+		<ant:copy toDir="${dist}/xdocs">
+			<ant:fileset dir="xdocs">
+				<ant:exclude name="**/.svn/**"/>
+			</ant:fileset>
+		</ant:copy>
 		<!-- Copy the master maven files src distro -->
 		<ant:copy toDir="${dist}" filtering="true">
 			<ant:fileset file="maven.xml"/>
