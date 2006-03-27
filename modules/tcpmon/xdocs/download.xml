@@ -15,7 +15,7 @@
 			<h2>Releases</h2>
 			<div align="left">
 				<p>Please select the TCPMon release you want to download. The only available version
-				for TCPMon is 1.00</p>
+				for TCPMon is 1.0</p>
 			</div>
 			<div align="center">
 				
@@ -30,22 +30,22 @@
 						</tr>
 						<tr class="b">
 							<td align="center" valign="middle">
-								<a name="10"></a>1.00</td>
+								<a name="10"></a>1.0</td>
 							<td align="center">Release</td>
 							<td>Source Distribution 
-								<a href="[preferred]/ws/commons/tcpmon/1_00/tcpmon-1.00-src.zip" title="[preferred]/ws/commons/tcpmon/1_00/tcpmon-1.00-src.zip">zip</a>
-								<a href="http://www.apache.org/dist/ws/commons/tcpmon/1_00/tcpmon-1.00-src.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/tcpmon/1_00/tcpmon-1.00-src.zip.md5">MD5</a>
-								<a href="http://www.apache.org/dist/ws/commons/tcpmon/1_00/tcpmon-1.00-src.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/commons/tcpmon/1_00/tcpmon-1.00-src.zip.asc">PGP</a>
+								<a href="[preferred]/ws/commons/tcpmon/1_0/tcpmon-1.0-src.zip" title="[preferred]/ws/commons/tcpmon/1_0/tcpmon-1.0-src.zip">zip</a>
+								<a href="http://www.apache.org/dist/ws/commons/tcpmon/1_0/tcpmon-1.0-src.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/tcpmon/1_0/tcpmon-1.0-src.zip.md5">MD5</a>
+								<a href="http://www.apache.org/dist/ws/commons/tcpmon/1_0/tcpmon-1.0-src.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/commons/tcpmon/1_0/tcpmon-1.0-src.zip.asc">PGP</a>
 								<br />
 								Binary Distribution 
-								<a href="[preferred]/ws/commons/tcpmon/1_00/tcpmon-1.00-bin.zip" title="[preferred]/ws/commons/tcpmon/1_00/tcpmon-1.00.zip">zip</a>
-								<a href="http://www.apache.org/dist/ws/commons/tcpmon/1_00/tcpmon-1.00-bin.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/tcpmon/1_00/tcpmon-1.00-bin.zip.md5">MD5</a>
-								<a href="http://www.apache.org/dist/ws/commons/tcpmon/1_00/tcpmon-1.00-bin.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/tcpmon/1_00/tcpmon-1.00-bin.zip.asc">PGP</a>
+								<a href="[preferred]/ws/commons/tcpmon/1_0/tcpmon-1.0-bin.zip" title="[preferred]/ws/commons/tcpmon/1_0/tcpmon-1.0.zip">zip</a>
+								<a href="http://www.apache.org/dist/ws/commons/tcpmon/1_0/tcpmon-1.0-bin.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/tcpmon/1_0/tcpmon-1.0-bin.zip.md5">MD5</a>
+								<a href="http://www.apache.org/dist/ws/commons/tcpmon/1_0/tcpmon-1.0-bin.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/tcpmon/1_0/tcpmon-1.0-bin.zip.asc">PGP</a>
 									
 								<br />
 							</td>
 							<td>27 - 03  - 2006</td>
-							<td>1.00 Release (Mirrored)</td>
+							<td>1.0 Release (Mirrored)</td>
 						</tr>
 						
 					</tbody>

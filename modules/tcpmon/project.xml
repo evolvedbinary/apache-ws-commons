@@ -32,7 +32,7 @@
 		<logo>http://www.apache.org/images/asf-logo.gif</logo>
 	</organization>
 	<inceptionYear>2006</inceptionYear>
-	<logo>http://www.apache.org/images/asf-logo.gif</logo>
+	<logo/>
 	<description>TCPMon is a utility that allows the messages to be viewed and resent. It is very much useful
 	as a debug tool. It has originally being part of Axis1 and now stands as an independent project.</description>
 	<shortDescription>TCPMon</shortDescription>
