@@ -172,4 +172,9 @@
 		<nagEmailAddress>commons-dev@ws.apache.org</nagEmailAddress>
 		<sourceDirectory>src</sourceDirectory>
 	</build>
+ <!-- maven site fails if this dummy report is not there -->
+    <reports>
+		<report>maven-junit-report-plugin</report>
+    </reports>
+      
 </project>

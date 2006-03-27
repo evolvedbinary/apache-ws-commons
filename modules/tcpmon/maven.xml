@@ -18,12 +18,12 @@
 			</ant:sourcepath>
 		</ant:javadoc>
 	</goal>
-	<!--<postGoal name="site">
+	<postGoal name="site">
 		<attainGoal name="javadocs"/>
 		<ant:copy toDir="${site.javadoc.dir}">
 			<ant:fileset dir="${javadoc.dir}"/>
 		</ant:copy>
-	</postGoal>-->
+	</postGoal>
 	<!-- create the binary distribution -->
 	<goal name="dist-bin" prereqs="jar,javadocs">
 		<ant:echo>+----------------------------------------------</ant:echo>
