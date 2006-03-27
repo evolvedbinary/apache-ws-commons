@@ -83,6 +83,12 @@
 				<ant:include name="**/test/**"/>
 			</ant:fileset>
 		</ant:copy>
+		<!-- add scripts-->
+		<ant:copy toDir="${dist}/scripts">
+			<ant:fileset dir="scripts">
+				<ant:exclude name="**/.svn/**"/>
+			</ant:fileset>
+		</ant:copy>
 		<!-- Copy the master maven files src distro -->
 		<ant:copy toDir="${dist}" filtering="true">
 			<ant:fileset file="maven.xml"/>
