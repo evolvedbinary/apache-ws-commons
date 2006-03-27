@@ -31,10 +31,10 @@
 		<url>http://www.apache.org/</url>
 		<logo>http://www.apache.org/images/asf-logo.gif</logo>
 	</organization>
-	<inceptionYear>2004</inceptionYear>
+	<inceptionYear>2006</inceptionYear>
 	<logo>http://www.apache.org/images/asf-logo.gif</logo>
 	<description>TCPMon is a utility that allows the messages to be viewed and resent. It is very much useful
-	as a debug tool. It has originally being part of Axis1</description>
+	as a debug tool. It has originally being part of Axis1 and now stands as an independent project.</description>
 	<shortDescription>TCPMon</shortDescription>
 	<!-- the project home page -->
 	<url>http://ws.apache.org/commons/tcpmon</url>

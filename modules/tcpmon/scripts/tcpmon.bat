@@ -1,1 +1,2 @@
-java -cp ./tcpmon-0.9-SNAPSHOT.jar org.apache.ws.commons.tcpmon.TCPMon %*
+rem Run the java exe with tcpmon jar
+java -cp ./tcpmon-1.00.jar org.apache.ws.commons.tcpmon.TCPMon
