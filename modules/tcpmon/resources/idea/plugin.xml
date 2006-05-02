@@ -1,0 +1,15 @@
+<!DOCTYPE idea-plugin PUBLIC "Plugin/DTD" "http://plugins.intellij.net/plugin.dtd">
+<idea-plugin>
+  <name>TCPMon</name>
+  <description>TCPMon from Apache - WS commons project. The original code
+               comes from the Axis 1.1 source</description>
+  <version>1.0</version>
+  <vendor>Apache Software Foundation</vendor>
+  <idea-version since-build="3000"/>
+   <project-components>
+       <component>
+           <interface-class>org.apache.ws.commons.tcpmon.idea.IdeaPlugin</interface-class>
+           <implementation-class>org.apache.ws.commons.tcpmon.idea.IdeaPlugin</implementation-class>
+       </component>
+   </project-components>
+</idea-plugin>

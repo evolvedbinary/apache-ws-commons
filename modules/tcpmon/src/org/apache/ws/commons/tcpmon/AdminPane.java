@@ -42,7 +42,7 @@ import java.awt.event.ActionListener;
 /**
  * this is the admin page
  */
-class AdminPane extends JPanel {
+public class AdminPane extends JPanel {
 	
     /**
      * Field listenerButton, proxyButton

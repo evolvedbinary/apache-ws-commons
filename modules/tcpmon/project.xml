@@ -171,6 +171,15 @@
 	<build>
 		<nagEmailAddress>commons-dev@ws.apache.org</nagEmailAddress>
 		<sourceDirectory>src</sourceDirectory>
+		 <!-- exclude the tcpmon plugin classes-->
+		  <sourceModifications>
+            <sourceModification>
+                <className>fakeClass</className>
+                <excludes>
+                    <exclude>**/idea/**/*.java</exclude>
+                 </excludes>
+            </sourceModification>
+        </sourceModifications>
 	</build>
  <!-- maven site fails if this dummy report is not there -->
     <reports>
