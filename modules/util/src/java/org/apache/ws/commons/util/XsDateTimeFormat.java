@@ -171,6 +171,13 @@ public class XsDateTimeFormat extends Format {
 	            offset = parseInt(pString, offset, digits);
 	            if (digits.length() > 0) {
 	                millis = Integer.parseInt(digits.toString());
+                    if (millis > 999) {
+                        pParsePosition.setErrorIndex(offset);
+                        return null;
+                    }
+                    for (int i = digits.length();  i < 3;  i++) {
+                        millis *= 10;
+                    }
 	            } else {
 	                millis = 0;
 	            }
