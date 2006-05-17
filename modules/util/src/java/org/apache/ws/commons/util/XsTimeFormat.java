@@ -26,6 +26,6 @@ public class XsTimeFormat extends XsDateTimeFormat {
 	/** Creates a new instance.
      */
     public XsTimeFormat() {
-        super(false, true);
+        super(false, true, true);
     }
 }

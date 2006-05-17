@@ -30,16 +30,29 @@ public class XsDateTimeFormat extends Format {
 	private static final long serialVersionUID = 3258131340871479609L;
 	final boolean parseDate;
     final boolean parseTime;
+    final boolean parseTz;
 
-    XsDateTimeFormat(boolean pParseDate, boolean pParseTime) {
+    /** Creates a new instance with the given settings.
+     * @param pParseDate Returns, whether the parsed/printed object will
+     * contain a date. In the case of {@link XsTimeFormat}, this value
+     * will be false. Otherwise, it will be true.
+     * @param pParseTime Returns, whether the parsed/printed object will
+     * contain a time value. In the case of {@link XsDateFormat}, this
+     * value will be false. Otherwise, it will be true.
+     * @param pParseTz Returns, whether the parsed/printed object will
+     * contain a time zone. This is typically the case, unless for printing
+     * XML-RPC values.
+     */
+    protected XsDateTimeFormat(boolean pParseDate, boolean pParseTime, boolean pParseTz) {
         parseDate = pParseDate;
         parseTime = pParseTime;
+        parseTz = pParseTz;
     }
 
     /** Creates a new instance.
      */
     public XsDateTimeFormat() {
-        this(true, true);
+        this(true, true, true);
     }
 
     private int parseInt(String pString, int pOffset, StringBuffer pDigits) {
@@ -188,35 +201,41 @@ public class XsDateTimeFormat extends Format {
             hour = minute = second = millis = 0;
         }
 
-        digits.setLength(0);
-        digits.append("GMT");
-        if (offset < length) {
-            char c = pString.charAt(offset);
-            if (c == 'Z') {
-                // Ignore UTC, it is the default
-                ++offset;
-            } else if (c == '+' || c == '-') {
-                digits.append(c);
-                ++offset;
-                for (int i = 0;  i < 5;  i++) {
-                    if (offset >= length) {
-                        pParsePosition.setErrorIndex(offset);
-                        return null;
-                    }
-                    c = pString.charAt(offset);
-                    if ((i != 2  &&  Character.isDigit(c))  ||
-                        (i == 2  &&  c == ':')) {
-                        digits.append(c);
-                    } else {
-                        pParsePosition.setErrorIndex(offset);
-                        return null;
-                    }
+        final TimeZone tz;
+        if (parseTz) {
+            digits.setLength(0);
+            digits.append("GMT");
+            if (offset < length) {
+                char c = pString.charAt(offset);
+                if (c == 'Z') {
+                    // Ignore UTC, it is the default
                     ++offset;
+                } else if (c == '+' || c == '-') {
+                    digits.append(c);
+                    ++offset;
+                    for (int i = 0;  i < 5;  i++) {
+                        if (offset >= length) {
+                            pParsePosition.setErrorIndex(offset);
+                            return null;
+                        }
+                        c = pString.charAt(offset);
+                        if ((i != 2  &&  Character.isDigit(c))  ||
+                            (i == 2  &&  c == ':')) {
+                            digits.append(c);
+                        } else {
+                            pParsePosition.setErrorIndex(offset);
+                            return null;
+                        }
+                        ++offset;
+                    }
                 }
             }
+            tz = TimeZone.getTimeZone(digits.toString());
+        } else {
+            tz = TimeZone.getDefault();
         }
 
-        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone(digits.toString()));
+        Calendar cal = Calendar.getInstance(tz);
         cal.set(isMinus ? -year : year, parseDate ? month-1 : month, mday, hour, minute, second);
         cal.set(Calendar.MILLISECOND, millis);
         pParsePosition.setIndex(offset);
@@ -270,27 +289,29 @@ public class XsDateTimeFormat extends Format {
 	            append(pBuffer, millis, 3);
 	        }
         }
-        TimeZone tz = cal.getTimeZone();
-        // JDK 1.4: int offset = tz.getOffset(cal.getTimeInMillis());
-        int offset = cal.get(Calendar.ZONE_OFFSET);
-        if (tz.inDaylightTime(cal.getTime())) {
-        	offset += cal.get(Calendar.DST_OFFSET);
-        }
-        if (offset == 0) {
-            pBuffer.append('Z');
-        } else {
-            if (offset < 0) {
-                pBuffer.append('-');
-                offset = -offset;
-            } else {
-                pBuffer.append('+');
+        if (parseTz) {
+            TimeZone tz = cal.getTimeZone();
+            // JDK 1.4: int offset = tz.getOffset(cal.getTimeInMillis());
+            int offset = cal.get(Calendar.ZONE_OFFSET);
+            if (tz.inDaylightTime(cal.getTime())) {
+            	offset += cal.get(Calendar.DST_OFFSET);
             }
-            int minutes = offset / (60*1000);
-            int hours = minutes / 60;
-            minutes -= hours * 60;
-            append(pBuffer, hours, 2);
-            pBuffer.append(':');
-            append(pBuffer, minutes, 2);
+            if (offset == 0) {
+                pBuffer.append('Z');
+            } else {
+                if (offset < 0) {
+                    pBuffer.append('-');
+                    offset = -offset;
+                } else {
+                    pBuffer.append('+');
+                }
+                int minutes = offset / (60*1000);
+                int hours = minutes / 60;
+                minutes -= hours * 60;
+                append(pBuffer, hours, 2);
+                pBuffer.append(':');
+                append(pBuffer, minutes, 2);
+            }
         }
         return pBuffer;
     }
