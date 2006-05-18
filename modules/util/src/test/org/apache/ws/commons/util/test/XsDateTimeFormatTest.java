@@ -21,7 +21,6 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.apache.ws.commons.util.XmlRpcDateTimeFormat;
 import org.apache.ws.commons.util.XsDateFormat;
 import org.apache.ws.commons.util.XsDateTimeFormat;
 import org.apache.ws.commons.util.XsTimeFormat;
@@ -198,22 +197,5 @@ public class XsDateTimeFormatTest extends TestCase {
         c1 = (Calendar) format.parseObject("15:29:17.15Z");
         c2 = (Calendar) format.parseObject("15:29:17.150Z");
         assertEquals(c1, c2);
-    }
-
-    /** Tests the XML-RPC compatible format variant.
-     */
-    public void testXmlRpcFormat() throws Exception {
-        Calendar cal = getCalendar(TimeZone.getTimeZone("GMT"));
-        assertEquals(0, cal.get(Calendar.MILLISECOND));
-        XmlRpcDateTimeFormat format = new XmlRpcDateTimeFormat();
-        String got = format.format(cal);
-        String expect = "2004-01-14T03:12:07";
-        assertEquals(expect, got);
-
-        cal = getCalendar(TimeZone.getTimeZone("GMT-03:00"));
-        assertEquals(0, cal.get(Calendar.MILLISECOND));
-        got = format.format(cal);
-        expect = "2004-01-14T03:12:07";
-        assertEquals(expect, got);
     }
 }
