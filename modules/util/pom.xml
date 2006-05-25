@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.apache.ws.commons</groupId>
     <artifactId>ws-commons-util</artifactId>
     <name>Apache WebServices Common Utilities</name>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <description>
         This is a small collection of utility classes, that allow
         high performance XML processing based on SAX. Basically,
@@ -55,9 +55,9 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/webservices/commons/trunk/modules/util</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/webservices/commons/trunk/modules/util</developerConnection>
-        <url>http://svn.apache.org/viewcvs.cgi/webservices/commons/trunk/modules/util</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/webservices/commons/tags/ws-commons-util-1.0</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/webservices/commons/tags/ws-commons-util-1.0</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/webservices/commons/tags/ws-commons-util-1.0</url>
     </scm>
     <organization>
         <name>Apache Software Foundation</name>
