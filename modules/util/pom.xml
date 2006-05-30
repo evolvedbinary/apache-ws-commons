@@ -4,7 +4,7 @@
     <groupId>org.apache.ws.commons</groupId>
     <artifactId>ws-commons-util</artifactId>
     <name>Apache WebServices Common Utilities</name>
-    <version>1.0</version>
+    <version>1.1-SNAPSHOT</version>
     <description>
         This is a small collection of utility classes, that allow
         high performance XML processing based on SAX. Basically,
@@ -143,4 +143,18 @@
             <url>scp://people.apache.org/www/ws.apache.org/commons/util</url>
         </site>
     </distributionManagement>
+    <profiles>
+        <profile>
+            <activation>
+            	<jdk>1.4</jdk>
+            </activation>
+            <dependencies>
+                <dependency>
+                	<groupId>org.apache.ws.commons</groupId>
+                	<artifactId>ws-commons-java5</artifactId>
+                	<version>1.0</version>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 </project>
