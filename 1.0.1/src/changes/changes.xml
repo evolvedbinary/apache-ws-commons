@@ -1,0 +1,14 @@
+<document>
+  <properties>
+    <title>Changes in WS Commons Util</title>
+  </properties>
+  <body>
+    <release version="1.0.1" date="2006-06-19">
+      <action dev="jochen" type="fix">
+        The classes XsDateTimeFormat, and XsTimeFormat have been
+        parsing the milliseconds wrong, if the string contained
+        less than three digits.
+      </action>
+    </release>
+  </body>
+</document>
