@@ -4,14 +4,11 @@
     <groupId>org.apache.ws.commons</groupId>
     <artifactId>ws-commons-java5</artifactId>
     <name>Apache Webservices Java 5 Classes</name>
-    <version>1.0</version>
-    <description>
-        This is a small collection of classes, which are part of
-        the Java 5 Core. In other words, you do not need this
-        library, if you are running Java 5, or later. The Java 5
-        classes are used by projects like Apache JaxMe, Apache
-        XML-RPC, or the the ws-common-utils.
-    </description>
+    <version>1.0.1</version>
+<!-- Be sure, that the following is a single line. See 
+     http://jira.codehaus.org/browse/MJAR-39
+     for the reason. -->
+    <description>This is a small collection of classes, which are part of the Java 5 Core. In other words, you do not need this library, if you are running Java 5, or later. The Java 5 classes are used by projects like Apache JaxMe, Apache XML-RPC, or the the ws-common-utils.</description>
     <url>http://ws.apache.org/commons/ws-commons-java5/</url>
     <issueManagement>
         <system>jira</system>
