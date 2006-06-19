@@ -4,14 +4,11 @@
     <groupId>org.apache.ws.commons</groupId>
     <artifactId>ws-commons-util</artifactId>
     <name>Apache WebServices Common Utilities</name>
-    <version>1.1-SNAPSHOT</version>
-    <description>
-        This is a small collection of utility classes, that allow
-        high performance XML processing based on SAX. Basically,
-        it is assumed, that you are using an JAXP 1.1 compliant
-        XML parser and nothing else. In particular, no dependency
-        on the javax.xml.transform package is introduced.
-    </description>
+    <version>1.0.1</version>
+<!-- Be sure, that the following is a single line. See 
+     http://jira.codehaus.org/browse/MJAR-39
+     for the reason. -->
+    <description>This is a small collection of utility classes, that allow high performance XML processing based on SAX. Basically, it is assumed, that you are using an JAXP 1.1 compliant XML parser and nothing else. In particular, no dependency on the javax.xml.transform package is introduced.</description>
     <url>http://ws.apache.org/commons/util</url>
     <issueManagement>
         <system>jira</system>
