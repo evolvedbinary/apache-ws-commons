@@ -4,11 +4,13 @@
     <groupId>org.apache.ws.commons</groupId>
     <artifactId>ws-commons-util</artifactId>
     <name>Apache WebServices Common Utilities</name>
-    <version>1.0.1</version>
-<!-- Be sure, that the following is a single line. See 
-     http://jira.codehaus.org/browse/MJAR-39
-     for the reason. -->
-    <description>This is a small collection of utility classes, that allow high performance XML processing based on SAX. Basically, it is assumed, that you are using an JAXP 1.1 compliant XML parser and nothing else. In particular, no dependency on the javax.xml.transform package is introduced.</description>
+    <version>1.0.2-SNAPSHOT</version>
+    <description>
+      This is a small collection of utility classes, that allow high performance XML
+      processing based on SAX. Basically, it is assumed, that you are using an JAXP
+      1.1 compliant XML parser and nothing else. In particular, no dependency on the
+      javax.xml.transform package is introduced.
+    </description>
     <url>http://ws.apache.org/commons/util</url>
     <issueManagement>
         <system>jira</system>
@@ -16,16 +18,6 @@
     </issueManagement>
     <inceptionYear>2005</inceptionYear>
     <mailingLists>
-      <mailingList>
-        <name>XML-RPC Users</name>
-        <subscribe>xmlrpc-user-subscribe@ws.apache.org</subscribe>
-        <unsubscribe>xmlrpc-user-unsubscribe@ws.apache.org</unsubscribe>
-        <post>xmlrpc-user@ws.apache.org</post>
-        <archive>http://mail-archives.apache.org/mod_mbox/ws-xmlrpc-user/</archive>
-        <otherArchives>
-          <otherArchive>http://marc.theaimsgroup.com/?l=xmlrpc-user</otherArchive>
-        </otherArchives>
-      </mailingList>
       <mailingList>
         <name>XML-RPC Developers</name>
         <subscribe>xmlrpc-dev-subscribe@ws.apache.org</subscribe>
@@ -52,9 +44,9 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/webservices/commons/tags/ws-commons-util-1.0</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/webservices/commons/tags/ws-commons-util-1.0</developerConnection>
-        <url>http://svn.apache.org/viewcvs.cgi/webservices/commons/tags/ws-commons-util-1.0</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/webservices/commons/trunk/util</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/webservices/commons/trunk/util</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/webservices/commons/trunk/util</url>
     </scm>
     <organization>
         <name>Apache Software Foundation</name>
@@ -126,13 +118,13 @@
         <repository>
             <id>apache-maven</id>
             <name>Apache Maven Repository</name>
-            <url>scp://people.apache.org/www/www.apache.org/dist/maven-repository</url>
+            <url>scp://people.apache.org/www/people.apache.org/repo/m2-ibiblio-rsync-repository</url>
         </repository>
         <snapshotRepository>
             <uniqueVersion>false</uniqueVersion>
             <id>apache-maven-snapshots</id>
             <name>Apache Maven Snapshot Repository</name>
-            <url>scp://people.apache.org/www/cvs.apache.org/maven-snapshot-repository</url>
+            <url>scp://people.apache.org/www/people.apache.org/repo/m2-snapshot-repository</url>
         </snapshotRepository>
         <site>
             <id>commons-util-site</id>

@@ -472,7 +472,7 @@ public class Base64 {
 	 * @return An output stream, encoding its input in Base64 and writing
 	 * the output to the writer <code>pWriter</code>.
 	 */
-	public Writer newDecoder(final OutputStream pStream) {
+	public static Writer newDecoder(final OutputStream pStream) {
 		return new Writer(){
 			private final Decoder decoder = new Decoder(1024){
 				protected void writeBuffer(byte[] pBytes, int pOffset, int pLen) throws IOException {
