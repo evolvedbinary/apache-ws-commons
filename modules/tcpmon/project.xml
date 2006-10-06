@@ -22,7 +22,7 @@
 	<!-- a unique name for this project -->
 	<name>Apache TCPMon</name>
 	<id>tcpmon</id>
-	<groupId>ws-commons</groupId>
+	<groupId>org.apache.ws.commons.tcpmon</groupId>
 	<package>org.apache.ws.commons.tcpmon</package>
 	<currentVersion>${tcpmon.version}</currentVersion>
 	<!-- details about the organization that 'owns' the project -->
