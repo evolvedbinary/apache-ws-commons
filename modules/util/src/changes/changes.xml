@@ -7,6 +7,10 @@
       <action dev="jochen" type="fix">
         A "newDecoder" method in the Base64 class wasn't static.
       </action>
+      <action dev="jochen" type="fix" due-to="Yasuoka Masahiko"
+          due-to-email="yasuoka@iij.ad.jp">
+        Fixed the completely broken CharSetXMLWriter.
+      </action>
     </release>
     <release version="1.0.1" date="2006-06-19">
       <action dev="jochen" type="fix">

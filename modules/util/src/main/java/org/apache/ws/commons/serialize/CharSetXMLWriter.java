@@ -29,13 +29,18 @@ public class CharSetXMLWriter extends XMLWriterImpl {
 	private CharsetEncoder charsetEncoder;
 	
 	public void startDocument() throws SAXException {
-		Charset charSet = Charset.forName(getEncoding());
+	    String enc = getEncoding();
+        if (enc == null) {
+            enc = "UTF-8";
+        }
+		Charset charSet = Charset.forName(enc);
 		if (charSet.canEncode()) {
 			charsetEncoder = charSet.newEncoder();
 		}
+        super.startDocument();
 	}
 	
 	public boolean canEncode(char c) {
-		return (charsetEncoder == null) ? false : charsetEncoder.canEncode(c);
+		return (charsetEncoder == null) ? super.canEncode(c) : charsetEncoder.canEncode(c);
 	}
 }

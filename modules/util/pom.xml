@@ -36,6 +36,12 @@
             <email>jochen.wiedmann@gmail.com</email>
         </developer>
     </developers>
+    <contributors>
+        <contributor>
+            <name>Yasuoka Masahiko</name>
+            <email>yasuoka@iij.ad.jp</email>
+        </contributor>
+    </contributors>
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
