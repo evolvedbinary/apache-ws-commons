@@ -83,7 +83,7 @@ public class TCPMon extends JFrame {
             } else {
                 l = new Listener(notebook, null, listenPort, targetHost, targetPort, false, null);
             }
-            notebook.setSelectedIndex(1);
+            notebook.setSelectedIndex(0);
             l.HTTPProxyHost = System.getProperty("http.proxyHost");
             if ((l.HTTPProxyHost != null) && l.HTTPProxyHost.equals("")) {
                 l.HTTPProxyHost = null;

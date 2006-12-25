@@ -1,4 +1,4 @@
-package org.apache.ws.commons.tcpmon.idea;
+package org.apache.ws.commons.tcpmon.idea.plugin;
 
 import com.intellij.openapi.components.ProjectComponent;
 import com.intellij.openapi.project.Project;
@@ -6,8 +6,7 @@ import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.openapi.wm.ToolWindowAnchor;
 
-import javax.swing.*;
-import java.net.URL;
+import org.apache.ws.commons.tcpmon.idea.ui.ComponentHandler;
 /*
  * Copyright 2004,2005 The Apache Software Foundation.
  *

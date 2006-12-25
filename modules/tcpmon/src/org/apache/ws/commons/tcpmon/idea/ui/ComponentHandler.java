@@ -1,4 +1,4 @@
-package org.apache.ws.commons.tcpmon.idea;
+package org.apache.ws.commons.tcpmon.idea.ui;
 
 import javax.swing.*;
 /*

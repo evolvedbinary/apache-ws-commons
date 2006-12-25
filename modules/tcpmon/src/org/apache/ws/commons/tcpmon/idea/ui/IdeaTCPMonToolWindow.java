@@ -1,4 +1,4 @@
-package org.apache.ws.commons.tcpmon.idea;
+package org.apache.ws.commons.tcpmon.idea.ui;
 
 import org.apache.ws.commons.tcpmon.TCPMon;
 import org.apache.ws.commons.tcpmon.AdminPane;

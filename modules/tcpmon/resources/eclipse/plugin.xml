@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            name="TCP Monitor"
+            id="tcpmonitor">
+      </category>
+      <view
+            name="TCP Monitor"
+            icon="icons/monitor.gif"
+            category="tcpmonitor"
+            class="tcpmonitor.views.MainView"
+            id="tcpmonitor.views.MainView">
+      </view>
+   </extension>
+   <extension
+         point="org.eclipse.ui.perspectiveExtensions">
+      <perspectiveExtension
+            targetID="org.eclipse.ui.resourcePerspective">
+         <view
+               ratio="0.5"
+               relative="org.eclipse.ui.views.TaskList"
+               relationship="right"
+               id="tcpmonitor.views.MainView">
+         </view>
+      </perspectiveExtension>
+   </extension>
+
+</plugin>
