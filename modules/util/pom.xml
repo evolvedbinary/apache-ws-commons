@@ -4,7 +4,7 @@
     <groupId>org.apache.ws.commons.util</groupId>
     <artifactId>ws-commons-util</artifactId>
     <name>Apache WebServices Common Utilities</name>
-    <version>1.0.2-SNAPSHOT</version>
+    <version>1.0.2</version>
     <description>
       This is a small collection of utility classes, that allow high performance XML
       processing based on SAX. Basically, it is assumed, that you are using an JAXP
@@ -150,6 +150,53 @@
                 	<version>1.0.1</version>
                 </dependency>
             </dependencies>
+        </profile>
+        <profile>
+            <id>ws-commons-util-release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <configuration>
+                            <passphrase>${gpg.passphrase}</passphrase>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>create-source-jar</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>create-javadoc-jar</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                                <configuration>
+                                    <source>${maven.compile.source}</source>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>

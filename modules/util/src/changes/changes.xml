@@ -3,7 +3,7 @@
     <title>Changes in WS Commons Util</title>
   </properties>
   <body>
-    <release version="1.0.2" date="Not yet released">
+    <release version="1.0.2" date="2007-Aug-31">
       <action dev="jochen" type="fix">
         A "newDecoder" method in the Base64 class wasn't static.
       </action>
