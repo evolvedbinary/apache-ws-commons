@@ -68,36 +68,6 @@
 			        <target>1.2</target>
 			    </configuration>
 			</plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-eclipse-plugin</artifactId>
-                <configuration>
-                    <downloadSources>true</downloadSources>
-                </configuration>
-            </plugin>
-            <plugin>
-                <inherited>true</inherited>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-source-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
-                    <descriptors>
-                        <descriptor>src/main/assembly/bin.xml</descriptor>
-                        <descriptor>src/main/assembly/src.xml</descriptor>
-                    </descriptors>
-                    <tarLongFileMode>gnu</tarLongFileMode>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
     <dependencies>
@@ -117,6 +87,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <configuration>
+                    <source>${maven.compile.source}</source>
+                    <aggregate>true</aggregate>
+                </configuration>
             </plugin>
         </plugins>
     </reporting>
@@ -124,18 +98,18 @@
         <repository>
             <id>apache-maven</id>
             <name>Apache Maven Repository</name>
-            <url>scp://people.apache.org/www/people.apache.org/repo/m2-ibiblio-rsync-repository</url>
+            <url>scpexe://people.apache.org/www/people.apache.org/repo/m2-ibiblio-rsync-repository</url>
         </repository>
         <snapshotRepository>
             <uniqueVersion>false</uniqueVersion>
             <id>apache-maven-snapshots</id>
             <name>Apache Maven Snapshot Repository</name>
-            <url>scp://people.apache.org/www/people.apache.org/repo/m2-snapshot-repository</url>
+            <url>scpexe://people.apache.org/www/people.apache.org/repo/m2-snapshot-repository</url>
         </snapshotRepository>
         <site>
             <id>commons-util-site</id>
             <name>WebServices Site / Commons/ Util</name>
-            <url>scp://people.apache.org/www/ws.apache.org/commons/util</url>
+            <url>scpexe://people.apache.org/www/ws.apache.org/commons/util</url>
         </site>
     </distributionManagement>
     <profiles>
@@ -191,6 +165,26 @@
                                 </goals>
                                 <configuration>
                                     <source>${maven.compile.source}</source>
+                                    <aggregate>true</aggregate>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>create-assemblies</id>
+                                <goals>
+                                    <goal>attached</goal>
+                                </goals>
+                                <phase>packaging</phase>
+                                <configuration>
+                                    <descriptors>
+                                        <descriptor>src/main/assembly/bin.xml</descriptor>
+                                        <descriptor>src/main/assembly/src.xml</descriptor>
+                                    </descriptors>
+                                    <tarLongFileMode>gnu</tarLongFileMode>
                                 </configuration>
                             </execution>
                         </executions>
