@@ -176,23 +176,23 @@ public class XmlSchema extends XmlSchemaAnnotated implements NamespaceContextOwn
 	}
 
 	/**
-	 * get an element by the qname
+	 * get an element by the name in the local schema
 	 * 
 	 * @param name
-	 * @param deep
 	 * @return
 	 */
-	public XmlSchemaElement getElementByName(QName name, boolean deep) {
-		return this.getElementByName(name, deep, null);
+	public XmlSchemaElement getElementByName(String name) {
+        QName nameToSearchFor = new QName(this.getTargetNamespace(),name);
+        return this.getElementByName(nameToSearchFor, false, null);
 	}
 
 	/**
-	 * @deprecated use the {@link #getElementByName(QName, boolean)} method
+	 * Look for a element by its qname. Searches through all the schemas
 	 * @param name
 	 * @return
 	 */
 	public XmlSchemaElement getElementByName(QName name) {
-		return this.getElementByName(name, false, null);
+		return this.getElementByName(name, true, null);
 	}
 
 	/**
@@ -243,22 +243,23 @@ public class XmlSchema extends XmlSchemaAnnotated implements NamespaceContextOwn
 	}
 
 	/**
-	 * @deprecated use the {@link #getTypeByName(QName, boolean)}
+	 * Search this schema and all the imported/included ones
+     * for the given Qname
 	 * @param name
 	 * @return
 	 */
 	public XmlSchemaType getTypeByName(QName name) {
-		return getTypeByName(name, false, null);
+		return getTypeByName(name, true, null);
 	}
 
 	/**
 	 * 
 	 * @param name
-	 * @param deep
 	 * @return
 	 */
-	public XmlSchemaType getTypeByName(QName name, boolean deep) {
-		return getTypeByName(name, deep, null);
+	public XmlSchemaType getTypeByName(String name) {
+        QName nameToSearchFor = new QName(this.getTargetNamespace(),name);
+        return getTypeByName(nameToSearchFor, false, null);
 	}
 
 	/**
