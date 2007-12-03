@@ -2688,7 +2688,12 @@ public class XmlSchemaSerializer {
 
     public static class XmlSchemaSerializerException extends Exception {
 
-        public XmlSchemaSerializerException(String msg) {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public XmlSchemaSerializerException(String msg) {
             super(msg);
         }
     }
