@@ -202,6 +202,13 @@
         <url>http://www.apache.org/</url>
     </organization>
     <build>
+		<!-- this entry here is for the assembly plugin- For some reason
+  		     the assembly plugin cannot override the filter properties (as explained
+			 in the docs) and also does not inherit the maven standard properties. This
+		     is the one that points to a seperare filter props file --> 
+		<filters>
+        	<filter>src/main/assembly/filter.properties</filter>
+        </filters>
         <plugins>
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
