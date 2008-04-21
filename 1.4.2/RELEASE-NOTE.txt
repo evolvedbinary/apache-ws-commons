@@ -1,0 +1,23 @@
+ ====================================
+       XMLSchema ${version} Release Notes
+ ====================================
+
+This is the release of XMLSchema ${version} of Apache WS-Commons. This release includes
+numerous bug fixes and a new feature addition that enables users to register
+extension types with the schema parser.
+
+XMLSchema is a lightweight schema object model that can be used to manipulate 
+and generate XML schema representations. It has no external dependencies
+and can be easily integrated into an existing project.
+
+You are welcome to kick the tires and get XMLSchema on the move. If you like
+to help us shape XMLSchema any contribution in the form of coding, testing,
+submitting improvements to the documentation, and reporting bugs are always
+welcome.
+
+Contains the fix for :
+* Regression found by Woden project (http://svn.apache.org/viewvc?view=rev&revision=648283)
+    
+Thanks for your interest in XMLSchema!
+
+- The XMLSchema Development Team
