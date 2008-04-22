@@ -27,7 +27,7 @@
 	<currentVersion>${tcpmon.version}</currentVersion>
 	<!-- details about the organization that 'owns' the project -->
 	<organization>
-		<name>Apache Software Foundation</name>
+		<name>The Apache Software Foundation</name>
 		<url>http://www.apache.org/</url>
 		<logo>http://www.apache.org/images/asf-logo.gif</logo>
 	</organization>
