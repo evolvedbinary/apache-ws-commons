@@ -16,8 +16,7 @@
  * limitations under the License.
  */
  -->
-<project>
-	<name>tcpmon</name>
+<project>	
 	<pomVersion>3</pomVersion>
 	<!-- a unique name for this project -->
 	<name>Apache TCPMon</name>
@@ -66,6 +65,7 @@
                 <className>fakeClass</className>
                 <excludes>
                     <exclude>**/idea/**/*.java</exclude>
+	  	    <exclude>**/eclipse/**/*.java</exclude>
                  </excludes>
             </sourceModification>
         </sourceModifications>

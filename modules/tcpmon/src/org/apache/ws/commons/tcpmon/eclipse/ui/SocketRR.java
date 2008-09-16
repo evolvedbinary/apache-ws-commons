@@ -22,9 +22,7 @@ import java.net.Socket;
 
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
-import org.apache.ws.commons.tcpmon.eclipse.ui.Connection;
-import org.apache.ws.commons.tcpmon.eclipse.ui.MainView;
-import org.apache.ws.commons.tcpmon.eclipse.ui.SlowLinkSimulator;
+import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
 
 /**
  * this class handles the pumping of data from the incoming socket to the

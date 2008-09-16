@@ -30,6 +30,7 @@ import java.util.Date;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
 
 /**
  * a connection listens to a single current connection

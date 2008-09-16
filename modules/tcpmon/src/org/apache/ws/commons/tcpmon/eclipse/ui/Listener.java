@@ -21,6 +21,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.apache.ws.commons.tcpmon.eclipse.ui.Connection;
+import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

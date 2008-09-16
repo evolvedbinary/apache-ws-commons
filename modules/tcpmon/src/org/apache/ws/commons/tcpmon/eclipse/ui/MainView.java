@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.part.ViewPart;
 import org.apache.ws.commons.tcpmon.eclipse.ui.Listener;
+import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
 
 /**
  * 
