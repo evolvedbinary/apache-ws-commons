@@ -103,6 +103,8 @@ public class JMSMessageReceiver implements MessageListener {
         try {
             if (message instanceof BytesMessage) {
                 metrics.incrementBytesReceived((JMSUtils.getBodyLength((BytesMessage) message)));
+            } else if (message instanceof MapMessage) {
+                metrics.incrementBytesReceived((JMSUtils.getBodyLength((MapMessage) message)));
             } else if (message instanceof TextMessage) {
                 metrics.incrementBytesReceived(((TextMessage) message).getText().getBytes().length);
             } else {

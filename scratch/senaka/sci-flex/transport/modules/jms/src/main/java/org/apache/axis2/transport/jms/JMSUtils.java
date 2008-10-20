@@ -330,6 +330,16 @@ public class JMSUtils extends BaseUtils {
                             txtMsg.getText().getBytes(MessageContext.DEFAULT_CHAR_SET_ENCODING));
                 }
 
+            } else if (message instanceof MapMessage) {
+                MapMessage mapMsg = (MapMessage) message;
+                String contentType = getProperty(mapMsg, BaseConstants.CONTENT_TYPE);
+
+                if (contentType != null) {
+                    return new MapMessageInputStream(mapMsg, BuilderUtil.getCharSetEncoding(contentType));
+                } else {
+                    return new MapMessageInputStream(mapMsg, MessageContext.DEFAULT_CHAR_SET_ENCODING);
+                }
+
             } else {
                 handleException("Unsupported JMS message type : " + message.getClass().getName());
             }
@@ -722,6 +732,31 @@ public class JMSUtils extends BaseUtils {
         return null;
     }
 
+    public Map getMessageMapPayload(Object message) {
+
+        if (message instanceof MapMessage) {
+            MapMessage mapMessage = (MapMessage) message;
+
+            try {
+                Map outMap = new TreeMap();
+                for (Enumeration e = mapMessage.getMapNames() ; e.hasMoreElements() ;) {
+                    String key = (String) e.nextElement();
+                    Object value = mapMessage.getObject(key);
+                    if (value != null) {
+                        outMap.put(key, value);
+                    } else {
+                        log.warn("Ignoring key " + key + " that did not return any value");
+                    }
+                }
+                return outMap;
+
+            } catch (JMSException e) {
+                handleException("Error reading JMS map message payload", e);
+            }
+        }
+        return null;
+    }
+
     // ----------- JMS 1.0.2b compatibility methods -------------
     public static Connection createConnection(ConnectionFactory conFactory, String user,
         String pass, String destinationType) throws JMSException {
@@ -829,6 +864,42 @@ public class JMSUtils extends BaseUtils {
             }
         } catch (JMSException ignore) {}
         return length;
+    }
+
+    public static long getBodyLength(MapMessage mMsg) {
+        long length = 0;
+        MapMessage mapMessage = (MapMessage) mMsg;
+            try {
+                for (Enumeration e = mMsg.getMapNames() ; e.hasMoreElements() ;) {
+                    String key = (String) e.nextElement();
+                    Object value = mMsg.getObject(key);
+                    if (value != null) {
+                        if (value instanceof Boolean || value instanceof Byte) {
+                            length += 1;
+                        } else if (value instanceof Character || value instanceof Short) {
+                            length += 2;
+                        } else if (value instanceof Integer || value instanceof Float) {
+                            length += 4;
+                        } else if (value instanceof Long || value instanceof Double) {
+                            length += 8;
+                        } else if (value instanceof byte[]) {
+                            length += ((byte[])value).length;
+                        } else if (value instanceof String) {
+                            length += ((String) value).getBytes().length;
+                        } else {
+                            log.error("Unable to determine message size. Invalid Object Type : " + value.getClass().getName());
+                            return 0; 
+                        }
+                    } else {
+                        log.warn("Ignoring key " + key + " that did not return any value");
+                    }
+                    length += key.getBytes().length;
+                }
+
+            } catch (JMSException e) {
+                handleException("Error reading JMS map message payload", e);
+            }
+            return length; 
     }
     
     public static <T> T lookup(Context context, Class<T> clazz, String name)

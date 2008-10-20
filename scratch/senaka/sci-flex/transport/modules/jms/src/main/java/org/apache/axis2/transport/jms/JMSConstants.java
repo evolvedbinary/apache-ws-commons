@@ -93,6 +93,10 @@ public class JMSConstants {
      */
     public static final String JMS_BYTE_MESSAGE = "JMS_BYTE_MESSAGE";
     /**
+     * The message type indicating a MapMessage. See JMS_MESSAGE_TYPE
+     */
+    public static final String JMS_MAP_MESSAGE = "JMS_MAP_MESSAGE";
+    /**
      * The message type indicating a TextMessage. See JMS_MESSAGE_TYPE
      */
     public static final String JMS_TEXT_MESSAGE = "JMS_TEXT_MESSAGE";

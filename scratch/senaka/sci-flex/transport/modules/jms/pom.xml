@@ -71,6 +71,12 @@
             <artifactId>geronimo-jms_1.1_spec</artifactId>
             <version>${jms-1.1-spec.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.ws.commons.axiom</groupId>
+            <artifactId>sciflex-axiom-patch</artifactId>
+            <version>${sciflex-axiom-patch.version}</version>
+        </dependency>
     </dependencies>
     
     <properties>
@@ -78,6 +84,7 @@
         <commons.logging.version>1.1</commons.logging.version>
         <axis2-transport-base.version>SNAPSHOT</axis2-transport-base.version>
         <jms-1.1-spec.version>1.1</jms-1.1-spec.version>
+        <sciflex-axiom-patch.version>0.9-SNAPSHOT</sciflex-axiom-patch.version>
     </properties>
 
 </project>

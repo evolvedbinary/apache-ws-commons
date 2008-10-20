@@ -22,6 +22,7 @@ package org.apache.axis2.transport.base;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.mail.internet.ContentType;
@@ -35,7 +36,9 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.OMOutputFormat;
+import org.apache.axiom.om.OMSourcedElement;
 import org.apache.axiom.om.OMText;
+import org.apache.axiom.om.ds.MapDataSource;
 import org.apache.axiom.om.impl.builder.StAXBuilder;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.impl.llom.OMTextImpl;
@@ -322,8 +325,19 @@ public abstract class BaseUtils {
                 msgContext.setDoingMTOM(true);
                 
             } else {
-                handleException("Unable to read payload from message of type : "
-                    + message.getClass().getName());
+                Map msgMap = getMessageMapPayload(message);
+                if (msgMap != null) {
+                    if (wrapperQName == null) {
+                        wrapperQName = BaseConstants.DEFAULT_MAP_WRAPPER;
+                    }
+                    OMSourcedElement omData = soapFactory.createOMElement(new MapDataSource(msgMap, 
+                        wrapperQName.getLocalPart(), soapFactory.createOMNamespace(wrapperQName.getNamespaceURI(), wrapperQName.getPrefix())),
+                        wrapperQName.getLocalPart(), soapFactory.createOMNamespace(wrapperQName.getNamespaceURI(), wrapperQName.getPrefix()));
+                    wrapper = (OMElement) omData; 
+                } else {
+                    handleException("Unable to read payload from message of type : "
+                        + message.getClass().getName());
+                }
             }
         }
 
@@ -365,6 +379,14 @@ public abstract class BaseUtils {
      * @return the payload of the message as a byte[]
      */
     public abstract byte[] getMessageBinaryPayload(Object message);
+
+    /**
+     * Get the message payload as a Map, if the message is a non-SOAP, non-XML, binary Map-based message
+     *
+     * @param message the message Object
+     * @return the payload of the message as a Map
+     */
+    public abstract Map getMessageMapPayload(Object message);
 
     protected static void handleException(String s) {
         log.error(s);

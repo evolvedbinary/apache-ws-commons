@@ -72,6 +72,12 @@ public class BaseConstants {
     public static final QName DEFAULT_TEXT_WRAPPER =
             new QName(AXIOMPAYLOADNS, "text");
 
+    /**
+     * The name of the element which wraps map content into a SOAP envelope
+     */
+    public static final QName DEFAULT_MAP_WRAPPER =
+            new QName(AXIOMPAYLOADNS, "map");
+
     //-------------------------- services.xml parameters --------------------------------
     /**
      * The Parameter name indicating the operation to dispatch non SOAP/XML messages

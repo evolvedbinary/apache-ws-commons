@@ -16,9 +16,12 @@
 package org.apache.axis2.transport.jms;
 
 import org.apache.axiom.om.OMOutputFormat;
+import org.apache.axiom.om.OMDataSourceExt;
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMSourcedElement;
 import org.apache.axiom.om.OMText;
 import org.apache.axiom.om.OMNode;
+import org.apache.axiom.om.ds.MapDataSource;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.context.ConfigurationContext;
@@ -243,6 +246,8 @@ public class JMSSender extends AbstractTransportSender implements ManagementSupp
                     try {
                         if (message instanceof BytesMessage) {
                             metrics.incrementBytesSent(JMSUtils.getBodyLength((BytesMessage) message));
+                        } else if (message instanceof MapMessage) {
+                            metrics.incrementBytesSent((JMSUtils.getBodyLength((MapMessage) message)));
                         } else if (message instanceof TextMessage) {
                             metrics.incrementBytesSent((
                                 (TextMessage) message).getText().getBytes().length);
@@ -337,6 +342,8 @@ public class JMSSender extends AbstractTransportSender implements ManagementSupp
                 try {
                     if (reply instanceof BytesMessage) {
                         metrics.incrementBytesReceived(JMSUtils.getBodyLength((BytesMessage) reply));
+                    } else if (reply instanceof MapMessage) {
+                        metrics.incrementBytesReceived((JMSUtils.getBodyLength((MapMessage) reply)));
                     } else if (reply instanceof TextMessage) {
                         metrics.incrementBytesReceived((
                             (TextMessage) reply).getText().getBytes().length);
@@ -418,6 +425,26 @@ public class JMSSender extends AbstractTransportSender implements ManagementSupp
                 message = session.createBytesMessage();
                 BytesMessage bytesMsg = (BytesMessage) message;
                 bytesMsg.writeBytes(baos.toByteArray());
+            } else if (msgType != null && JMSConstants.JMS_MAP_MESSAGE.equals(msgType)) {
+                message = session.createMapMessage();
+                MapMessage mapMsg = (MapMessage) message;
+                OMElement wrapper = msgContext.getEnvelope().getBody().getFirstElement();
+                if (wrapper != null && wrapper instanceof OMSourcedElement) {
+                    OMSourcedElement omNode = (OMSourcedElement) wrapper;
+                    Object ds = omNode.getDataSource();
+                    if (ds != null && ds instanceof MapDataSource) {
+                        OMDataSourceExt dse = (OMDataSourceExt) omNode.getDataSource();
+                        Map map = (Map) dse.getObject();
+                        Iterator it = map.keySet().iterator();
+                        while (it.hasNext()) {
+                            Object key = it.next();
+                            Object value = map.get(key);
+                            if (key != null && value != null && key instanceof String) {
+                                mapMsg.setObject((String)key, value);
+                            }
+                        }
+                    }
+                }
             } else {
                 message = session.createTextMessage();  // default
                 TextMessage txtMsg = (TextMessage) message;
@@ -454,6 +481,27 @@ public class JMSSender extends AbstractTransportSender implements ManagementSupp
             TextMessage txtMsg = (TextMessage) message;
             txtMsg.setText(msgContext.getEnvelope().getBody().
                 getFirstChildWithName(BaseConstants.DEFAULT_TEXT_WRAPPER).getText());
+        } else if (JMSConstants.JMS_MAP_MESSAGE.equals(jmsPayloadType)) {
+            message = session.createMapMessage();
+            MapMessage mapMsg = (MapMessage) message;
+            OMElement wrapper = msgContext.getEnvelope().getBody().
+                getFirstChildWithName(BaseConstants.DEFAULT_MAP_WRAPPER);
+            if (wrapper != null && wrapper instanceof OMSourcedElement) {
+                OMSourcedElement omNode = (OMSourcedElement) wrapper;
+                Object ds = omNode.getDataSource();
+                if (ds != null && ds instanceof MapDataSource) {
+                    OMDataSourceExt dse = (OMDataSourceExt) omNode.getDataSource();
+                    Map map = (Map) dse.getObject();
+                    Iterator it = map.keySet().iterator();
+                    while (it.hasNext()) {
+                        Object key = it.next();
+                        Object value = map.get(key);
+                        if (key != null && value != null && key instanceof String) {
+                            mapMsg.setObject((String)key, value);
+                        }
+                    }
+                }
+            }   
         }
 
         // set the JMS correlation ID if specified
@@ -483,7 +531,8 @@ public class JMSSender extends AbstractTransportSender implements ManagementSupp
     /**
      * Guess the message type to use for JMS looking at the message contexts' envelope
      * @param msgContext the message context
-     * @return JMSConstants.JMS_BYTE_MESSAGE or JMSConstants.JMS_TEXT_MESSAGE or null
+     * @return JMSConstants.JMS_BYTE_MESSAGE, JMSConstants.JMS_TEXT_MESSAGE, 
+     * JMSConstants.JMS_MAP_MESSAGE or null
      */
     private String guessMessageType(MessageContext msgContext) {
         OMElement firstChild = msgContext.getEnvelope().getBody().getFirstElement();
@@ -492,6 +541,8 @@ public class JMSSender extends AbstractTransportSender implements ManagementSupp
                 return JMSConstants.JMS_BYTE_MESSAGE;
             } else if (BaseConstants.DEFAULT_TEXT_WRAPPER.equals(firstChild.getQName())) {
                 return JMSConstants.JMS_TEXT_MESSAGE;
+            } else if (BaseConstants.DEFAULT_MAP_WRAPPER.equals(firstChild.getQName())) {
+                return JMSConstants.JMS_MAP_MESSAGE;
             }
         }
         return null;
