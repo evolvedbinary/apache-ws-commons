@@ -25,6 +25,7 @@ import java.io.PrintWriter;
 import java.util.Enumeration;
 
 import javax.jms.BytesMessage;
+import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.TextMessage;
 
@@ -65,6 +66,9 @@ public class LogAspect {
                 } else if (message instanceof TextMessage) {
                     pw.print(((TextMessage)message).getText());
                     pw.flush();
+                } else if (message instanceof MapMessage) {
+                    MapMessage mapMessage = (MapMessage)message;
+                    IOUtils.copy(new MapMessageInputStream(mapMessage), out);
                 }
             } finally {
                 out.close();

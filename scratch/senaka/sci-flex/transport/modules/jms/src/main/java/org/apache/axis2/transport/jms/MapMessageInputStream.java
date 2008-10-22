@@ -18,6 +18,7 @@ package org.apache.axis2.transport.jms;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.ds.MapDataSource;
+import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.transport.base.BaseConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,6 +48,10 @@ public class MapMessageInputStream extends InputStream {
         this.message = message;
         this.encoding = encoding;
     }
+
+    public MapMessageInputStream(MapMessage message) {
+        this(message, MessageContext.DEFAULT_CHAR_SET_ENCODING);
+    } 
 
     private ByteArrayInputStream getByteStream() {
         if (byteStream != null) {

@@ -19,11 +19,14 @@
 
 package org.apache.axis2.transport.jms;
 
+import java.util.Enumeration;
+
 import javax.jms.BytesMessage;
 import javax.jms.Connection;
 import javax.jms.Destination;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
+import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
@@ -71,6 +74,14 @@ public class MockEchoEndpoint extends InOutEndpointSupport implements InOutEndpo
                     } else if (message instanceof TextMessage) {
                         reply = replySession.createTextMessage();
                         ((TextMessage)reply).setText(((TextMessage)message).getText());
+                    } else if (message instanceof MapMessage) {
+                        reply = replySession.createMapMessage();
+                        MapMessage mapMessage = (MapMessage)message;
+                        for (Enumeration e = mapMessage.getMapNames() ; e.hasMoreElements() ;) {
+                            String key = (String) e.nextElement();
+                            Object value = mapMessage.getObject(key);
+                            ((MapMessage)reply).setObject(key, value);
+                        }
                     } else {
                         // TODO
                         throw new UnsupportedOperationException("Unsupported message type");
