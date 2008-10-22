@@ -85,7 +85,12 @@
             <artifactId>axis2-transport-jms</artifactId>
             <version>${pom.version}</version>
             <scope>test</scope>
-        </dependency>    
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ws.commons.axiom</groupId>
+            <artifactId>sciflex-axiom-patch</artifactId>
+            <version>0.9-SNAPSHOT</version>
+        </dependency>
         <dependency>
             <groupId>org.mockejb</groupId>
             <artifactId>mockejb</artifactId>

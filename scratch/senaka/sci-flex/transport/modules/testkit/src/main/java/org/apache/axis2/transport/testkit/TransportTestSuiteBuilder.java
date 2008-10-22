@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.axis2.transport.testkit.channel.AsyncChannel;
@@ -44,6 +45,7 @@ import org.apache.axis2.transport.testkit.message.XMLMessage;
 import org.apache.axis2.transport.testkit.message.RESTMessage.Parameter;
 import org.apache.axis2.transport.testkit.tests.async.BinaryTestCase;
 import org.apache.axis2.transport.testkit.tests.async.LargeSOAPAsyncMessageTestCase;
+import org.apache.axis2.transport.testkit.tests.async.MapTestCase;
 import org.apache.axis2.transport.testkit.tests.async.RESTTestCase;
 import org.apache.axis2.transport.testkit.tests.async.SwATestCase;
 import org.apache.axis2.transport.testkit.tests.async.TextPlainTestCase;
@@ -113,11 +115,13 @@ public class TransportTestSuiteBuilder {
     private final ResourceList<AsyncTestClient<XMLMessage>> xmlAsyncClients = new ResourceList<AsyncTestClient<XMLMessage>>();
     private final ResourceList<AsyncTestClient<RESTMessage>> restAsyncClients = new ResourceList<AsyncTestClient<RESTMessage>>();
     private final ResourceList<AsyncTestClient<String>> stringAsyncClients = new ResourceList<AsyncTestClient<String>>();
+/*    private final ResourceList<AsyncTestClient<Map>> mapAsyncClients = new ResourceList<AsyncTestClient<Map>>();*/
     
     private final ResourceList<AsyncEndpoint<byte[]>> byteAsyncEndpoints = new ResourceList<AsyncEndpoint<byte[]>>();
     private final ResourceList<AsyncEndpoint<XMLMessage>> xmlAsyncEndpoints = new ResourceList<AsyncEndpoint<XMLMessage>>();
     private final ResourceList<AsyncEndpoint<RESTMessage>> restAsyncEndpoints = new ResourceList<AsyncEndpoint<RESTMessage>>();
     private final ResourceList<AsyncEndpoint<String>> stringAsyncEndpoints = new ResourceList<AsyncEndpoint<String>>();
+/*    private final ResourceList<AsyncEndpoint<Map>> mapAsyncEndpoints = new ResourceList<AsyncEndpoint<Map>>();*/
     
     private final ResourceList<RequestResponseChannel> requestResponseChannels = new ResourceList<RequestResponseChannel>();
     
@@ -163,6 +167,10 @@ public class TransportTestSuiteBuilder {
         xmlAsyncClients.add(adapt(client, MessageEncoder.XML_TO_STRING), relatedResources);
         stringAsyncClients.add(client, relatedResources);
     }
+
+    public void addMapAsyncTestClient(AsyncTestClient<Map> client, Object... relatedResources) {
+/*        mapAsyncClients.add(client, relatedResources);*/
+    }
     
     public void addAxisAsyncEndpoint(AsyncEndpoint<AxisMessage> endpoint, Object... relatedResources) {
         byteAsyncEndpoints.add(adapt(endpoint, MessageDecoder.AXIS_TO_BYTE), relatedResources);
@@ -179,6 +187,10 @@ public class TransportTestSuiteBuilder {
     
     public void addRESTAsyncEndpoint(AsyncEndpoint<RESTMessage> endpoint, Object... relatedResources) {
         restAsyncEndpoints.add(endpoint, relatedResources);
+    }
+
+    public void addMapAsyncEndpoint(AsyncEndpoint<Map> endpoint, Object... relatedResources) {
+/*        mapAsyncEndpoints.add(endpoint, relatedResources);*/
     }
     
     public void addRequestResponseChannel(RequestResponseChannel channel, Object... relatedResources) {
@@ -249,6 +261,12 @@ public class TransportTestSuiteBuilder {
 //                    addTest(new RESTTestCase(env, channel, client, endpoint, restTestMessage2));
                 }
             }
+            /*for (ResourceRelation<AsyncTestClient<Map>> client : mapAsyncClients) {
+                for (ResourceRelation<AsyncEndpoint<Map>> endpoint : mapAsyncEndpoints) {
+                    Object[] resources = merge(env, channel, client, endpoint);
+                    suite.addTest(new MapTestCase(channel.getPrimaryResource(), client.getPrimaryResource(), endpoint.getPrimaryResource(), resources));
+                }
+            }*/
         }
         for (ResourceRelation<RequestResponseChannel> channel : requestResponseChannels) {
             for (ResourceRelation<RequestResponseTestClient<XMLMessage,XMLMessage>> client : xmlRequestResponseClients) {
