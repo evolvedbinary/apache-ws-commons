@@ -74,7 +74,7 @@ public class JMSTransportTest extends TestCase {
         builder.addAxisAsyncTestClient(new AxisAsyncTestClient(), new JMSAxisTestClientConfigurator(JMSConstants.JMS_TEXT_MESSAGE));
         builder.addByteArrayAsyncTestClient(new JMSAsyncClient<byte[]>(JMSBytesMessageFactory.INSTANCE));
         builder.addStringAsyncTestClient(new JMSAsyncClient<String>(JMSTextMessageFactory.INSTANCE));
-/*        builder.addMapAsyncTestClient(new JMSAsyncClient<Map>(JMSMapMessageFactory.INSTANCE));*/
+        builder.addMapAsyncTestClient(new JMSAsyncClient<Map>(JMSMapMessageFactory.INSTANCE));
         
         builder.addAxisAsyncEndpoint(new AxisAsyncEndpoint());
         

@@ -115,13 +115,13 @@ public class TransportTestSuiteBuilder {
     private final ResourceList<AsyncTestClient<XMLMessage>> xmlAsyncClients = new ResourceList<AsyncTestClient<XMLMessage>>();
     private final ResourceList<AsyncTestClient<RESTMessage>> restAsyncClients = new ResourceList<AsyncTestClient<RESTMessage>>();
     private final ResourceList<AsyncTestClient<String>> stringAsyncClients = new ResourceList<AsyncTestClient<String>>();
-/*    private final ResourceList<AsyncTestClient<Map>> mapAsyncClients = new ResourceList<AsyncTestClient<Map>>();*/
+    private final ResourceList<AsyncTestClient<Map>> mapAsyncClients = new ResourceList<AsyncTestClient<Map>>();
     
     private final ResourceList<AsyncEndpoint<byte[]>> byteAsyncEndpoints = new ResourceList<AsyncEndpoint<byte[]>>();
     private final ResourceList<AsyncEndpoint<XMLMessage>> xmlAsyncEndpoints = new ResourceList<AsyncEndpoint<XMLMessage>>();
     private final ResourceList<AsyncEndpoint<RESTMessage>> restAsyncEndpoints = new ResourceList<AsyncEndpoint<RESTMessage>>();
     private final ResourceList<AsyncEndpoint<String>> stringAsyncEndpoints = new ResourceList<AsyncEndpoint<String>>();
-/*    private final ResourceList<AsyncEndpoint<Map>> mapAsyncEndpoints = new ResourceList<AsyncEndpoint<Map>>();*/
+    private final ResourceList<AsyncEndpoint<Map>> mapAsyncEndpoints = new ResourceList<AsyncEndpoint<Map>>();
     
     private final ResourceList<RequestResponseChannel> requestResponseChannels = new ResourceList<RequestResponseChannel>();
     
@@ -169,7 +169,7 @@ public class TransportTestSuiteBuilder {
     }
 
     public void addMapAsyncTestClient(AsyncTestClient<Map> client, Object... relatedResources) {
-/*        mapAsyncClients.add(client, relatedResources);*/
+        mapAsyncClients.add(client, relatedResources);
     }
     
     public void addAxisAsyncEndpoint(AsyncEndpoint<AxisMessage> endpoint, Object... relatedResources) {
@@ -190,7 +190,7 @@ public class TransportTestSuiteBuilder {
     }
 
     public void addMapAsyncEndpoint(AsyncEndpoint<Map> endpoint, Object... relatedResources) {
-/*        mapAsyncEndpoints.add(endpoint, relatedResources);*/
+        mapAsyncEndpoints.add(endpoint, relatedResources);
     }
     
     public void addRequestResponseChannel(RequestResponseChannel channel, Object... relatedResources) {
@@ -261,12 +261,12 @@ public class TransportTestSuiteBuilder {
 //                    addTest(new RESTTestCase(env, channel, client, endpoint, restTestMessage2));
                 }
             }
-            /*for (ResourceRelation<AsyncTestClient<Map>> client : mapAsyncClients) {
+            for (ResourceRelation<AsyncTestClient<Map>> client : mapAsyncClients) {
                 for (ResourceRelation<AsyncEndpoint<Map>> endpoint : mapAsyncEndpoints) {
                     Object[] resources = merge(env, channel, client, endpoint);
                     suite.addTest(new MapTestCase(channel.getPrimaryResource(), client.getPrimaryResource(), endpoint.getPrimaryResource(), resources));
                 }
-            }*/
+            }
         }
         for (ResourceRelation<RequestResponseChannel> channel : requestResponseChannels) {
             for (ResourceRelation<RequestResponseTestClient<XMLMessage,XMLMessage>> client : xmlRequestResponseClients) {
