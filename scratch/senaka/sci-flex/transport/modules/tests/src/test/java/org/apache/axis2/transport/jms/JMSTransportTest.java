@@ -74,9 +74,10 @@ public class JMSTransportTest extends TestCase {
         builder.addAxisAsyncTestClient(new AxisAsyncTestClient(), new JMSAxisTestClientConfigurator(JMSConstants.JMS_TEXT_MESSAGE));
         builder.addByteArrayAsyncTestClient(new JMSAsyncClient<byte[]>(JMSBytesMessageFactory.INSTANCE));
         builder.addStringAsyncTestClient(new JMSAsyncClient<String>(JMSTextMessageFactory.INSTANCE));
-        builder.addMapAsyncTestClient(new JMSAsyncClient<Map>(JMSMapMessageFactory.INSTANCE));
-        
+        builder.addMapAsyncTestClient(new JMSAsyncClient<Map>(JMSMapMessageFactory.INSTANCE), new JMSAxisTestClientConfigurator(JMSConstants.JMS_MAP_MESSAGE));
+
         builder.addAxisAsyncEndpoint(new AxisAsyncEndpoint());
+        builder.addMapAsyncEndpoint(new AxisAsyncEndpoint());
         
         builder.addRequestResponseChannel(new JMSRequestResponseChannel(JMSConstants.DESTINATION_TYPE_QUEUE, JMSConstants.DESTINATION_TYPE_QUEUE, ContentTypeMode.TRANSPORT));
         
@@ -88,6 +89,7 @@ public class JMSTransportTest extends TestCase {
         
         builder.addAxisRequestResponseTestClient(new AxisRequestResponseTestClient(), timeoutConfigurator);
         builder.addStringRequestResponseTestClient(new JMSRequestResponseClient<String>(JMSTextMessageFactory.INSTANCE));
+        builder.addMapRequestResponseTestClient(new JMSRequestResponseClient<Map>(JMSMapMessageFactory.INSTANCE));
         
         builder.addEchoEndpoint(new MockEchoEndpoint());
         builder.addEchoEndpoint(new AxisEchoEndpoint());

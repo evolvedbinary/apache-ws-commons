@@ -19,26 +19,34 @@
 
 package org.apache.axis2.transport.testkit.message;
 
+import java.beans.XMLDecoder;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.StringReader;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.mail.internet.ContentType;
+import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamReader;
 
 import junit.framework.Assert;
 
 import org.apache.axiom.attachments.Attachments;
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMDataSourceExt;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNode;
+import org.apache.axiom.om.OMSourcedElement;
 import org.apache.axiom.om.OMText;
+import org.apache.axiom.om.ds.MapDataSource;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.util.StAXUtils;
 import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
 import org.apache.axis2.transport.base.BaseConstants;
 import org.apache.axis2.transport.testkit.message.RESTMessage.Parameter;
@@ -56,6 +64,24 @@ public interface MessageDecoder<T,U> {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ((DataHandler)((OMText)child).getDataHandler()).writeTo(baos);
             return baos.toByteArray();
+        }
+    };
+
+    MessageDecoder<AxisMessage,Map> AXIS_TO_MAP =
+        new MessageDecoder<AxisMessage,Map>() {
+
+        public Map decode(ContentType contentType, AxisMessage message) throws Exception {
+            SOAPEnvelope envelope = message.getEnvelope();
+            OMElement wrapper = envelope.getBody().getFirstElement();
+            Assert.assertEquals(BaseConstants.DEFAULT_MAP_WRAPPER, wrapper.getQName());
+            OMNode firstChild = wrapper.getFirstOMChild();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            firstChild.serialize(baos);
+            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            XMLDecoder decoder = new XMLDecoder(bais);
+            Object result = decoder.readObject();
+            decoder.close();
+            return (Map)result;
         }
     };
     
@@ -134,6 +160,19 @@ public interface MessageDecoder<T,U> {
                 }
                 return new XMLMessage(payload, type);
             }
+        }
+    };
+
+    MessageDecoder<Map,XMLMessage> MAP_TO_XML =
+        new MessageDecoder<Map,XMLMessage>() {
+
+        public XMLMessage decode(ContentType contentType, Map message) throws Exception {
+            SOAPFactory factory = OMAbstractFactory.getSOAP11Factory();
+            QName wrapperQName = BaseConstants.DEFAULT_MAP_WRAPPER;
+            OMElement wrapper = factory.createOMElement(new MapDataSource(message, wrapperQName.getLocalPart(),
+                factory.createOMNamespace(wrapperQName.getNamespaceURI(), wrapperQName.getPrefix())), wrapperQName.getLocalPart(),
+                factory.createOMNamespace(wrapperQName.getNamespaceURI(), wrapperQName.getPrefix()));
+            return new XMLMessage(wrapper, XMLMessage.Type.SOAP11);
         }
     };
     

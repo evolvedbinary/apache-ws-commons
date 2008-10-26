@@ -19,17 +19,23 @@
 
 package org.apache.axis2.transport.testkit.message;
 
+import java.beans.XMLDecoder;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
+import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.mail.internet.ContentType;
+import javax.xml.namespace.QName;
 
 import org.apache.axiom.attachments.ByteArrayDataSource;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMOutputFormat;
+import org.apache.axiom.om.ds.MapDataSource;
 import org.apache.axiom.om.impl.MIMEOutputUtils;
+import org.apache.axiom.soap.SOAP11Constants;
 import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
@@ -115,6 +121,27 @@ public interface MessageEncoder<T,U> {
             return sw.toString();
         }
     };
+
+    MessageEncoder<XMLMessage,Map> XML_TO_MAP =
+        new MessageEncoder<XMLMessage,Map>() {
+
+        public ContentType getContentType(ClientOptions options, ContentType contentType) throws Exception {
+            return new ContentType(SOAP11Constants.SOAP_11_CONTENT_TYPE);
+        }
+
+        public Map encode(ClientOptions options, XMLMessage message) throws Exception {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            OMOutputFormat outputFormat = new OMOutputFormat();
+            outputFormat.setCharSetEncoding(options.getCharset());
+            outputFormat.setIgnoreXMLDeclaration(true);
+            message.getPayload().getFirstElement().serializeAndConsume(baos, outputFormat);
+            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            XMLDecoder decoder = new XMLDecoder(bais);
+            Object result = decoder.readObject();
+            decoder.close();
+            return (Map)result;
+        }
+    };
     
     MessageEncoder<byte[],AxisMessage> BINARY_WRAPPER =
         new MessageEncoder<byte[],AxisMessage>() {
@@ -131,6 +158,27 @@ public interface MessageEncoder<T,U> {
             OMElement wrapper = factory.createOMElement(BaseConstants.DEFAULT_BINARY_WRAPPER);
             DataHandler dataHandler = new DataHandler(new ByteArrayDataSource(message));
             wrapper.addChild(factory.createOMText(dataHandler, true));
+            envelope.getBody().addChild(wrapper);
+            result.setEnvelope(envelope);
+            return result;
+        }
+    };
+
+    MessageEncoder<Map,AxisMessage> MAP_WRAPPER =
+        new MessageEncoder<Map,AxisMessage>() {
+
+        public ContentType getContentType(ClientOptions options, ContentType contentType) {
+            return contentType;
+        }
+
+        public AxisMessage encode(ClientOptions options, Map message) throws Exception {
+            AxisMessage result = new AxisMessage();
+            result.setMessageType(null);
+            SOAPFactory factory = OMAbstractFactory.getSOAP11Factory();
+            SOAPEnvelope envelope = factory.getDefaultEnvelope();
+            QName wrapperQName = BaseConstants.DEFAULT_MAP_WRAPPER;
+            OMElement wrapper = factory.createOMElement(new MapDataSource(message), wrapperQName.getLocalPart(),
+                factory.createOMNamespace(wrapperQName.getNamespaceURI(), wrapperQName.getPrefix()));
             envelope.getBody().addChild(wrapper);
             result.setEnvelope(envelope);
             return result;

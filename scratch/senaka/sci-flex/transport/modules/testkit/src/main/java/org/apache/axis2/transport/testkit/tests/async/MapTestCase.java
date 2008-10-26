@@ -33,15 +33,16 @@ import org.apache.axis2.transport.testkit.name.Name;
 @Name("AsyncMap")
 public class MapTestCase extends AsyncMessageTestCase<Map> {
     private static final Random random = new Random();
+    private final Map message;
     
-    public MapTestCase(AsyncChannel channel, AsyncTestClient<Map> client, AsyncEndpoint<Map> endpoint, Object... resources) {
+    public MapTestCase(AsyncChannel channel, AsyncTestClient<Map> client, AsyncEndpoint<Map> endpoint, Map message, Object... resources) {
         super(channel, client, endpoint, null, null, resources);
+        this.message = message;
     }
     
     @Override
     protected Map prepareMessage() throws Exception {
-        Map content = new TreeMap();
-        return content;
+        return message;
     }
 
     @Override

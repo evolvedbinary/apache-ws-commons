@@ -66,7 +66,7 @@ public class JMSClient<T> implements TestClient {
 
     protected String doSendMessage(ClientOptions options, ContentType contentType, T message) throws Exception {
         Message jmsMessage = jmsMessageFactory.createMessage(session, message);
-        if (contentTypeMode == ContentTypeMode.TRANSPORT) {
+        if (contentType != null && contentTypeMode == ContentTypeMode.TRANSPORT) {
             jmsMessage.setStringProperty(BaseConstants.CONTENT_TYPE, contentType.toString());
         }
         producer.send(jmsMessage);

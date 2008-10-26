@@ -37,6 +37,10 @@ import javax.jms.*;
 import javax.jms.Queue;
 import javax.activation.DataHandler;
 import javax.naming.Context;
+import javax.xml.stream.XMLStreamException;
+
+import java.beans.XMLDecoder;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -444,6 +448,33 @@ public class JMSSender extends AbstractTransportSender implements ManagementSupp
                             }
                         }
                     }
+                } else if (wrapper != null && wrapper.getFirstOMChild() != null) {
+                // FIXME: The incoming payload might come from a non-JMS source, in that case,
+                // we don't get a OMSourcedElement. This issue must be sorted and the creation 
+                // of the OMSourcedElement must happen at the most optimal location.
+                    OMNode firstChild = wrapper.getFirstOMChild();
+                    ByteArrayOutputStream baosForMap = new ByteArrayOutputStream();
+                    try {
+                        firstChild.serialize(baosForMap);
+                    } catch (XMLStreamException e) {
+                        handleException("Error serializing binary content of element : " +
+                                BaseConstants.DEFAULT_MAP_WRAPPER, e);
+                    }
+                    ByteArrayInputStream bais = new ByteArrayInputStream(baosForMap.toByteArray());
+                    XMLDecoder decoder = new XMLDecoder(bais);
+                    Object result = decoder.readObject();
+                    decoder.close();
+                    if (result != null) {
+                        Map map = (Map)result;
+                        Iterator it = map.keySet().iterator();
+                        while (it.hasNext()) {
+                            Object key = it.next();
+                            Object value = map.get(key);
+                            if (key != null && value != null && key instanceof String) {
+                                mapMsg.setObject((String)key, value);
+                            }
+                        }
+                    }
                 }
             } else {
                 message = session.createTextMessage();  // default
@@ -501,7 +532,34 @@ public class JMSSender extends AbstractTransportSender implements ManagementSupp
                         }
                     }
                 }
-            }   
+            } else if (wrapper != null && wrapper.getFirstOMChild() != null) {
+            // FIXME: The incoming payload might come from a non-JMS source, in that case,
+            // we don't get a OMSourcedElement. This issue must be sorted and the creation 
+            // of the OMSourcedElement must happen at the most optimal location.
+                OMNode firstChild = wrapper.getFirstOMChild();
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                try {
+                    firstChild.serialize(baos);
+                } catch (XMLStreamException e) {
+                    handleException("Error serializing binary content of element : " +
+                            BaseConstants.DEFAULT_MAP_WRAPPER, e);
+                }
+                ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+                XMLDecoder decoder = new XMLDecoder(bais);
+                Object result = decoder.readObject();
+                decoder.close();
+                if (result != null) {
+                    Map map = (Map)result;
+                    Iterator it = map.keySet().iterator();
+                    while (it.hasNext()) {
+                        Object key = it.next();
+                        Object value = map.get(key);
+                        if (key != null && value != null && key instanceof String) {
+                            mapMsg.setObject((String)key, value);
+                        }
+                    }
+                }
+            }
         }
 
         // set the JMS correlation ID if specified

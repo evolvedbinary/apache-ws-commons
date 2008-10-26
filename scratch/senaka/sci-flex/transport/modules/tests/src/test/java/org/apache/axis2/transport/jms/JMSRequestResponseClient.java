@@ -27,6 +27,7 @@ import javax.jms.MessageConsumer;
 import javax.jms.Session;
 import javax.mail.internet.ContentType;
 
+import org.apache.axiom.soap.SOAP11Constants;
 import org.apache.axis2.transport.testkit.client.ClientOptions;
 import org.apache.axis2.transport.testkit.client.RequestResponseTestClient;
 import org.apache.axis2.transport.testkit.message.IncomingMessage;
@@ -57,7 +58,9 @@ public class JMSRequestResponseClient<T> extends JMSClient<T> implements Request
         MessageConsumer consumer = replySession.createConsumer(replyDestination, "JMSCorrelationID = '" + correlationId + "'");
         try {
             Message replyMessage = consumer.receive(8000);
-            return new IncomingMessage<T>(new ContentType(replyMessage.getStringProperty("Content-Type")),
+            return new IncomingMessage<T>(new ContentType((replyMessage.getStringProperty("Content-Type") != null ?
+                                          replyMessage.getStringProperty("Content-Type") :
+                                          SOAP11Constants.SOAP_11_CONTENT_TYPE)),
                                           jmsMessageFactory.parseMessage(replyMessage));
         } finally {
             consumer.close();

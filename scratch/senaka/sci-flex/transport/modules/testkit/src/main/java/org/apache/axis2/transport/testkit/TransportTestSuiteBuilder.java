@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import org.apache.axis2.transport.testkit.channel.AsyncChannel;
 import org.apache.axis2.transport.testkit.channel.RequestResponseChannel;
@@ -51,6 +52,7 @@ import org.apache.axis2.transport.testkit.tests.async.SwATestCase;
 import org.apache.axis2.transport.testkit.tests.async.TextPlainTestCase;
 import org.apache.axis2.transport.testkit.tests.async.XMLAsyncMessageTestCase;
 import org.apache.axis2.transport.testkit.tests.echo.XMLRequestResponseMessageTestCase;
+import org.apache.axis2.transport.testkit.tests.echo.XMLMapRequestResponseMessageTestCase;
 
 public class TransportTestSuiteBuilder {
     static class ResourceRelation<T> {
@@ -104,6 +106,8 @@ public class TransportTestSuiteBuilder {
             new Parameter("param", "value1"),
             new Parameter("param", "value2"),
         });
+
+    private static final Map mapTestMessage = new TreeMap();
     
     private final ManagedTestSuite suite;
     
@@ -126,6 +130,7 @@ public class TransportTestSuiteBuilder {
     private final ResourceList<RequestResponseChannel> requestResponseChannels = new ResourceList<RequestResponseChannel>();
     
     private final ResourceList<RequestResponseTestClient<XMLMessage,XMLMessage>> xmlRequestResponseClients = new ResourceList<RequestResponseTestClient<XMLMessage,XMLMessage>>();
+    private final ResourceList<RequestResponseTestClient<XMLMessage,XMLMessage>> xmlMapRequestResponseClients = new ResourceList<RequestResponseTestClient<XMLMessage,XMLMessage>>();
     
     private final ResourceList<InOutEndpoint> echoEndpoints = new ResourceList<InOutEndpoint>();
     
@@ -137,6 +142,8 @@ public class TransportTestSuiteBuilder {
         } catch (ParseException ex) {
             throw new Error(ex);
         }
+        mapTestMessage.put("string", "name");
+        mapTestMessage.put("int", 1);
     }
     
     public void addEnvironment(Object... resources) {
@@ -189,10 +196,10 @@ public class TransportTestSuiteBuilder {
         restAsyncEndpoints.add(endpoint, relatedResources);
     }
 
-    public void addMapAsyncEndpoint(AsyncEndpoint<Map> endpoint, Object... relatedResources) {
-        mapAsyncEndpoints.add(endpoint, relatedResources);
+    public void addMapAsyncEndpoint(AsyncEndpoint<AxisMessage> endpoint, Object... relatedResources) {
+        mapAsyncEndpoints.add(adapt(endpoint, MessageDecoder.AXIS_TO_MAP), relatedResources);
     }
-    
+
     public void addRequestResponseChannel(RequestResponseChannel channel, Object... relatedResources) {
         requestResponseChannels.add(channel, relatedResources);
     }
@@ -207,6 +214,10 @@ public class TransportTestSuiteBuilder {
     
     public void addStringRequestResponseTestClient(RequestResponseTestClient<String,String> client, Object... relatedResources) {
         xmlRequestResponseClients.add(adapt(client, MessageEncoder.XML_TO_STRING, MessageDecoder.STRING_TO_XML), relatedResources);
+    }
+
+    public void addMapRequestResponseTestClient(RequestResponseTestClient<Map,Map> client, Object... relatedResources) {
+        xmlMapRequestResponseClients.add(adapt(client, MessageEncoder.XML_TO_MAP, MessageDecoder.MAP_TO_XML), relatedResources);
     }
     
     public void addEchoEndpoint(InOutEndpoint endpoint, Object... relatedResources) {
@@ -264,7 +275,7 @@ public class TransportTestSuiteBuilder {
             for (ResourceRelation<AsyncTestClient<Map>> client : mapAsyncClients) {
                 for (ResourceRelation<AsyncEndpoint<Map>> endpoint : mapAsyncEndpoints) {
                     Object[] resources = merge(env, channel, client, endpoint);
-                    suite.addTest(new MapTestCase(channel.getPrimaryResource(), client.getPrimaryResource(), endpoint.getPrimaryResource(), resources));
+                    suite.addTest(new MapTestCase(channel.getPrimaryResource(), client.getPrimaryResource(), endpoint.getPrimaryResource(), mapTestMessage, resources));
                 }
             }
         }
@@ -279,6 +290,12 @@ public class TransportTestSuiteBuilder {
                             }
                         }
                     }
+                }
+            }
+            for (ResourceRelation<RequestResponseTestClient<XMLMessage,XMLMessage>> client : xmlMapRequestResponseClients) {
+                for (ResourceRelation<InOutEndpoint> endpoint : echoEndpoints) {
+                    Object[] resources = merge(env, channel, client, endpoint);
+                    suite.addTest(new XMLMapRequestResponseMessageTestCase(channel.getPrimaryResource(), client.getPrimaryResource(), endpoint.getPrimaryResource(), XMLMessage.Type.SOAP11, mapTestMessage, resources));
                 }
             }
         }
