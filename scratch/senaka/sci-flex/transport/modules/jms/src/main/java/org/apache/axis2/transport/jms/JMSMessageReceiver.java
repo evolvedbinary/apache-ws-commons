@@ -15,7 +15,6 @@
 */
 package org.apache.axis2.transport.jms;
 
-import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants;
 import org.apache.axis2.transport.base.threads.WorkerPool;
 import org.apache.axis2.transport.base.BaseUtils;
@@ -161,10 +160,10 @@ public class JMSMessageReceiver implements MessageListener {
                 msgContext.setProperty(JMSConstants.JMS_COORELATION_ID, message.getJMSMessageID());
             } catch (JMSException ignore) {}
 
+            AxisService service = null;
             try {
-                String soapAction = JMSUtils.getInstace().
+                String soapAction = JMSUtils.
                     getProperty(message, BaseConstants.SOAPACTION);
-                AxisService service = null;
 
                 // set to bypass dispatching if we know the service - we already should!
                 if (serviceName != null) {
@@ -205,11 +204,16 @@ public class JMSMessageReceiver implements MessageListener {
                     }
                 }
 
-                String contentType =
-                    JMSUtils.getInstace().getProperty(message, BaseConstants.CONTENT_TYPE);
+                String contentType = null;
+                if (service != null) {
+                    contentType = (String)service.getParameterValue(JMSConstants.CONTENT_TYPE_PARAM);
+                }
+                if (contentType == null) {
+                    contentType
+                        = JMSUtils.getProperty(message, BaseConstants.CONTENT_TYPE);
+                }
                 
-                // set the message payload to the message context
-                JMSUtils.getInstace().setSOAPEnvelope(message, msgContext, contentType);
+                JMSUtils.setSOAPEnvelope(message, msgContext, contentType);
 
                 jmsListener.handleIncomingMessage(
                     msgContext,
@@ -219,12 +223,10 @@ public class JMSMessageReceiver implements MessageListener {
                 );
                 metrics.incrementMessagesReceived();
 
-            } catch (JMSException e) {
-                handleException("JMS Exception reading the message Destination or JMS ReplyTo", e);
+            } catch (Throwable e) {
                 metrics.incrementFaultsReceiving();
-            } catch (AxisFault e) {
-                handleException("Axis fault creating a MessageContext", e);
-                metrics.incrementFaultsReceiving();
+                jmsListener.error(service, e);
+                log.error("Exception while processing incoming message", e);
             }
         }
     }

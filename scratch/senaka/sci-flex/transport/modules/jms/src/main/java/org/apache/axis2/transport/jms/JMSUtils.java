@@ -16,27 +16,32 @@
 package org.apache.axis2.transport.jms;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.Constants;
+import org.apache.axis2.builder.Builder;
 import org.apache.axis2.builder.BuilderUtil;
+import org.apache.axis2.builder.SOAPBuilder;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.Parameter;
 import org.apache.axis2.description.ParameterIncludeImpl;
+import org.apache.axis2.format.TextMessageBuilder;
+import org.apache.axis2.format.TextMessageBuilderAdapter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.axis2.transport.base.BaseConstants;
+import org.apache.axis2.transport.TransportUtils;
 import org.apache.axis2.transport.base.BaseUtils;
 
 import javax.jms.*;
 import javax.jms.Queue;
+import javax.mail.internet.ContentType;
+import javax.mail.internet.ParseException;
 import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.Reference;
+import javax.xml.stream.XMLStreamException;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -48,12 +53,6 @@ public class JMSUtils extends BaseUtils {
     private static final Log log = LogFactory.getLog(JMSUtils.class);
     private static final Class[]  NOARGS  = new Class[] {};
     private static final Object[] NOPARMS = new Object[] {};
-
-    private static BaseUtils _instance = new JMSUtils();
-
-    public static BaseUtils getInstace() {
-        return _instance;
-    }
 
     /**
      * Create a JMS Queue using the given connection with the JNDI destination name, and return the
@@ -217,10 +216,9 @@ public class JMSUtils extends BaseUtils {
      * @param property property name
      * @return property value
      */
-    @Override
-    public String getProperty(Object message, String property) {
+    public static String getProperty(Message message, String property) {
         try {
-            return ((Message)message).getStringProperty(property);
+            return message.getStringProperty(property);
         } catch (JMSException e) {
             return null;
         }
@@ -296,40 +294,57 @@ public class JMSUtils extends BaseUtils {
         }
     }
 
-    /**
-     * Get an InputStream to the JMS message payload
-     *
-     * @param message the JMS message
-     * @return an InputStream to the payload
-     */
-    @Override
-    public InputStream getInputStream(Object message) {
-
-        try {
-            if (message instanceof BytesMessage) {
-                byte[] buffer = new byte[1024];
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-                BytesMessage byteMsg = (BytesMessage) message;
-                byteMsg.reset();
-                for (int bytesRead = byteMsg.readBytes(buffer); bytesRead != -1;
-                     bytesRead = byteMsg.readBytes(buffer)) {
-                    out.write(buffer, 0, bytesRead);
+    public static void setSOAPEnvelope(Message message, MessageContext msgContext, String contentType) throws AxisFault, JMSException {
+        if (message instanceof BytesMessage) {
+            if (contentType == null) {
+                log.debug("No content type specified; assuming application/octet-stream.");
+                contentType = "application/octet-stream";
+            } else {
+                // Extract the charset encoding from the content type and
+                // set the CHARACTER_SET_ENCODING property as e.g. SOAPBuilder relies on this.
+                String charSetEnc = null;
+                try {
+                    if (contentType != null) {
+                        charSetEnc = new ContentType(contentType).getParameter("charset");
+                    }
+                } catch (ParseException ex) {
+                    // ignore
                 }
-                return new ByteArrayInputStream(out.toByteArray());
-
-            } else if (message instanceof TextMessage) {
-                TextMessage txtMsg = (TextMessage) message;
-                String contentType = getProperty(txtMsg, BaseConstants.CONTENT_TYPE);
-                
-                if (contentType != null) {
-                    return new ByteArrayInputStream(
-                        txtMsg.getText().getBytes(BuilderUtil.getCharSetEncoding(contentType)));
+                msgContext.setProperty(Constants.Configuration.CHARACTER_SET_ENCODING, charSetEnc);
+            }
+            
+            SOAPEnvelope envelope;
+            try {
+                envelope = TransportUtils.createSOAPMessage(msgContext,
+                        new BytesMessageInputStream((BytesMessage)message), contentType);
+            } catch (XMLStreamException ex) {
+                handleException("Error parsing XML", ex);
+                return; // Make compiler happy
+            }
+            msgContext.setEnvelope(envelope);
+        } else if (message instanceof TextMessage) {
+            String type;
+            if (contentType == null) {
+                log.debug("No content type specified; assuming text/plain.");
+                type = contentType = "text/plain";
+            } else {
+                int index = contentType.indexOf(';');
+                if (index > 0) {
+                    type = contentType.substring(0, index);
                 } else {
-                    return new ByteArrayInputStream(
-                            txtMsg.getText().getBytes(MessageContext.DEFAULT_CHAR_SET_ENCODING));
+                    type = contentType;
                 }
-
+            }
+            Builder builder = BuilderUtil.getBuilderFromSelector(type, msgContext);
+            if (builder == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("No message builder found for type '" + type + "'. Falling back to SOAP.");
+                }
+                builder = new SOAPBuilder();
+            }
+            TextMessageBuilder textMessageBuilder;
+            if (builder instanceof TextMessageBuilder) {
+                textMessageBuilder = (TextMessageBuilder)builder;
             } else if (message instanceof MapMessage) {
                 MapMessage mapMsg = (MapMessage) message;
                 String contentType = getProperty(mapMsg, BaseConstants.CONTENT_TYPE);
@@ -341,15 +356,13 @@ public class JMSUtils extends BaseUtils {
                 }
 
             } else {
-                handleException("Unsupported JMS message type : " + message.getClass().getName());
+                textMessageBuilder = new TextMessageBuilderAdapter(builder);
             }
-
-        } catch (JMSException e) {
-            handleException("JMS Exception reading message payload", e);
-        } catch (UnsupportedEncodingException e) {
-            handleException("Encoding exception getting InputStream into message", e);
+            String content = ((TextMessage)message).getText();
+            OMElement documentElement
+                    = textMessageBuilder.processDocument(content, contentType, msgContext);
+            msgContext.setEnvelope(TransportUtils.createSOAPEnvelope(documentElement));
         }
-        return null;
     }
 
     /**
@@ -694,43 +707,6 @@ public class JMSUtils extends BaseUtils {
         return map;
     }
 
-
-    @Override
-    public String getMessageTextPayload(Object message) {
-        if (message instanceof TextMessage) {
-            try {
-                return ((TextMessage) message).getText();
-            } catch (JMSException e) {
-                handleException("Error reading JMS text message payload", e);
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public byte[] getMessageBinaryPayload(Object message) {
-
-        if (message instanceof BytesMessage) {
-            BytesMessage bytesMessage = (BytesMessage) message;
-
-            try {
-                bytesMessage.reset();
-
-                byte[] buffer = new byte[1024];
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-                for (int bytesRead = bytesMessage.readBytes(buffer); bytesRead != -1;
-                     bytesRead = bytesMessage.readBytes(buffer)) {
-                    out.write(buffer, 0, bytesRead);
-                }
-                return out.toByteArray();
-                
-            } catch (JMSException e) {
-                handleException("Error reading JMS binary message payload", e);
-            }
-        }
-        return null;
-    }
 
     public Map getMessageMapPayload(Object message) {
 
