@@ -15,7 +15,11 @@
 */
 package org.apache.axis2.transport.jms;
 
+import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
+import org.apache.axiom.om.ds.MapDataSource;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants;
@@ -345,16 +349,6 @@ public class JMSUtils extends BaseUtils {
             TextMessageBuilder textMessageBuilder;
             if (builder instanceof TextMessageBuilder) {
                 textMessageBuilder = (TextMessageBuilder)builder;
-            } else if (message instanceof MapMessage) {
-                MapMessage mapMsg = (MapMessage) message;
-                String contentType = getProperty(mapMsg, BaseConstants.CONTENT_TYPE);
-
-                if (contentType != null) {
-                    return new MapMessageInputStream(mapMsg, BuilderUtil.getCharSetEncoding(contentType));
-                } else {
-                    return new MapMessageInputStream(mapMsg, MessageContext.DEFAULT_CHAR_SET_ENCODING);
-                }
-
             } else {
                 textMessageBuilder = new TextMessageBuilderAdapter(builder);
             }
@@ -362,6 +356,11 @@ public class JMSUtils extends BaseUtils {
             OMElement documentElement
                     = textMessageBuilder.processDocument(content, contentType, msgContext);
             msgContext.setEnvelope(TransportUtils.createSOAPEnvelope(documentElement));
+        } else if (message instanceof MapMessage) {
+            Map payloadMap = getMessageMapPayload(message);
+            OMFactory omBuilderFactory = OMAbstractFactory.getOMFactory();
+            OMElement payload = omBuilderFactory.createOMElement(new MapDataSource(payloadMap, "map", omBuilderFactory.createOMNamespace("http://ws.apache.org/commons/ns/payload", "ns")), "map",omBuilderFactory.createOMNamespace("http://ws.apache.org/commons/ns/payload", "ns")); 
+            msgContext.setEnvelope(TransportUtils.createSOAPEnvelope(payload));
         }
     }
 
@@ -708,7 +707,7 @@ public class JMSUtils extends BaseUtils {
     }
 
 
-    public Map getMessageMapPayload(Object message) {
+    public static Map getMessageMapPayload(Object message) {
 
         if (message instanceof MapMessage) {
             MapMessage mapMessage = (MapMessage) message;

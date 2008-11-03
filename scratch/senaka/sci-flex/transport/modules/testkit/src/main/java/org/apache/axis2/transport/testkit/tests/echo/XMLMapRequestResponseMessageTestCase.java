@@ -25,6 +25,7 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMSourcedElement;
 import org.apache.axiom.om.ds.MapDataSource;
 import org.apache.axis2.transport.base.BaseConstants;
 import org.apache.axis2.transport.testkit.MessageTestData;
@@ -59,6 +60,10 @@ public class XMLMapRequestResponseMessageTestCase extends XMLRequestResponseMess
     protected void checkResponse(XMLMessage request, XMLMessage response) throws Exception {
         OMElement orgElement = request.getPayload();
         OMElement element = response.getPayload();
+        assertTrue(orgElement != null);
+        assertTrue(element != null);
+        assertTrue(orgElement instanceof OMSourcedElement);
+        assertTrue(element instanceof OMSourcedElement);
         assertEquals(orgElement.getQName(), element.getQName());
         assertEquals(orgElement.toString(), element.toString());
     }

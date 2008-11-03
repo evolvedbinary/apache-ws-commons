@@ -57,8 +57,7 @@ public class MapMessageInputStream extends InputStream {
         if (byteStream != null) {
             return byteStream;
         } else {
-            JMSUtils utils = new JMSUtils();
-            Map payloadMap = utils.getMessageMapPayload(message);
+            Map payloadMap = JMSUtils.getMessageMapPayload(message);
             if (payloadMap != null) {
                 QName wrapperQName = BaseConstants.DEFAULT_MAP_WRAPPER;
                 OMFactory ombuilderFactory = OMAbstractFactory.getOMFactory();
