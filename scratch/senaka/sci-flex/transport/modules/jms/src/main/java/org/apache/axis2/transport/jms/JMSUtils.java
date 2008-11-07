@@ -15,11 +15,7 @@
 */
 package org.apache.axis2.transport.jms;
 
-import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMFactory;
-import org.apache.axiom.om.OMNamespace;
-import org.apache.axiom.om.ds.MapDataSource;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants;
@@ -30,6 +26,8 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.Parameter;
 import org.apache.axis2.description.ParameterIncludeImpl;
+import org.apache.axis2.format.MapMessageBuilder;
+import org.apache.axis2.format.MapMessageBuilderAdapter;
 import org.apache.axis2.format.TextMessageBuilder;
 import org.apache.axis2.format.TextMessageBuilderAdapter;
 import org.apache.commons.logging.Log;
@@ -357,9 +355,33 @@ public class JMSUtils extends BaseUtils {
                     = textMessageBuilder.processDocument(content, contentType, msgContext);
             msgContext.setEnvelope(TransportUtils.createSOAPEnvelope(documentElement));
         } else if (message instanceof MapMessage) {
+            String type;
+            if (contentType == null) {
+                log.debug("No content type specified; assuming text/xml.");
+                type = contentType = "text/xml";
+            } else {
+                int index = contentType.indexOf(';');
+                if (index > 0) {
+                    type = contentType.substring(0, index);
+                } else {
+                    type = contentType;
+                }
+            }
+            Builder builder = BuilderUtil.getBuilderFromSelector(type, msgContext);
+            if (builder == null) {
+                if (log.isDebugEnabled()) {
+                    log.debug("No message builder found for type '" + type + "'. Falling back to SOAP.");
+                }
+                builder = new SOAPBuilder();
+            }
             Map payloadMap = getMessageMapPayload(message);
-            OMFactory omBuilderFactory = OMAbstractFactory.getOMFactory();
-            OMElement payload = omBuilderFactory.createOMElement(new MapDataSource(payloadMap, "map", omBuilderFactory.createOMNamespace("http://ws.apache.org/commons/ns/payload", "ns")), "map",omBuilderFactory.createOMNamespace("http://ws.apache.org/commons/ns/payload", "ns")); 
+            MapMessageBuilder mapMessageBuilder;
+            if (builder instanceof MapMessageBuilder) {
+                mapMessageBuilder = (MapMessageBuilder)builder;
+            } else {
+                mapMessageBuilder = new MapMessageBuilderAdapter(builder);
+            }
+            OMElement payload = mapMessageBuilder.processDocument(payloadMap, contentType, msgContext);
             msgContext.setEnvelope(TransportUtils.createSOAPEnvelope(payload));
         }
     }
