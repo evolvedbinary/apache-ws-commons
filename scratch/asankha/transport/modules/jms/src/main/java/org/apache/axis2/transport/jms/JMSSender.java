@@ -132,15 +132,9 @@ public class JMSSender extends AbstractTransportSender implements ManagementSupp
             contentTypeProperty = jmsOut.getContentTypeProperty();
         }
 
-        if (messageSender.getCacheLevel() < JMSConstants.CACHE_SESSION) {
-            // only connection has been cached at most
+        // need to synchronize as Sessions are not thread safe
+        synchronized (messageSender.getSession()) {
             sendOverJMS(msgCtx, messageSender, contentTypeProperty, jmsConnectionFactory, jmsOut);
-            
-        } else {
-            // need to synchronize as Sessions are not thread safe
-            synchronized (messageSender.getSession()) {
-                sendOverJMS(msgCtx, messageSender, contentTypeProperty, jmsConnectionFactory, jmsOut);
-            }
         }
     }
 
