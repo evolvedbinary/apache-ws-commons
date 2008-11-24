@@ -144,7 +144,7 @@ public class MinConcurrencyTest extends ManagedTestCase {
             while (concurrencyReached < expectedConcurrency
                 && System.currentTimeMillis() < (startTime + 5000)) {
                 synchronized(concurrencyReachedLock) {
-                    concurrencyReachedLock.wait();
+                    concurrencyReachedLock.wait(5000);
                 }
             }
             
