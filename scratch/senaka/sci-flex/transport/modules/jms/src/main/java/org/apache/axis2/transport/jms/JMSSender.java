@@ -430,21 +430,31 @@ public class JMSSender extends AbstractTransportSender implements ManagementSupp
                 BytesMessage bytesMsg = (BytesMessage) message;
                 bytesMsg.writeBytes(baos.toByteArray());
             } else if (msgType != null && JMSConstants.JMS_MAP_MESSAGE.equals(msgType)) {
-                message = session.createMapMessage();
-                MapMessage mapMsg = (MapMessage) message;
                 OMElement wrapper = msgContext.getEnvelope().getBody().getFirstElement();
                 if (wrapper != null && wrapper instanceof OMSourcedElement) {
                     OMSourcedElement omNode = (OMSourcedElement) wrapper;
                     Object ds = omNode.getDataSource();
                     if (ds != null && ds instanceof MapDataSource) {
                         OMDataSourceExt dse = (OMDataSourceExt) omNode.getDataSource();
-                        Map map = (Map) dse.getObject();
-                        Iterator it = map.keySet().iterator();
-                        while (it.hasNext()) {
-                            Object key = it.next();
-                            Object value = map.get(key);
-                            if (key != null && value != null && key instanceof String) {
-                                mapMsg.setObject((String)key, value);
+                        if (dse.getObject() instanceof JMSMapWrapper) {
+                            message = session.createMapMessage();
+                            MapMessage mapMessage = ((JMSMapWrapper) dse.getObject()).getWrappedObject();
+                            for (Enumeration e = mapMessage.getMapNames() ; e.hasMoreElements() ;) {
+                                String key = (String) e.nextElement();
+                                Object value = mapMessage.getObject(key);
+                                ((MapMessage)message).setObject(key, value);
+                            }
+                        } else {
+                            message = session.createMapMessage();
+                            MapMessage mapMsg = (MapMessage) message;
+                            Map map = (Map) dse.getObject();
+                            Iterator it = map.keySet().iterator();
+                            while (it.hasNext()) {
+                                Object key = it.next();
+                                Object value = map.get(key);
+                                if (key != null && value != null && key instanceof String) {
+                                    mapMsg.setObject((String)key, value);
+                                }
                             }
                         }
                     }
@@ -465,13 +475,25 @@ public class JMSSender extends AbstractTransportSender implements ManagementSupp
                     Object result = decoder.readObject();
                     decoder.close();
                     if (result != null) {
-                        Map map = (Map)result;
-                        Iterator it = map.keySet().iterator();
-                        while (it.hasNext()) {
-                            Object key = it.next();
-                            Object value = map.get(key);
-                            if (key != null && value != null && key instanceof String) {
-                                mapMsg.setObject((String)key, value);
+                        if (result instanceof JMSMapWrapper) {
+                            message = session.createMapMessage();
+                            MapMessage mapMessage = ((JMSMapWrapper)result).getWrappedObject();
+                            for (Enumeration e = mapMessage.getMapNames() ; e.hasMoreElements() ;) {
+                                String key = (String) e.nextElement();
+                                Object value = mapMessage.getObject(key);
+                                ((MapMessage)message).setObject(key, value);
+                            }
+                        } else {
+                            message = session.createMapMessage();
+                            MapMessage mapMsg = (MapMessage) message;
+                            Map map = (Map)result;
+                            Iterator it = map.keySet().iterator();
+                            while (it.hasNext()) {
+                                Object key = it.next();
+                                Object value = map.get(key);
+                                if (key != null && value != null && key instanceof String) {
+                                    mapMsg.setObject((String)key, value);
+                                }
                             }
                         }
                     }
@@ -513,8 +535,6 @@ public class JMSSender extends AbstractTransportSender implements ManagementSupp
             txtMsg.setText(msgContext.getEnvelope().getBody().
                 getFirstChildWithName(BaseConstants.DEFAULT_TEXT_WRAPPER).getText());
         } else if (JMSConstants.JMS_MAP_MESSAGE.equals(jmsPayloadType)) {
-            message = session.createMapMessage();
-            MapMessage mapMsg = (MapMessage) message;
             OMElement wrapper = msgContext.getEnvelope().getBody().
                 getFirstChildWithName(BaseConstants.DEFAULT_MAP_WRAPPER);
             if (wrapper != null && wrapper instanceof OMSourcedElement) {
@@ -522,20 +542,32 @@ public class JMSSender extends AbstractTransportSender implements ManagementSupp
                 Object ds = omNode.getDataSource();
                 if (ds != null && ds instanceof MapDataSource) {
                     OMDataSourceExt dse = (OMDataSourceExt) omNode.getDataSource();
-                    Map map = (Map) dse.getObject();
-                    Iterator it = map.keySet().iterator();
-                    while (it.hasNext()) {
-                        Object key = it.next();
-                        Object value = map.get(key);
-                        if (key != null && value != null && key instanceof String) {
-                            mapMsg.setObject((String)key, value);
+                    if (dse.getObject() instanceof JMSMapWrapper) {
+                        message = session.createMapMessage();
+                        MapMessage mapMessage = ((JMSMapWrapper) dse.getObject()).getWrappedObject();
+                        for (Enumeration e = mapMessage.getMapNames() ; e.hasMoreElements() ;) {
+                            String key = (String) e.nextElement();
+                            Object value = mapMessage.getObject(key);
+                            ((MapMessage)message).setObject(key, value);
+                        }
+                    } else {
+                        message = session.createMapMessage();
+                        MapMessage mapMsg = (MapMessage) message;
+                        Map map = (Map) dse.getObject();
+                        Iterator it = map.keySet().iterator();
+                        while (it.hasNext()) {
+                            Object key = it.next();
+                            Object value = map.get(key);
+                            if (key != null && value != null && key instanceof String) {
+                                mapMsg.setObject((String)key, value);
+                            }
                         }
                     }
                 }
             } else if (wrapper != null && wrapper.getFirstOMChild() != null) {
-            // FIXME: The incoming payload might come from a non-JMS source, in that case,
-            // we don't get a OMSourcedElement. This issue must be sorted and the creation 
-            // of the OMSourcedElement must happen at the most optimal location.
+                // FIXME: The incoming payload might come from a non-JMS source, in that case,
+                // we don't get a OMSourcedElement. This issue must be sorted and the creation 
+                // of the OMSourcedElement must happen at the most optimal location.
                 OMNode firstChild = wrapper.getFirstOMChild();
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 try {
@@ -549,13 +581,25 @@ public class JMSSender extends AbstractTransportSender implements ManagementSupp
                 Object result = decoder.readObject();
                 decoder.close();
                 if (result != null) {
-                    Map map = (Map)result;
-                    Iterator it = map.keySet().iterator();
-                    while (it.hasNext()) {
-                        Object key = it.next();
-                        Object value = map.get(key);
-                        if (key != null && value != null && key instanceof String) {
-                            mapMsg.setObject((String)key, value);
+                    if (result instanceof JMSMapWrapper) {
+                        message = session.createMapMessage();
+                        MapMessage mapMessage = ((JMSMapWrapper)result).getWrappedObject();
+                        for (Enumeration e = mapMessage.getMapNames() ; e.hasMoreElements() ;) {
+                            String key = (String) e.nextElement();
+                            Object value = mapMessage.getObject(key);
+                            ((MapMessage)message).setObject(key, value);
+                        }
+                    } else {
+                        message = session.createMapMessage();
+                        MapMessage mapMsg = (MapMessage) message;
+                        Map map = (Map)result;
+                        Iterator it = map.keySet().iterator();
+                        while (it.hasNext()) {
+                            Object key = it.next();
+                            Object value = map.get(key);
+                            if (key != null && value != null && key instanceof String) {
+                                mapMsg.setObject((String)key, value);
+                            }
                         }
                     }
                 }

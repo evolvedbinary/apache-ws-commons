@@ -733,23 +733,7 @@ public class JMSUtils extends BaseUtils {
 
         if (message instanceof MapMessage) {
             MapMessage mapMessage = (MapMessage) message;
-
-            try {
-                Map outMap = new TreeMap();
-                for (Enumeration e = mapMessage.getMapNames() ; e.hasMoreElements() ;) {
-                    String key = (String) e.nextElement();
-                    Object value = mapMessage.getObject(key);
-                    if (value != null) {
-                        outMap.put(key, value);
-                    } else {
-                        log.warn("Ignoring key " + key + " that did not return any value");
-                    }
-                }
-                return outMap;
-
-            } catch (JMSException e) {
-                handleException("Error reading JMS map message payload", e);
-            }
+            return new JMSMapWrapper(mapMessage);
         }
         return null;
     }
