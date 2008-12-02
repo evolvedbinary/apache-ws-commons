@@ -32,21 +32,6 @@
 		<system>JIRA</system>
 		<url>http://issues.apache.org/jira/browse/WSCOMMONS</url>
 	</issueManagement>
-	<ciManagement>
-		<system>Continuum</system>
-		<url>unknown</url>
-		<notifiers>
-			<notifier>
-				<sendOnError>false</sendOnError>
-				<sendOnFailure>false</sendOnFailure>
-				<sendOnSuccess>false</sendOnSuccess>
-				<sendOnWarning>false</sendOnWarning>
-				<configuration>
-					<address>commons-dev@ws.apache.org</address>
-				</configuration>
-			</notifier>
-		</notifiers>
-	</ciManagement>
 	<mailingLists>
 		<mailingList>
 			<name>WS Commons Developers</name>
@@ -66,9 +51,7 @@
 	</licenses>
 	<scm>
 		<connection>scm:svn:http://svn.apache.org/repos/asf/webservices/commons/branches/modules/XmlSchema/1_4_X_BRANCH</connection>
-		<developerConnection>
-		    scm:svn:https://svn.apache.org/repos/asf/webservices/commons/branches/modules/XmlSchema/1_4_X_BRANCH
-		    </developerConnection>
+		<developerConnection>scm:svn:https://svn.apache.org/repos/asf/webservices/commons/branches/modules/XmlSchema/1_4_X_BRANCH</developerConnection>
 		<url>http://svn.apache.org/viewvc/webservices/commons/branches/modules/XmlSchema/1_4_X_BRANCH</url>
 	</scm>
 	<organization>
@@ -82,7 +65,7 @@
 			this entry here is for the assembly plugin- For some reason the
 			assembly plugin cannot override the filter properties (as explained
 			in the docs) and also does not inherit the maven standard properties.
-			This is the one that points to a seperare filter props file
+			This is the one that points to a separate filter props file.
 		-->
 		<filters>
 			<filter>src/main/assembly/filter.properties</filter>
