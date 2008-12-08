@@ -168,8 +168,12 @@ public class JMSOutTransportInfo implements OutTransportInfo {
         try {
             return JMSUtils.lookup(context, Destination.class, destinationName);
         } catch (NameNotFoundException e) {
-            if (log.isDebugEnabled()) {
-                log.debug("Cannot locate destination : " + destinationName + " using " + url);
+            try {
+                return JMSUtils.lookup(context, Destination.class,
+                    (JMSConstants.DESTINATION_TYPE_TOPIC.equals(destinationType) ?
+                        "dynamicTopics/" : "dynamicQueues/") + destinationName);
+            } catch (NamingException x) {
+                handleException("Cannot locate destination : " + destinationName + " using " + url);
             }
         } catch (NamingException e) {
             handleException("Cannot locate destination : " + destinationName + " using " + url, e);

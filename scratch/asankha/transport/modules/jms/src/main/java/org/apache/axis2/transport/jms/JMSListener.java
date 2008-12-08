@@ -122,8 +122,7 @@ public class JMSListener extends AbstractTransportListener implements Management
         JMSEndpoint endpoint = new JMSEndpoint();
         endpoint.setService(service);
         endpoint.setCf(cf);
-        endpoint.computeEPRs(); // compute service EPR and keep for later use
-        
+
         Parameter destParam = service.getParameter(JMSConstants.PARAM_DESTINATION);
         if (destParam != null) {
             endpoint.setJndiDestinationName((String)destParam.getValue());
@@ -135,7 +134,7 @@ public class JMSListener extends AbstractTransportListener implements Management
         Parameter destTypeParam = service.getParameter(JMSConstants.PARAM_DEST_TYPE);
         if (destTypeParam != null) {
             String paramValue = (String) destTypeParam.getValue();
-            if(JMSConstants.DESTINATION_TYPE_QUEUE.equals(paramValue) ||
+            if (JMSConstants.DESTINATION_TYPE_QUEUE.equals(paramValue) ||
                     JMSConstants.DESTINATION_TYPE_TOPIC.equals(paramValue) )  {
                 endpoint.setDestinationType(paramValue);
             } else {
@@ -156,6 +155,8 @@ public class JMSListener extends AbstractTransportListener implements Management
         } else {
             endpoint.setContentTypeRuleSet(ContentTypeRuleFactory.parse(contentTypeParam));
         }
+
+        endpoint.computeEPRs(); // compute service EPR and keep for later use        
         serviceNameToEndpointMap.put(service.getName(), endpoint);
         
         ServiceTaskManager stm = JMSUtils.createTaskManagerForService(cf, service, workerPool);

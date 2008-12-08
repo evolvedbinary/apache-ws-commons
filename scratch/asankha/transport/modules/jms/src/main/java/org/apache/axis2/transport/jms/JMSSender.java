@@ -72,9 +72,9 @@ public class JMSSender extends AbstractTransportSender implements ManagementSupp
      */
     private JMSConnectionFactory getJMSConnectionFactory(JMSOutTransportInfo trpInfo) {
         Map<String,String> props = trpInfo.getProperties();
-        if(trpInfo.getProperties() != null) {
+        if (trpInfo.getProperties() != null) {
             String jmsConnectionFactoryName = props.get(JMSConstants.PARAM_JMS_CONFAC);
-            if(jmsConnectionFactoryName != null) {
+            if (jmsConnectionFactoryName != null) {
                 return connFacManager.getJMSConnectionFactory(jmsConnectionFactoryName);
             } else {
                 return connFacManager.getJMSConnectionFactory(props);
@@ -134,7 +134,11 @@ public class JMSSender extends AbstractTransportSender implements ManagementSupp
 
         // need to synchronize as Sessions are not thread safe
         synchronized (messageSender.getSession()) {
-            sendOverJMS(msgCtx, messageSender, contentTypeProperty, jmsConnectionFactory, jmsOut);
+            try {
+                sendOverJMS(msgCtx, messageSender, contentTypeProperty, jmsConnectionFactory, jmsOut);
+            } finally {
+                messageSender.close();
+            }
         }
     }
 

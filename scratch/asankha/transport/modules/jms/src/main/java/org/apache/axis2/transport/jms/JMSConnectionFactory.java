@@ -254,8 +254,8 @@ public class JMSConnectionFactory {
         try {
             connection = JMSUtils.createConnection(
                 conFactory,
-                parameters.get(Context.SECURITY_PRINCIPAL),
-                parameters.get(Context.SECURITY_CREDENTIALS),
+                parameters.get(JMSConstants.PARAM_JMS_USERNAME),
+                parameters.get(JMSConstants.PARAM_JMS_PASSWORD),
                 isJmsSpec11(), isQueue());
 
             if (log.isDebugEnabled()) {

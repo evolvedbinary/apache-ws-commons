@@ -230,27 +230,33 @@ public class JMSMessageSender {
      * Close non-shared producer, session and connection if any
      */
     public void close() {
-        if (cacheLevel < JMSConstants.CACHE_PRODUCER) {
+        if (producer != null && cacheLevel < JMSConstants.CACHE_PRODUCER) {
             try {
                 producer.close();
             } catch (JMSException e) {
                 log.error("Error closing JMS MessageProducer after send", e);
+            } finally {
+                producer = null;
             }
         }
 
-        if (cacheLevel < JMSConstants.CACHE_SESSION) {
+        if (session != null && cacheLevel < JMSConstants.CACHE_SESSION) {
             try {
                 session.close();
             } catch (JMSException e) {
                 log.error("Error closing JMS Session after send", e);
+            } finally {
+                session = null;
             }
         }
 
-        if (cacheLevel < JMSConstants.CACHE_CONNECTION) {
+        if (connection != null && cacheLevel < JMSConstants.CACHE_CONNECTION) {
             try {
                 connection.close();
             } catch (JMSException e) {
                 log.error("Error closing JMS Connection after send", e);
+            } finally {
+                connection = null;
             }
         }
     }

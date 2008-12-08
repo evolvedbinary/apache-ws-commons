@@ -32,10 +32,7 @@ import javax.naming.NamingException;
 import javax.transaction.UserTransaction;
 import javax.transaction.NotSupportedException;
 import javax.transaction.SystemException;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Collections;
-import java.util.ArrayList;
+import java.util.*;
 
 /**
  * Each service will have one ServiceTaskManager instance that will create, manage and also destroy
@@ -116,8 +113,8 @@ public class ServiceTaskManager {
     /** Upper limit on reconnection attempt duration */
     private long maxReconnectDuration = 1000 * 60 * 60; // 1 hour
 
-    /** The JNDI context properties */
-    private Hashtable<String,String> jndiProperties = null;
+    /** The JNDI context properties and other general properties */
+    private Hashtable<String,String> jmsProperties = new Hashtable<String, String>();
     /** The JNDI Context acuired */
     private Context context = null;
     /** The ConnectionFactory to be used */
@@ -303,6 +300,20 @@ public class ServiceTaskManager {
     }
 
     /**
+     * Get the number of MessageListenerTasks that are currently connected to the JMS provider
+     * @return connected task count
+     */
+    private int getConnectedTaskCount() {
+        int count = 0;
+        for (MessageListenerTask lstTask : pollingTasks) {
+            if (lstTask.isConnected()) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /**
      * The actual threads/tasks that perform message polling
      */
     private class MessageListenerTask implements Runnable, ExceptionListener {
@@ -319,6 +330,8 @@ public class ServiceTaskManager {
         private int idleExecutionCount = 0;
         /** Is this task idle right now? */
         private volatile boolean idle = false;
+        /** Is this task connected to the JMS provider successfully? */
+        private boolean connected = false;
 
         /** As soon as we create a new polling task, add it to the STM for control later */
         MessageListenerTask() {
@@ -369,49 +382,58 @@ public class ServiceTaskManager {
                 log.debug("New poll task starting : thread id = " + Thread.currentThread().getId());
             }
 
-            while (isActive() &&
-                (getMaxMessagesPerTask() < 0 || messageCount < getMaxMessagesPerTask()) &&
-                (getConcurrentConsumers() == 1 || idleExecutionCount < getIdleTaskExecutionLimit())) {
+            try {
+                while (isActive() &&
+                    (getMaxMessagesPerTask() < 0 || messageCount < getMaxMessagesPerTask()) &&
+                    (getConcurrentConsumers() == 1 || idleExecutionCount < getIdleTaskExecutionLimit())) {
 
-                UserTransaction ut = null;
-                try {
-                    if (transactionality == BaseConstants.TRANSACTION_JTA) {
-                        ut = getUserTransaction();
-                        ut.begin();
+                    UserTransaction ut = null;
+                    try {
+                        if (transactionality == BaseConstants.TRANSACTION_JTA) {
+                            ut = getUserTransaction();
+                            ut.begin();
+                        }
+                    } catch (NotSupportedException e) {
+                        handleException("Listener Task is already associated with a transaction", e);
+                    } catch (SystemException e) {
+                        handleException("Error starting a JTA transaction", e);
                     }
-                } catch (NotSupportedException e) {
-                    handleException("Listener Task is already associated with a transaction", e);
-                } catch (SystemException e) {
-                    handleException("Error starting a JTA transaction", e);
-                }
 
-                // Get a message by polling, or receive null
-                Message message = receiveMessage();
+                    // Get a message by polling, or receive null
+                    Message message = receiveMessage();
 
-                if (log.isTraceEnabled()) {
+                    if (log.isTraceEnabled()) {
+                        if (message != null) {
+                            try {
+                                log.trace("<<<<<<< READ message with Message ID : " +
+                                    message.getJMSMessageID() + " from : " + destination +
+                                    " by Thread ID : " + Thread.currentThread().getId());
+                            } catch (JMSException ignore) {}
+                        } else {
+                            log.trace("No message received by Thread ID : " +
+                                Thread.currentThread().getId() + " for destination : " + destination);
+                        }
+                    }
+
                     if (message != null) {
-                        try {
-                            log.trace("<<<<<<< READ message with Message ID : " +
-                                message.getJMSMessageID() + " from : " + destination +
-                                " by Thread ID : " + Thread.currentThread().getId());
-                        } catch (JMSException ignore) {}
+                        idle = false;
+                        idleExecutionCount = 0;
+                        messageCount++;
+                        // I will be busy now while processing this message, so start another if needed
+                        scheduleNewTaskIfAppropriate();
+                        handleMessage(message, ut);
+
                     } else {
-                        log.trace("No message received by Thread ID : " +
-                            Thread.currentThread().getId() + " for destination : " + destination);
+                        idle = true;
+                        idleExecutionCount++;
                     }
                 }
 
-                if (message != null) {
-                    idle = false;
-                    idleExecutionCount = 0;
-                    messageCount++;
-                    // I will be busy now while processing this message, so start another if needed
-                    scheduleNewTaskIfAppropriate();
-                    handleMessage(message, ut);
-
-                } else {
-                    idle = true;
-                    idleExecutionCount++;
+            } finally {
+                workerState = STATE_STOPPED;
+                activeTaskCount--;
+                synchronized(pollingTasks) {
+                    pollingTasks.remove(this);
                 }
             }
 
@@ -431,10 +453,6 @@ public class ServiceTaskManager {
             closeSession(true);
             closeConnection();
 
-            activeTaskCount--;
-            synchronized(pollingTasks) {
-                pollingTasks.remove(this);
-            }
             // My time is up, so if I am going away, create another
             scheduleNewTaskIfAppropriate();
         }
@@ -561,8 +579,12 @@ public class ServiceTaskManager {
         public void onException(JMSException j) {
 
             if (!isSTMActive()) {
+                requestShutdown();
                 return;
             }
+
+            log.warn("JMS Connection failure : " + j.getMessage());
+            setConnected(false);
 
             if (cacheLevel < JMSConstants.CACHE_CONNECTION) {
                 // failed Connection was not shared, thus no need to restart the whole STM
@@ -572,7 +594,7 @@ public class ServiceTaskManager {
 
             // if we failed while active, update state to show failure
             setServiceTaskManagerState(STATE_FAILURE);
-            log.error("JMS Connection failed : " + j.getMessage() + " - shutting down worker tasks", j);
+            log.error("JMS Connection failed : " + j.getMessage() + " - shutting down worker tasks");
 
             int r = 1;
             long retryDuration = initialReconnectDuration;
@@ -581,9 +603,22 @@ public class ServiceTaskManager {
                 try {
                     log.info("Reconnection attempt : " + r + " for service : " + serviceName);
                     start();
-                } catch (Exception e) {
+                } catch (Exception ignore) {}
+
+                boolean connected = false;
+                for (int i=0; i<5; i++) {
+                    if (getConnectedTaskCount() == concurrentConsumers) {
+                        connected = true;
+                        break;
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException ignore) {}
+                }
+
+                if (!connected) {
                     log.error("Reconnection attempt : " + (r++) + " for service : " + serviceName +
-                        " failed. Next retry in " + (retryDuration/1000) + "seconds", e);
+                        " failed. Next retry in " + (retryDuration/1000) + "seconds");
                     retryDuration = (long) (retryDuration * reconnectionProgressionFactor);
                     if (retryDuration > maxReconnectDuration) {
                         retryDuration = maxReconnectDuration;
@@ -593,7 +628,8 @@ public class ServiceTaskManager {
                         Thread.sleep(retryDuration);
                     } catch (InterruptedException ignore) {}
                 }
-            } while (!isSTMActive());
+
+            } while (!isSTMActive() || getConnectedTaskCount() < concurrentConsumers);
         }
 
         protected void requestShutdown() {
@@ -606,6 +642,14 @@ public class ServiceTaskManager {
 
         protected boolean isTaskIdle() {
             return idle;
+        }
+
+        public boolean isConnected() {
+            return connected;
+        }
+
+        public void setConnected(boolean connected) {
+            this.connected = connected;
         }
 
         /**
@@ -630,6 +674,7 @@ public class ServiceTaskManager {
                     }
                 }
             }
+            setConnected(true);
             return connection;
         }
 
@@ -733,15 +778,15 @@ public class ServiceTaskManager {
                 log.info("Connected to the JMS connection factory : " + getConnFactoryJNDIName());
             } catch (NamingException e) {
                 handleException("Error looking up connection factory : " + getConnFactoryJNDIName() +
-                    " using JNDI properties : " + jndiProperties, e);
+                    " using JNDI properties : " + jmsProperties, e);
             }
 
             Connection connection = null;
             try {
                 connection = JMSUtils.createConnection(
                     conFactory,
-                    jndiProperties.get(Context.SECURITY_PRINCIPAL),
-                    jndiProperties.get(Context.SECURITY_CREDENTIALS),
+                    jmsProperties.get(JMSConstants.PARAM_JMS_USERNAME),
+                    jmsProperties.get(JMSConstants.PARAM_JMS_PASSWORD),
                     isJmsSpec11(), isQueue());
 
                 connection.setExceptionListener(this);
@@ -750,7 +795,7 @@ public class ServiceTaskManager {
 
             } catch (JMSException e) {
                 handleException("Error acquiring a JMS connection to : " + getConnFactoryJNDIName() +
-                    " using JNDI properties : " + jndiProperties, e);
+                    " using JNDI properties : " + jmsProperties, e);
             }
             return connection;
         }
@@ -786,7 +831,7 @@ public class ServiceTaskManager {
                 }
 
                 return JMSUtils.createConsumer(
-                    session, getDestination(), isQueue(),
+                    session, getDestination(session), isQueue(),
                     (isSubscriptionDurable() && getDurableSubscriberName() == null ?
                         getDurableSubscriberName() : serviceName),
                     getMessageSelector(), isPubSubNoLocal(), isSubscriptionDurable(), isJmsSpec11());
@@ -806,7 +851,7 @@ public class ServiceTaskManager {
      */
     private Context getInitialContext() throws NamingException {
         if (context == null) {
-            context = new InitialContext(jndiProperties);
+            context = new InitialContext(jmsProperties);
         }
         return context;
     }
@@ -815,7 +860,7 @@ public class ServiceTaskManager {
      * Return the JMS Destination for the JNDI name of the Destination from the InitialContext
      * @return the JMS Destination to which this STM listens for messages
      */
-    private Destination getDestination() {
+    private Destination getDestination(Session session) {
         if (destination == null) {
             try {
                 context = getInitialContext();
@@ -825,8 +870,26 @@ public class ServiceTaskManager {
                         " found for service " + serviceName);
                 }
             } catch (NamingException e) {
-                handleException("Error looking up JMS destination : " + getDestinationJNDIName() +
-                    " using JNDI properties : " + jndiProperties, e);
+                try {
+                    switch (destinationType) {
+                        case JMSConstants.QUEUE: {
+                            destination = session.createQueue(getDestinationJNDIName());
+                            break;
+                        }
+                        case JMSConstants.TOPIC: {
+                            destination = session.createTopic(getDestinationJNDIName());
+                            break;
+                        }
+                        default: {
+                            handleException("Error looking up JMS destination : " +
+                                getDestinationJNDIName() + " using JNDI properties : " +
+                                jmsProperties, e);
+                        }
+                    }
+                } catch (JMSException j) {
+                    handleException("Error looking up and creating JMS destination : " +
+                        getDestinationJNDIName() + " using JNDI properties : " + jmsProperties, e);
+                }
             }
         }
         return destination;
@@ -848,7 +911,7 @@ public class ServiceTaskManager {
                     JMSUtils.lookup(context, UserTransaction.class, getUserTransactionJNDIName());
             } catch (NamingException e) {
                 handleException("Error looking up UserTransaction : " + getDestinationJNDIName() +
-                    " using JNDI properties : " + jndiProperties, e);
+                    " using JNDI properties : " + jmsProperties, e);
             }
         }
         
@@ -862,7 +925,7 @@ public class ServiceTaskManager {
                 }
             } catch (NamingException e) {
                 handleException("Error looking up UserTransaction : " + getDestinationJNDIName() +
-                    " using JNDI properties : " + jndiProperties, e);
+                    " using JNDI properties : " + jmsProperties, e);
             }
         }
         return sharedUserTransaction;
@@ -1100,12 +1163,16 @@ public class ServiceTaskManager {
         this.jmsSpec11 = jmsSpec11;
     }
 
-    public Hashtable<String, String> getJndiProperties() {
-        return jndiProperties;
+    public Hashtable<String, String> getJmsProperties() {
+        return jmsProperties;
     }
 
-    public void setJndiProperties(Hashtable<String, String> jndiProperties) {
-        this.jndiProperties = jndiProperties;
+    public void addJmsProperties(Map<String, String> jmsProperties) {
+        this.jmsProperties.putAll(jmsProperties);
+    }
+
+    public void removeJmsProperties(String key) {
+        this.jmsProperties.remove(key);
     }
 
     public Context getContext() {

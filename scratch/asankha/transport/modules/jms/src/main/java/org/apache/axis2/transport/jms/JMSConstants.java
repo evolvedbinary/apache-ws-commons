@@ -188,6 +188,11 @@ public class JMSConstants {
     /** @see PARAM_RECON_INIT_DURATION */
     public static final String PARAM_RECON_MAX_DURATION = "transport.jms.MaxReconnectDuration";
 
+    /** The username to use when obtaining a JMS Connection */
+    public static final String PARAM_JMS_USERNAME = "transport.jms.UserName";
+    /** The password to use when obtaining a JMS Connection */
+    public static final String PARAM_JMS_PASSWORD = "transport.jms.Password";
+
     //-------------- message context / transport header properties and client options --------------
     /**
      * A MessageContext property or client Option indicating the JMS message type

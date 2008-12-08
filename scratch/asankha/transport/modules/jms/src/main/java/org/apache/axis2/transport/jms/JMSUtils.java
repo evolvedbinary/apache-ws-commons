@@ -80,7 +80,8 @@ public class JMSUtils extends BaseUtils {
      * Get the EPR for the given JMS connection factory and destination
      * the form of the URL is
      * jms:/<destination>?[<key>=<value>&]*
-     * Credentials Context.SECURITY_PRINCIPAL and Context.SECURITY_CREDENTIALS are filtered
+     * Credentials Context.SECURITY_PRINCIPAL, Context.SECURITY_CREDENTIALS
+     * JMSConstants.PARAM_JMS_USERNAME and JMSConstants.PARAM_JMS_USERNAME are filtered
      *
      * @param cf the Axis2 JMS connection factory
      * @param destinationType the type of destination
@@ -110,7 +111,9 @@ public class JMSUtils extends BaseUtils {
 
         for (Map.Entry<String,String> entry : cf.getParameters().entrySet()) {
             if (!Context.SECURITY_PRINCIPAL.equalsIgnoreCase(entry.getKey()) &&
-                !Context.SECURITY_CREDENTIALS.equalsIgnoreCase(entry.getKey())) {
+                !Context.SECURITY_CREDENTIALS.equalsIgnoreCase(entry.getKey()) &&
+                !JMSConstants.PARAM_JMS_USERNAME.equalsIgnoreCase(entry.getKey()) &&
+                !JMSConstants.PARAM_JMS_PASSWORD.equalsIgnoreCase(entry.getKey())) {
                 sb.append("&").append(
                     entry.getKey()).append("=").append(entry.getValue());
             }
@@ -584,12 +587,16 @@ public class JMSUtils extends BaseUtils {
         ServiceTaskManager stm = new ServiceTaskManager();
 
         stm.setServiceName(name);
-        stm.setJndiProperties(jcf.getParameters());
+        stm.addJmsProperties(cf);
+        stm.addJmsProperties(svc);
 
         stm.setConnFactoryJNDIName(
             getRqdStringProperty(JMSConstants.PARAM_CONFAC_JNDI_NAME, svc, cf));
-        stm.setDestinationJNDIName(
-            getRqdStringProperty(JMSConstants.PARAM_DESTINATION, svc, cf));
+        String destName = getOptionalStringProperty(JMSConstants.PARAM_DESTINATION, svc, cf);
+        if (destName == null) {
+            destName = service.getName();
+        }
+        stm.setDestinationJNDIName(destName);
         stm.setDestinationType(getDestinationType(svc, cf));
 
         stm.setJmsSpec11(
@@ -624,7 +631,7 @@ public class JMSUtils extends BaseUtils {
         if (value != null) {
             stm.setConcurrentConsumers(value);
         }
-        value = getOptionalIntProperty(JMSConstants.PARAM_CONCURRENT_CONSUMERS, svc, cf);
+        value = getOptionalIntProperty(JMSConstants.PARAM_MAX_CONSUMERS, svc, cf);
         if (value != null) {
             stm.setMaxConcurrentConsumers(value);
         }
@@ -651,6 +658,29 @@ public class JMSUtils extends BaseUtils {
         }
 
         stm.setWorkerPool(workerPool);
+
+        // remove processed properties from property bag
+        stm.removeJmsProperties(JMSConstants.PARAM_CONFAC_JNDI_NAME);
+        stm.removeJmsProperties(JMSConstants.PARAM_DESTINATION);
+        stm.removeJmsProperties(JMSConstants.PARAM_JMS_SPEC_VER);
+        stm.removeJmsProperties(BaseConstants.PARAM_TRANSACTIONALITY);
+        stm.removeJmsProperties(BaseConstants.PARAM_CACHE_USER_TXN);
+        stm.removeJmsProperties(BaseConstants.PARAM_USER_TXN_JNDI_NAME);
+        stm.removeJmsProperties(JMSConstants.PARAM_SESSION_TRANSACTED);
+        stm.removeJmsProperties(JMSConstants.PARAM_MSG_SELECTOR);
+        stm.removeJmsProperties(JMSConstants.PARAM_SUB_DURABLE);
+        stm.removeJmsProperties(JMSConstants.PARAM_DURABLE_SUB_NAME);
+        stm.removeJmsProperties(JMSConstants.PARAM_CACHE_LEVEL);
+        stm.removeJmsProperties(JMSConstants.PARAM_PUBSUB_NO_LOCAL);
+        stm.removeJmsProperties(JMSConstants.PARAM_RCV_TIMEOUT);
+        stm.removeJmsProperties(JMSConstants.PARAM_CONCURRENT_CONSUMERS);
+        stm.removeJmsProperties(JMSConstants.PARAM_MAX_CONSUMERS);
+        stm.removeJmsProperties(JMSConstants.PARAM_IDLE_TASK_LIMIT);
+        stm.removeJmsProperties(JMSConstants.PARAM_MAX_MSGS_PER_TASK);
+        stm.removeJmsProperties(JMSConstants.PARAM_RECON_INIT_DURATION);
+        stm.removeJmsProperties(JMSConstants.PARAM_RECON_MAX_DURATION);
+        stm.removeJmsProperties(JMSConstants.PARAM_RECON_FACTOR);
+
         return stm;
     }
 
@@ -990,9 +1020,9 @@ public class JMSUtils extends BaseUtils {
         jmsOut.loadConnectionFactoryFromProperies();
 
         // create a one time connection and session to be used
-        Hashtable<String,String> jndiProps = jmsOut.getProperties();
-        String user = jndiProps != null ? jndiProps.get(Context.SECURITY_PRINCIPAL) : null;
-        String pass = jndiProps != null ? jndiProps.get(Context.SECURITY_CREDENTIALS) : null;
+        Hashtable<String,String> jmsProps = jmsOut.getProperties();
+        String user = jmsProps != null ? jmsProps.get(JMSConstants.PARAM_JMS_USERNAME) : null;
+        String pass = jmsProps != null ? jmsProps.get(JMSConstants.PARAM_JMS_PASSWORD) : null;
 
         QueueConnectionFactory qConFac = null;
         TopicConnectionFactory tConFac = null;
@@ -1041,8 +1071,9 @@ public class JMSUtils extends BaseUtils {
         }
 
         return new JMSMessageSender(connection, session, producer,
-            destination, JMSConstants.CACHE_NONE, false,
-                destType == -1 ? null : destType == JMSConstants.QUEUE ? Boolean.TRUE : Boolean.FALSE);
+            destination, (jmsOut.getJmsConnectionFactory() == null ?
+            JMSConstants.CACHE_NONE : jmsOut.getJmsConnectionFactory().getCacheLevel()), false,
+            destType == -1 ? null : destType == JMSConstants.QUEUE ? Boolean.TRUE : Boolean.FALSE);
     }
 
     /**
