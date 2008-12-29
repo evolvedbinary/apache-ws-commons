@@ -17,6 +17,7 @@ package org.apache.ws.commons.tcpmon.eclipse.ui;
 
 
 import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
+import org.apache.ws.commons.tcpmon.TCPMonBundle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -24,8 +25,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.part.ViewPart;
-
-import java.util.ResourceBundle;
 
 /**
  * 
@@ -77,14 +76,14 @@ public class MainView extends ViewPart{
         gd.horizontalSpan = 3;
         gd.verticalIndent = 10;
         Label label = new Label(composite, SWT.NONE);
-        label.setText(MainView.getMessage("newTCP00", "Create a new TCPMon..."));
+        label.setText(TCPMonBundle.getMessage("newTCP00", "Create a new TCPMon..."));
         label.setLayoutData(gd);
 
         gd = new GridData();
         gd.horizontalAlignment = SWT.BEGINNING;
         gd.verticalIndent = 15;
         label = new Label(composite, SWT.NONE);
-        label.setText(MainView.getMessage("listenPort00", "Listen Port #"));
+        label.setText(TCPMonBundle.getMessage("listenPort00", "Listen Port #"));
         label.setLayoutData(gd);
 
         gd = new GridData();
@@ -100,7 +99,7 @@ public class MainView extends ViewPart{
         gd.verticalIndent = 10;
         gd.heightHint = 30;
         addButton = new Button(composite, SWT.PUSH);
-        final String add = MainView.getMessage("add00", "Add");
+        final String add = TCPMonBundle.getMessage("add00", "Add");
         addButton.setText(add);
         addButton.setLayoutData(gd);
         addButton.addSelectionListener(new SelectionAdapter() {
@@ -154,14 +153,14 @@ public class MainView extends ViewPart{
         gd.horizontalSpan = 3;
         gd.verticalIndent = 5;
         Label label = new Label(composite, SWT.NONE);
-        label.setText(MainView.getMessage("actAs00", "Act as a..."));
+        label.setText(TCPMonBundle.getMessage("actAs00", "Act as a..."));
         label.setLayoutData(gd);
 
         gd = new GridData();
         gd.horizontalSpan = 3;
         gd.verticalIndent = 5;
         listenerButton = new Button(composite, SWT.RADIO);
-        listenerButton.setText(MainView.getMessage("listener00", "Listener"));
+        listenerButton.setText(TCPMonBundle.getMessage("listener00", "Listener"));
         listenerButton.setSelection(true);
         listenerButton.setLayoutData(gd);
 
@@ -170,7 +169,7 @@ public class MainView extends ViewPart{
         gd.verticalIndent = 5;
         gd.horizontalIndent = 25;
         final Label hostLabel = new Label(composite, SWT.NONE);
-        hostLabel.setText(MainView.getMessage("targetHostname00", "Target Hostname"));
+        hostLabel.setText(TCPMonBundle.getMessage("targetHostname00", "Target Hostname"));
         hostLabel.setLayoutData(gd);
 
         gd = new GridData(SWT.FILL, SWT.NONE, true, false);
@@ -184,7 +183,7 @@ public class MainView extends ViewPart{
         gd.verticalIndent = 2;
         gd.horizontalIndent = 25;
         final Label tportLabel = new Label(composite, SWT.NONE);
-        tportLabel.setText(MainView.getMessage("targetPort00", "Target Port #"));
+        tportLabel.setText(TCPMonBundle.getMessage("targetPort00", "Target Port #"));
         tportLabel.setLayoutData(gd);
 
         gd = new GridData(SWT.NONE, SWT.NONE, false, false);
@@ -198,7 +197,7 @@ public class MainView extends ViewPart{
         gd.horizontalSpan = 3;
         gd.verticalIndent = 5;
         proxyButton = new Button(composite, SWT.RADIO);
-        proxyButton.setText(MainView.getMessage("proxy00", "Proxy"));
+        proxyButton.setText(TCPMonBundle.getMessage("proxy00", "Proxy"));
         proxyButton.setLayoutData(gd);
 
         listenerButton.addSelectionListener(new SelectionAdapter() {
@@ -217,16 +216,16 @@ public class MainView extends ViewPart{
         gd.horizontalSpan = 3;
         gd.verticalIndent = 5;
         final Group optGroup = new Group(composite, SWT.SHADOW_ETCHED_IN);
-        optGroup.setText(MainView.getMessage("options00", "Options"));
+        optGroup.setText(TCPMonBundle.getMessage("options00", "Options"));
         optGroup.setLayoutData(gd);
 
         hTTPProxyBox = new Button(optGroup, SWT.CHECK);
         hTTPProxyBox.setBounds(10, 20, 200, 20);
-        hTTPProxyBox.setText(MainView.getMessage("proxySupport00", "HTTP Proxy Support"));
+        hTTPProxyBox.setText(TCPMonBundle.getMessage("proxySupport00", "HTTP Proxy Support"));
 
         final Label hTTPProxyHostLabel = new Label(optGroup, SWT.NONE);
         hTTPProxyHostLabel.setEnabled(false);
-        hTTPProxyHostLabel.setText(MainView.getMessage("hostname00", "Hostname"));
+        hTTPProxyHostLabel.setText(TCPMonBundle.getMessage("hostname00", "Hostname"));
         hTTPProxyHostLabel.setBounds(30, 50, 70, 25);
 
         hTTPProxyHost = new Text(optGroup, SWT.BORDER);
@@ -235,7 +234,7 @@ public class MainView extends ViewPart{
 
         final Label hTTPProxyPortLabel = new Label(optGroup, SWT.NONE);
         hTTPProxyPortLabel.setEnabled(false);
-        hTTPProxyPortLabel.setText(MainView.getMessage("port00", "Port #"));
+        hTTPProxyPortLabel.setText(TCPMonBundle.getMessage("port00", "Port #"));
         hTTPProxyPortLabel.setBounds(30, 85, 70, 25);
 
         hTTPProxyPort = new Text(optGroup, SWT.BORDER);
@@ -268,12 +267,12 @@ public class MainView extends ViewPart{
 
         delayBox = new Button(optGroup, SWT.CHECK);
         delayBox.setBounds(10, 120, 200, 20);
-        final String delaySupport = MainView.getMessage("delay00", "Simulate Slow Connection");
+        final String delaySupport = TCPMonBundle.getMessage("delay00", "Simulate Slow Connection");
         delayBox.setText(delaySupport);
 
         final Label delayBytesLabel = new Label(optGroup, SWT.NONE);
         delayBytesLabel.setEnabled(false);
-        delayBytesLabel.setText(MainView.getMessage("delay01", "Bytes per Pause"));
+        delayBytesLabel.setText(TCPMonBundle.getMessage("delay01", "Bytes per Pause"));
         delayBytesLabel.setBounds(30, 150, 130, 25);
 
         delayBytes = new Text(optGroup, SWT.BORDER);
@@ -282,7 +281,7 @@ public class MainView extends ViewPart{
 
         final Label delayTimeLabel = new Label(optGroup, SWT.NONE);
         delayTimeLabel.setEnabled(false);
-        delayTimeLabel.setText(MainView.getMessage("delay02", "Delay in Milliseconds"));
+        delayTimeLabel.setText(TCPMonBundle.getMessage("delay02", "Delay in Milliseconds"));
         delayTimeLabel.setBounds(30, 185, 130, 25);
 
         delayTime = new Text(optGroup, SWT.BORDER);
@@ -313,23 +312,6 @@ public class MainView extends ViewPart{
     }
 
     public void setFocus() {
-    }
-
-    private static ResourceBundle messages = null;
-
-    public static String getMessage(String key, String defaultMsg) {
-        try {
-            if (messages == null) {
-                initializeMessages();
-            }
-            return messages.getString(key);
-        } catch (Throwable t) {
-            return defaultMsg;
-        }
-    }
-
-    private static void initializeMessages() {
-        messages = ResourceBundle.getBundle("org.apache.ws.commons.tcpmon.tcpmon");
     }
 
     public int getValue(int def, String text) {

@@ -191,13 +191,13 @@ class Connection extends Thread {
             } else {
                 fromHost = "resend";
             }
-            String dateformat = TCPMon.getMessage("dateformat00", "yyyy-MM-dd HH:mm:ss");
+            String dateformat = TCPMonBundle.getMessage("dateformat00", "yyyy-MM-dd HH:mm:ss");
             DateFormat df = new SimpleDateFormat(dateformat);
             time = df.format(new Date());
             int count = listener.connections.size();
             listener.tableModel.insertRow(count + 1,
                     new Object[]{
-                        TCPMon.getMessage("active00","Active"),
+                        TCPMonBundle.getMessage("active00","Active"),
                         time,
                         fromHost,
                         listener.hostField.getText(),
@@ -406,7 +406,7 @@ class Connection extends Thread {
                 if ((null != rr1) && rr1.isDone()) {
                     if ((index >= 0) && (rr2 != null)) {
                         listener.tableModel.setValueAt(
-                                TCPMon.getMessage("resp00", "Resp"), 1 + index,
+                                TCPMonBundle.getMessage("resp00", "Resp"), 1 + index,
                                 TCPMon.STATE_COLUMN);
                     }
                     rr1 = null;
@@ -415,7 +415,7 @@ class Connection extends Thread {
                 if ((null != rr2) && rr2.isDone()) {
                     if ((index >= 0) && (rr1 != null)) {
                         listener.tableModel.setValueAt(
-                                TCPMon.getMessage("req00", "Req"), 1 + index,
+                                TCPMonBundle.getMessage("req00", "Req"), 1 + index,
                                 TCPMon.STATE_COLUMN);
                     }
                     rr2 = null;
@@ -430,7 +430,7 @@ class Connection extends Thread {
 
             if (index >= 0) {
                 listener.tableModel.setValueAt(
-                        TCPMon.getMessage("done00", "Done"),
+                        TCPMonBundle.getMessage("done00", "Done"),
                         1 + index, TCPMon.STATE_COLUMN);
             }
 
@@ -440,7 +440,7 @@ class Connection extends Thread {
             int index = listener.connections.indexOf(this);
             if (index >= 0) {
                 listener.tableModel.setValueAt(
-                        TCPMon.getMessage("error00", "Error"), 1 + index,
+                        TCPMonBundle.getMessage("error00", "Error"), 1 + index,
                         TCPMon.STATE_COLUMN);
             }
             e.printStackTrace(wr);

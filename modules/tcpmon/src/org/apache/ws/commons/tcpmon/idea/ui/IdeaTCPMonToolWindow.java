@@ -1,7 +1,7 @@
 package org.apache.ws.commons.tcpmon.idea.ui;
 
-import org.apache.ws.commons.tcpmon.TCPMon;
 import org.apache.ws.commons.tcpmon.AdminPane;
+import org.apache.ws.commons.tcpmon.TCPMonBundle;
 
 import javax.swing.*;
 /*
@@ -23,7 +23,7 @@ import javax.swing.*;
 public class IdeaTCPMonToolWindow extends JTabbedPane {
 
     public IdeaTCPMonToolWindow() {
-        new AdminPane(this, TCPMon.getMessage("admin00", "Admin"));
+        new AdminPane(this, TCPMonBundle.getMessage("admin00", "Admin"));
     }
 }
 

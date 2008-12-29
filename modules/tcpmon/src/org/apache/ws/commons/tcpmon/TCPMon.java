@@ -20,7 +20,6 @@ import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import java.util.ResourceBundle;
 
 /**
  * Proxy that sniffs and shows HTTP messages and responses, both SOAP and plain HTTP.
@@ -72,10 +71,10 @@ public class TCPMon extends JFrame {
      * @param embedded
      */
     public TCPMon(int listenPort, String targetHost, int targetPort, boolean embedded) {
-        super(getMessage("httptracer00","TCPMon"));
+        super(TCPMonBundle.getMessage("httptracer00","TCPMon"));
         notebook = new JTabbedPane();
         this.getContentPane().add(notebook);
-        new AdminPane(notebook, getMessage("admin00", "Admin"));
+        new AdminPane(notebook, TCPMonBundle.getMessage("admin00", "Admin"));
         if (listenPort != 0) {
             Listener l = null;
             if (targetHost == null) {
@@ -166,7 +165,7 @@ public class TCPMon extends JFrame {
                 new TCPMon(p1, null, 0);
             } else if (args.length != 0) {
                 System.err.println(
-                        getMessage("usage00", "Usage:")
+                        TCPMonBundle.getMessage("usage00", "Usage:")
                         + " TCPMon [listenPort targetHost targetPort]\n");
             } else {
                 new TCPMon(0, null, 0);
@@ -175,40 +174,4 @@ public class TCPMon extends JFrame {
             exp.printStackTrace();
         }
     }
-
-    /**
-     * Field messages
-     */
-    private static ResourceBundle messages = null;
-
-    /**
-     * Get the message with the given key.  There are no arguments for this message.
-     *
-     * @param key
-     * @param defaultMsg
-     * @return string
-     */
-    public static String getMessage(String key, String defaultMsg) {
-        try {
-            if (messages == null) {
-                initializeMessages();
-            }
-            return messages.getString(key);
-        } catch (Throwable t) {
-
-            // If there is any problem whatsoever getting the internationalized
-            // message, return the default.
-            return defaultMsg;
-        }
-    }
-
-    /**
-     * Load the resource bundle messages from the properties file.  This is ONLY done when it is
-     * needed.  If no messages are printed (for example, only Wsdl2java is being run in non-
-     * verbose mode) then there is no need to read the properties file.
-     */
-    private static void initializeMessages() {
-        messages = ResourceBundle.getBundle("org.apache.ws.commons.tcpmon.tcpmon");
-    }
-
 }

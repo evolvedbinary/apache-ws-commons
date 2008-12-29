@@ -31,6 +31,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
+import org.apache.ws.commons.tcpmon.TCPMonBundle;
 
 /**
  * a connection listens to a single current connection
@@ -185,7 +186,7 @@ class Connection extends Thread {
             } else {
                 fromHost = "resend";
             }
-            String dateformat = MainView.getMessage("dateformat00", "yyyy-MM-dd HH:mm:ss");
+            String dateformat = TCPMonBundle.getMessage("dateformat00", "yyyy-MM-dd HH:mm:ss");
             DateFormat df = new SimpleDateFormat(dateformat);
             time = df.format(new Date());
             final int count = listener.connections.size();
@@ -193,7 +194,7 @@ class Connection extends Thread {
             MainView.display.syncExec(new Runnable() {
                 public void run() {
                     item = new TableItem(listener.connectionTable, SWT.BORDER, count + 1);
-                    item.setText(new String[]{MainView.getMessage("active00", "Active"),
+                    item.setText(new String[]{TCPMonBundle.getMessage("active00", "Active"),
                             time,
                             fromHost,
                             listener.hostField.getText(),
@@ -484,7 +485,7 @@ class Connection extends Thread {
                         MainView.display.syncExec(new Runnable() {
                             public void run() {
                                 listener.tableEnhancer.setValueAt(
-                                        MainView.getMessage("resp00", "Resp"), 1 + inputInt,
+                                        TCPMonBundle.getMessage("resp00", "Resp"), 1 + inputInt,
                                         MainView.STATE_COLUMN);
                             }
                         });
@@ -498,7 +499,7 @@ class Connection extends Thread {
                         MainView.display.syncExec(new Runnable() {
                             public void run() {
                                 listener.tableEnhancer.setValueAt(
-                                        MainView.getMessage("req00", "Req"), 1 + inputInt,
+                                        TCPMonBundle.getMessage("req00", "Req"), 1 + inputInt,
                                         MainView.STATE_COLUMN);
                             }
                         });
@@ -518,7 +519,7 @@ class Connection extends Thread {
                 MainView.display.syncExec(new Runnable() {
                     public void run() {
                         listener.tableEnhancer.setValueAt(
-                                MainView.getMessage("done00", "Done"),
+                                TCPMonBundle.getMessage("done00", "Done"),
                                 1 + inputInt, MainView.STATE_COLUMN);
                     }
                 });
@@ -533,7 +534,7 @@ class Connection extends Thread {
                 MainView.display.syncExec(new Runnable() {
                     public void run() {
                         listener.tableEnhancer.setValueAt(
-                                MainView.getMessage("error00", "Error"), 1 + inputInt,
+                                TCPMonBundle.getMessage("error00", "Error"), 1 + inputInt,
                                 MainView.STATE_COLUMN);
 
                     }

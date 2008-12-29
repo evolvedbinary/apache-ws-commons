@@ -16,6 +16,7 @@
 package org.apache.ws.commons.tcpmon.eclipse.ui;
 
 import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
+import org.apache.ws.commons.tcpmon.TCPMonBundle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -75,7 +76,7 @@ class Listener {
                     String host, int targetPort, boolean isProxy,
                     SlowLinkSimulator slowLink) {
         if (name == null) {
-            name = MainView.getMessage("port01", "Port") + " " + listenPort;
+            name = TCPMonBundle.getMessage("port01", "Port") + " " + listenPort;
         }
         // set the slow link to the passed down link
         if (slowLink != null) {
@@ -103,14 +104,14 @@ class Listener {
         GridData gd = new GridData(SWT.FILL, SWT.CENTER, false, false);
         gd.widthHint = 71;
         stopButton.setLayoutData(gd);
-        final String start = MainView.getMessage("start00", "Start");
+        final String start = TCPMonBundle.getMessage("start00", "Start");
         stopButton.setText(start);
 
         final Label listenPortLabel = new Label(composite, SWT.NONE);
         gd = new GridData();
         gd.horizontalIndent = 5;
         listenPortLabel.setLayoutData(gd);
-        listenPortLabel.setText(MainView.getMessage("listenPort01", "Listen Port:"));
+        listenPortLabel.setText(TCPMonBundle.getMessage("listenPort01", "Listen Port:"));
 
         portField = new Text(composite, SWT.BORDER);
         portField.setText("" + listenPort);
@@ -118,7 +119,7 @@ class Listener {
         gd.widthHint = 40;
         portField.setLayoutData(gd);
 
-        (new Label(composite, SWT.NONE)).setText(MainView.getMessage("host00", "Host:"));
+        (new Label(composite, SWT.NONE)).setText(TCPMonBundle.getMessage("host00", "Host:"));
 
         hostField = new Text(composite, SWT.BORDER);
         hostField.setText(host);
@@ -126,7 +127,7 @@ class Listener {
         gd.widthHint = 202;
         hostField.setLayoutData(gd);
 
-        (new Label(composite, SWT.NONE)).setText(MainView.getMessage("port02", "Port:"));
+        (new Label(composite, SWT.NONE)).setText(TCPMonBundle.getMessage("port02", "Port:"));
 
         tPortField = new Text(composite, SWT.BORDER);
         tPortField.setText("" + targetPort);
@@ -140,7 +141,7 @@ class Listener {
         gd.verticalIndent = 2;
         gd.horizontalIndent = 10;
         isProxyBox.setLayoutData(gd);
-        isProxyBox.setText(MainView.getMessage("proxy00", "Proxy"));
+        isProxyBox.setText(TCPMonBundle.getMessage("proxy00", "Proxy"));
         isProxyBox.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
                 boolean state = ((Button) e.getSource()).getSelection();
@@ -154,7 +155,7 @@ class Listener {
         tPortField.setEditable(false);
         stopButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
-                if (stopButton.getText().equals(MainView.getMessage("stop00", "Stop"))) {
+                if (stopButton.getText().equals(TCPMonBundle.getMessage("stop00", "Stop"))) {
                     stop();
                 } else {
                     start();
@@ -170,27 +171,27 @@ class Listener {
 
         final TableColumn stateColumn = new TableColumn(connectionTable, SWT.CENTER);
         stateColumn.setWidth(47);
-        stateColumn.setText(MainView.getMessage("state00", "State"));
+        stateColumn.setText(TCPMonBundle.getMessage("state00", "State"));
 
         final TableColumn timeColumn = new TableColumn(connectionTable, SWT.CENTER);
         timeColumn.setWidth(100);
-        timeColumn.setText(MainView.getMessage("time00", "Time"));
+        timeColumn.setText(TCPMonBundle.getMessage("time00", "Time"));
 
         final TableColumn reqHostColumn = new TableColumn(connectionTable, SWT.CENTER);
         reqHostColumn.setWidth(100);
-        reqHostColumn.setText(MainView.getMessage("requestHost00", "Request Host"));
+        reqHostColumn.setText(TCPMonBundle.getMessage("requestHost00", "Request Host"));
 
         final TableColumn targetHostColumn = new TableColumn(connectionTable, SWT.CENTER);
         targetHostColumn.setWidth(100);
-        targetHostColumn.setText(MainView.getMessage("targetHost", "Target Host"));
+        targetHostColumn.setText(TCPMonBundle.getMessage("targetHost", "Target Host"));
 
         final TableColumn requestColumn = new TableColumn(connectionTable, SWT.CENTER);
         requestColumn.setWidth(100);
-        requestColumn.setText(MainView.getMessage("request00", "Request..."));
+        requestColumn.setText(TCPMonBundle.getMessage("request00", "Request..."));
 
         final TableColumn elapsedTimeColumn = new TableColumn(connectionTable, SWT.CENTER);
         elapsedTimeColumn.setWidth(140);
-        elapsedTimeColumn.setText(MainView.getMessage("elapsed00", "Elapsed Time"));
+        elapsedTimeColumn.setText(TCPMonBundle.getMessage("elapsed00", "Elapsed Time"));
 
         final TableItem headerItem = new TableItem(connectionTable, SWT.BORDER);
         headerItem.setText(new String[]{"--", "Most Recent", "--", "--", "--", "--"});
@@ -216,7 +217,7 @@ class Listener {
         RowData rd = new RowData();
         rd.width = 100;
         removeButton.setLayoutData(rd);
-        final String removeSelected = MainView.getMessage("removeSelected00", "Remove Selected");
+        final String removeSelected = TCPMonBundle.getMessage("removeSelected00", "Remove Selected");
         removeButton.setText(removeSelected);
         removeButton.setEnabled(false);
         removeButton.addSelectionListener(new SelectionAdapter() {
@@ -231,7 +232,7 @@ class Listener {
         rd = new RowData();
         rd.width = 100;
         removeAllButton.setLayoutData(rd);
-        final String removeAll = MainView.getMessage("removeAll00", "Remove All");
+        final String removeAll = TCPMonBundle.getMessage("removeAll00", "Remove All");
         removeAllButton.setText(removeAll);
         removeAllButton.setEnabled(false);
         removeAllButton.addSelectionListener(new SelectionAdapter() {
@@ -256,7 +257,7 @@ class Listener {
         rightPanel.setLayout(new GridLayout(8, true));
 
         xmlFormatBox = new Button(composite, SWT.CHECK);
-        xmlFormatBox.setText(MainView.getMessage("xmlFormat00", "XML Format"));
+        xmlFormatBox.setText(TCPMonBundle.getMessage("xmlFormat00", "XML Format"));
 
         final Composite buttonComposite2 = new Composite(composite, SWT.NONE);
         buttonComposite2.setLayout(new RowLayout());
@@ -269,7 +270,7 @@ class Listener {
         rd = new RowData();
         rd.width = 100;
         saveButton.setLayoutData(rd);
-        final String save = MainView.getMessage("save00", "Save");
+        final String save = TCPMonBundle.getMessage("save00", "Save");
         saveButton.setText(save);
         saveButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
@@ -283,7 +284,7 @@ class Listener {
         rd = new RowData();
         rd.width = 100;
         resendButton.setLayoutData(rd);
-        final String resend = MainView.getMessage("resend00", "Resend");
+        final String resend = TCPMonBundle.getMessage("resend00", "Resend");
         resendButton.setText(resend);
         resendButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
@@ -297,7 +298,7 @@ class Listener {
         rd = new RowData();
         rd.width = 100;
         switchButton.setLayoutData(rd);
-        final String switchStr = MainView.getMessage("switch00", "Switch Layout");
+        final String switchStr = TCPMonBundle.getMessage("switch00", "Switch Layout");
         switchButton.setText(switchStr);
         switchButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
@@ -326,7 +327,7 @@ class Listener {
         rd = new RowData();
         rd.width = 60;
         closeButton.setLayoutData(rd);
-        final String close = MainView.getMessage("close00", "Close");
+        final String close = TCPMonBundle.getMessage("close00", "Close");
         closeButton.setText(close);
         closeButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(SelectionEvent e) {
@@ -341,7 +342,7 @@ class Listener {
 
     public void handleSelection() {
         if (tableEnhancer.isSelectionEmpty()) {
-            setLeft(MainView.SWT_LABEL, " " + MainView.getMessage("wait00",
+            setLeft(MainView.SWT_LABEL, " " + TCPMonBundle.getMessage("wait00",
                     "Waiting for Connection..."));
             setRight(MainView.SWT_LABEL, "");
             removeButton.setEnabled(false);
@@ -358,7 +359,7 @@ class Listener {
             }
             if (row == 0) {
                 if (connections.size() == 0) {
-                    setLeft(MainView.SWT_LABEL, " " + MainView.getMessage("wait00",
+                    setLeft(MainView.SWT_LABEL, " " + TCPMonBundle.getMessage("wait00",
                             "Waiting for connection..."));
                     setRight(MainView.SWT_LABEL, "");
                     removeButton.setEnabled(false);
@@ -410,7 +411,7 @@ class Listener {
                 conn.halt();
             }
             sw.halt();
-            stopButton.setText(MainView.getMessage("start00", "Start"));
+            stopButton.setText(TCPMonBundle.getMessage("start00", "Start"));
             portField.setEditable(true);
             hostField.setEditable(true);
             tPortField.setEditable(true);
@@ -423,11 +424,11 @@ class Listener {
     public void start() {
         int port = Integer.parseInt(portField.getText());
         portField.setText("" + port);
-        portTabItem.setText(MainView.getMessage("port01", "Port") + " " + port);
+        portTabItem.setText(TCPMonBundle.getMessage("port01", "Port") + " " + port);
         int tmp = Integer.parseInt(tPortField.getText());
         tPortField.setText("" + tmp);
         sw = new SocketWaiter(this, port);
-        stopButton.setText(MainView.getMessage("stop00", "Stop"));
+        stopButton.setText(TCPMonBundle.getMessage("stop00", "Stop"));
         portField.setEditable(false);
         hostField.setEditable(false);
         tPortField.setEditable(false);
@@ -444,7 +445,7 @@ class Listener {
             con = (Connection) connections.get(index - 1 - i);
             if (con.active) {
                 MessageBox mb = new MessageBox(MainView.display.getActiveShell(), SWT.ICON_INFORMATION | SWT.OK);
-                mb.setMessage(MainView.getMessage("inform00", "Connection can be removed only when its status indicates Done"));
+                mb.setMessage(TCPMonBundle.getMessage("inform00", "Connection can be removed only when its status indicates Done"));
                 mb.setText("Connection Active");
                 mb.open();
                 continue;
@@ -467,11 +468,11 @@ class Listener {
 
     public void close() {
         MessageBox mb = new MessageBox(MainView.display.getActiveShell(), SWT.ICON_QUESTION | SWT.YES | SWT.NO);
-        mb.setMessage(MainView.getMessage("quit00", "Do you want to remove monitoring") + " " + portTabItem.getText());
+        mb.setMessage(TCPMonBundle.getMessage("quit00", "Do you want to remove monitoring") + " " + portTabItem.getText());
         mb.setText("Remove Monitor");
         int response = mb.open();
         if (response == SWT.YES) {
-            if (stopButton.getText().equals(MainView.getMessage("stop00", "Stop"))) {
+            if (stopButton.getText().equals(TCPMonBundle.getMessage("stop00", "Stop"))) {
                 stop();
             }
             portTabItem.dispose();
@@ -500,23 +501,23 @@ class Listener {
                         && (tableEnhancer.getLeadSelectionIndex() == 0))) {
                     rc = Integer.parseInt(portField.getText());
                     out.write("\n==============\n".getBytes());
-                    out.write(((MainView.getMessage("listenPort01",
+                    out.write(((TCPMonBundle.getMessage("listenPort01",
                             "Listen Port:")
                             + " " + rc + "\n")).getBytes());
-                    out.write((MainView.getMessage("targetHost01",
+                    out.write((TCPMonBundle.getMessage("targetHost01",
                             "Target Host:")
                             + " " + hostField.getText()
                             + "\n").getBytes());
                     rc = Integer.parseInt(tPortField.getText());
-                    out.write(((MainView.getMessage("targetPort01",
+                    out.write(((TCPMonBundle.getMessage("targetPort01",
                             "Target Port:")
                             + " " + rc + "\n")).getBytes());
                     out.write((("==== "
-                            + MainView.getMessage("request01", "Request")
+                            + TCPMonBundle.getMessage("request01", "Request")
                             + " ====\n")).getBytes());
                     out.write(conn.inputText.getText().getBytes());
                     out.write((("==== "
-                            + MainView.getMessage("response00", "Response")
+                            + TCPMonBundle.getMessage("response00", "Response")
                             + " ====\n")).getBytes());
                     out.write(conn.outputText.getText().getBytes());
                     out.write("\n==============\n".getBytes());

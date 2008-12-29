@@ -66,7 +66,7 @@ class SocketWaiter extends Thread {
         try {
             listener.setLeft(
                     new JLabel(
-                 		   TCPMon.getMessage("wait00",
+                            TCPMonBundle.getMessage("wait00",
                                     " Waiting for Connection...")));
             listener.repaint();
             sSocket = new ServerSocket(port);

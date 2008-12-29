@@ -15,6 +15,7 @@
  */
 package org.apache.ws.commons.tcpmon.eclipse.ui;
 
+import org.apache.ws.commons.tcpmon.TCPMonBundle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -82,7 +83,7 @@ class Sender {
         outputText = new Text(textComposite, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
 
         xmlFormatBox = new Button(tabComposite, SWT.CHECK);
-        xmlFormatBox.setText(MainView.getMessage("xmlFormat00", "XML Format"));
+        xmlFormatBox.setText(TCPMonBundle.getMessage("xmlFormat00", "XML Format"));
 
         final Composite buttonComposite = new Composite(tabComposite, SWT.NONE);
         buttonComposite.setLayout(new RowLayout());
@@ -118,7 +119,7 @@ class Sender {
             }
         });
 
-        switchButton.setText(MainView.getMessage("switch00", "Switch Layout"));
+        switchButton.setText(TCPMonBundle.getMessage("switch00", "Switch Layout"));
     }
 
     public void send() {

@@ -16,6 +16,7 @@
 
 package org.apache.ws.commons.tcpmon.eclipse.ui;
 
+import org.apache.ws.commons.tcpmon.TCPMonBundle;
 import org.apache.ws.commons.tcpmon.eclipse.ui.Connection;
 import org.apache.ws.commons.tcpmon.eclipse.ui.Listener;
 import org.apache.ws.commons.tcpmon.eclipse.ui.MainView;
@@ -68,7 +69,7 @@ class SocketWaiter extends Thread {
         try {
             MainView.display.syncExec(new Runnable() {
                 public void run() {
-                    listener.setLeft(MainView.SWT_LABEL, MainView.getMessage("wait00", " Waiting for Connection..."));
+                    listener.setLeft(MainView.SWT_LABEL, TCPMonBundle.getMessage("wait00", " Waiting for Connection..."));
                 }
             });
 
