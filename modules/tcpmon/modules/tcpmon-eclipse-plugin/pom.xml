@@ -85,6 +85,7 @@
                         <Bundle-SymbolicName>${groupId}.${artifactId};singleton:=true</Bundle-SymbolicName>
                         <Export-Package>
                             org.apache.ws.commons.tcpmon,
+                            org.apache.ws.commons.tcpmon.core,
                             org.apache.ws.commons.tcpmon.eclipse.*
                         </Export-Package>
                         <Bundle-Activator>org.apache.ws.commons.tcpmon.eclipse.plugin.TcpmonitorPlugin</Bundle-Activator>

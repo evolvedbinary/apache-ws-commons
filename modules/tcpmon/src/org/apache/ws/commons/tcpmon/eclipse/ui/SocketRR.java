@@ -23,53 +23,18 @@ import java.net.Socket;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
 import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
+import org.apache.ws.commons.tcpmon.core.AbstractSocketRR;
 
 /**
  * this class handles the pumping of data from the incoming socket to the
  * outgoing socket   Same as the swing one except for the use of SWT components
  */
-class SocketRR extends Thread {
-
-    /**
-     * Field inSocket
-     */
-    Socket inSocket = null;
-
-    /**
-     * Field outSocket
-     */
-    Socket outSocket = null;
-
+class SocketRR extends AbstractSocketRR {
     /**
      * Field textArea
      */
     Text textArea;
 
-    /**
-     * Field in
-     */
-    InputStream in = null;
-
-    /**
-     * Field out
-     */
-    OutputStream out = null;
-
-    /**
-     * Field xmlFormat
-     */
-    boolean xmlFormat;
-
-    /**
-     * Field done
-     */
-    volatile boolean done = false;
-
-    /**
-     * Field tmodel
-     */
-    volatile long elapsed = 0;
-    
     /**
      * Field tmodel
      */
@@ -81,19 +46,9 @@ class SocketRR extends Thread {
     int tableIndex = 0;
 
     /**
-     * Field type
-     */
-    String type = null;
-
-    /**
      * Field myConnection
      */
     Connection myConnection = null;
-
-    /**
-     * Field slowLink
-     */
-    SlowLinkSimulator slowLink;
 
     /**
      * Constructor SocketRR
@@ -115,278 +70,45 @@ class SocketRR extends Thread {
                     OutputStream outputStream, Text _textArea,
                     boolean format, Table tModel, int index,
                     final String type, SlowLinkSimulator slowLink) {
-        inSocket = inputSocket;
-        in = inputStream;
-        outSocket = outputSocket;
-        out = outputStream;
+        super(inputSocket, inputStream, outputSocket, outputStream, format, type, slowLink);
         textArea = _textArea;
-        xmlFormat = format;
         tmodel = tModel;
         tableIndex = index;
-        this.type = type;
         myConnection = c;
-        this.slowLink = slowLink;
         start();
     }
 
-    /**
-     * Method isDone
-     *
-     * @return boolean
-     */
-    public boolean isDone() {
-        return done;
-    }
-
-    public String getElapsed() {
-        return String.valueOf(elapsed);
+    protected boolean isSaveFirstLine() {
+        return tmodel != null;
     }
     
-    /**
-     * Method run
-     */
-    public void run() {
-        try {
-            byte[] buffer = new byte[4096];
-            byte[] tmpbuffer = new byte[8192];
-            int saved = 0;
-            int len;
-            int i1, i2;
-            int i;
-            int reqSaved = 0;
-            int tabWidth = 3;
-            boolean atMargin = true;
-            int thisIndent = -1, nextIndent = -1, previousIndent = -1;
-
-            final int[] result = new int[] { reqSaved };
-            MainView.display.syncExec(new Runnable() {
-                public void run() {
-                    if (tmodel != null) {
-                        String tmpStr = tmodel.getItem(tableIndex).getText(MainView.REQ_COLUMN);
-                        if (!"".equals(tmpStr)) {
-                            result[0] = tmpStr.length();
-                        }
-                    }
-                }
-            });
-            reqSaved = result[0];
-
-            long start = System.currentTimeMillis();
-            a:
-            for (; ;) {
-                
-                elapsed = System.currentTimeMillis() - start;
-                
-                if (done) {
-                    break;
-                }
-                
-                // try{
-                // len = in.available();
-                // }catch(Exception e){len=0;}
-                len = buffer.length;
-
-                // Used to be 1, but if we block it doesn't matter
-                // however 1 will break with some servers, including apache
-                if (len == 0) {
-                    len = buffer.length;
-                }
-                if (saved + len > buffer.length) {
-                    len = buffer.length - saved;
-                }
-                int len1 = 0;
-                while (len1 == 0) {
-                    try {
-                        len1 = in.read(buffer, saved, len);
-                    } catch (Exception ex) {
-                        if (done && (saved == 0)) {
-                            break a;
-                        }
-                        len1 = -1;
-                        break;
-                    }
-                }
-                len = len1;
-                if ((len == -1) && (saved == 0)) {
-                    break;
-                }
-                if (len == -1) {
-                    done = true;
-                }
-
-                // No matter how we may (or may not) format it, send it
-                // on unformatted - we don't want to mess with how its
-                // sent to the other side, just how its displayed
-                if ((out != null) && (len > 0)) {
-                    slowLink.pump(len);
-                    out.write(buffer, saved, len);
-                }
-
-                final boolean[] outBool = new boolean[1];
-                MainView.display.syncExec(new Runnable() {
-                    public void run() {
-                        outBool[0] = (tmodel != null);
-                    }
-                });
-
-
-                if (outBool[0] && (reqSaved < 50)) {
-                    final String[] outString = new String[1];
-                    MainView.display.syncExec(new Runnable() {
-                        public void run() {
-                            outString[0] = tmodel.getItem(tableIndex).getText(MainView.REQ_COLUMN);
-                        }
-                    });
-
-                    String old = outString[0];
-                    old = old + new String(buffer, saved, len);
-                    if (old.length() > 50) {
-                        old = old.substring(0, 50);
-                    }
-                    reqSaved = old.length();
-                    if ((i = old.indexOf('\n')) > 0) {
-                        old = old.substring(0, i - 1);
-                        reqSaved = 50;
-                    }
-
-                    final String inputString = old;
-                    MainView.display.syncExec(new Runnable() {
-                        public void run() {
-                            tmodel.getItem(tableIndex).setText(MainView.REQ_COLUMN, inputString);
-                        }
-                    });
-                }
-                
-                
-                if (xmlFormat) {
-
-                    // Do XML Formatting
-                    boolean inXML = false;
-                    int bufferLen = saved;
-                    if (len != -1) {
-                        bufferLen += len;
-                    }
-                    i1 = 0;
-                    i2 = 0;
-                    saved = 0;
-                    for (; i1 < bufferLen; i1++) {
-
-                        // Except when we're at EOF, saved last char
-                        if ((len != -1) && (i1 + 1 == bufferLen)) {
-                            saved = 1;
-                            break;
-                        }
-                        thisIndent = -1;
-                        if ((buffer[i1] == '<')
-                                && (buffer[i1 + 1] != '/')) {
-                            previousIndent = nextIndent++;
-                            thisIndent = nextIndent;
-                            inXML = true;
-                        }
-                        if ((buffer[i1] == '<')
-                                && (buffer[i1 + 1] == '/')) {
-                            if (previousIndent > nextIndent) {
-                                thisIndent = nextIndent;
-                            }
-                            previousIndent = nextIndent--;
-                            inXML = true;
-                        }
-                        if ((buffer[i1] == '/')
-                                && (buffer[i1 + 1] == '>')) {
-                            previousIndent = nextIndent--;
-                            inXML = true;
-                        }
-                        if (thisIndent != -1) {
-                            if (thisIndent > 0) {
-                                tmpbuffer[i2++] = (byte) '\n';
-                            }
-                            for (i = tabWidth * thisIndent; i > 0; i--) {
-                                tmpbuffer[i2++] = (byte) ' ';
-                            }
-                        }
-                        atMargin = ((buffer[i1] == '\n')
-                                || (buffer[i1] == '\r'));
-                        if (!inXML || !atMargin) {
-                            tmpbuffer[i2++] = buffer[i1];
-                        }
-                    }
-                    
-                    final String inputString = new String(tmpbuffer, 0, i2);
-                    MainView.display.syncExec(new Runnable() {
-                        public void run() {
-                            textArea.append(inputString);
-                        }
-                    });
-
-                    // Shift saved bytes to the beginning
-                    for (i = 0; i < saved; i++) {
-                        buffer[i] = buffer[bufferLen - saved + i];
-                    }
-                } else {
-                    final String inputString = new String(buffer, 0, len);
-                    MainView.display.syncExec(new Runnable() {
-                        public void run() {
-                            textArea.append(inputString);
-                        }
-                    });
-                }
+    protected String getSavedFirstLine() {
+        final String[] result = new String[1];
+        MainView.display.syncExec(new Runnable() {
+            public void run() {
+                result[0] = tmodel.getItem(tableIndex).getText(MainView.REQ_COLUMN);
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            done = true;
-            try {
-                if (out != null) {
-                    out.flush();
-                    if (null != outSocket) {
-                        outSocket.shutdownOutput();
-                    } else {
-                        out.close();
-                    }
-                    out = null;
-                }
-            } catch (Exception e) {
+        });
+        return result[0];
+    }
+    
+    protected void setSavedFirstLine(final String value) {
+        MainView.display.syncExec(new Runnable() {
+            public void run() {
+                tmodel.getItem(tableIndex).setText(MainView.REQ_COLUMN, value);
             }
-            try {
-                if (in != null) {
-                    if (inSocket != null) {
-                        inSocket.shutdownInput();
-                    } else {
-                        in.close();
-                    }
-                    in = null;
-                }
-            } catch (Exception e) {
+        });
+    }
+    
+    protected void appendData(final String data) {
+        MainView.display.syncExec(new Runnable() {
+            public void run() {
+                textArea.append(data);
             }
-            myConnection.wakeUp();
-        }
+        });
     }
 
-    /**
-     * Method halt
-     */
-    public void halt() {
-        try {
-            if (inSocket != null) {
-                inSocket.close();
-            }
-            if (outSocket != null) {
-                outSocket.close();
-            }
-            inSocket = null;
-            outSocket = null;
-            if (in != null) {
-                in.close();
-            }
-            if (out != null) {
-                out.close();
-            }
-            in = null;
-            out = null;
-            done = true;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    protected void onFinish() {
+        myConnection.wakeUp();
     }
 }
