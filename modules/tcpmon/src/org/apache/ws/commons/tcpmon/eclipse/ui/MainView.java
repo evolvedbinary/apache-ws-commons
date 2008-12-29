@@ -16,28 +16,20 @@
 package org.apache.ws.commons.tcpmon.eclipse.ui;
 
 
-import java.util.ResourceBundle;
-
+import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.part.ViewPart;
-import org.apache.ws.commons.tcpmon.eclipse.ui.Listener;
-import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
+
+import java.util.ResourceBundle;
 
 /**
  * 
- * Main view to be mounted into Eclipse
+ * The class <code>MainView</code> is the UI mounted into Eclipse as a View
  *
  */
 public class MainView extends ViewPart{
@@ -97,9 +89,8 @@ public class MainView extends ViewPart{
 
         gd = new GridData();
         gd.verticalIndent = 15;
-        gd.widthHint = 30;
+        gd.widthHint = 60;
         port = new Text(composite, SWT.BORDER);
-        port.setTextLimit(4);
         port.setLayoutData(gd);
 
         addActAsOptions(composite);
@@ -198,9 +189,8 @@ public class MainView extends ViewPart{
 
         gd = new GridData(SWT.NONE, SWT.NONE, false, false);
         gd.verticalIndent = 2;
-        gd.widthHint = 30;
+        gd.widthHint = 60;
         tport = new Text(composite, SWT.BORDER);
-        tport.setTextLimit(4);
         tport.setText("8080");
         tport.setLayoutData(gd);
 
@@ -237,21 +227,20 @@ public class MainView extends ViewPart{
         final Label hTTPProxyHostLabel = new Label(optGroup, SWT.NONE);
         hTTPProxyHostLabel.setEnabled(false);
         hTTPProxyHostLabel.setText(MainView.getMessage("hostname00", "Hostname"));
-        hTTPProxyHostLabel.setBounds(30, 50, 50, 20);
+        hTTPProxyHostLabel.setBounds(30, 50, 70, 25);
 
         hTTPProxyHost = new Text(optGroup, SWT.BORDER);
         hTTPProxyHost.setEnabled(false);
-        hTTPProxyHost.setBounds(90, 50, 150, 20);
+        hTTPProxyHost.setBounds(110, 50, 300, 25);
 
         final Label hTTPProxyPortLabel = new Label(optGroup, SWT.NONE);
         hTTPProxyPortLabel.setEnabled(false);
         hTTPProxyPortLabel.setText(MainView.getMessage("port00", "Port #"));
-        hTTPProxyPortLabel.setBounds(30, 75, 50, 20);
+        hTTPProxyPortLabel.setBounds(30, 85, 70, 25);
 
         hTTPProxyPort = new Text(optGroup, SWT.BORDER);
-        hTTPProxyPort.setTextLimit(4);
         hTTPProxyPort.setEnabled(false);
-        hTTPProxyPort.setBounds(90, 75, 40, 20);
+        hTTPProxyPort.setBounds(110, 85, 70, 25);
 
         // Set default proxy values...
         String tmp = System.getProperty("http.proxyHost");
@@ -278,27 +267,27 @@ public class MainView extends ViewPart{
         }
 
         delayBox = new Button(optGroup, SWT.CHECK);
-        delayBox.setBounds(10, 110, 200, 20);
+        delayBox.setBounds(10, 120, 200, 20);
         final String delaySupport = MainView.getMessage("delay00", "Simulate Slow Connection");
         delayBox.setText(delaySupport);
 
         final Label delayBytesLabel = new Label(optGroup, SWT.NONE);
         delayBytesLabel.setEnabled(false);
         delayBytesLabel.setText(MainView.getMessage("delay01", "Bytes per Pause"));
-        delayBytesLabel.setBounds(30, 140, 100, 20);
+        delayBytesLabel.setBounds(30, 150, 130, 25);
 
         delayBytes = new Text(optGroup, SWT.BORDER);
         delayBytes.setEnabled(false);
-        delayBytes.setBounds(140, 140, 40, 20);
+        delayBytes.setBounds(170, 150, 70, 25);
 
         final Label delayTimeLabel = new Label(optGroup, SWT.NONE);
         delayTimeLabel.setEnabled(false);
         delayTimeLabel.setText(MainView.getMessage("delay02", "Delay in Milliseconds"));
-        delayTimeLabel.setBounds(30, 165, 100, 20);
+        delayTimeLabel.setBounds(30, 185, 130, 25);
 
         delayTime = new Text(optGroup, SWT.BORDER);
         delayTime.setEnabled(false);
-        delayTime.setBounds(140, 165, 40, 20);
+        delayTime.setBounds(170, 185, 70, 25);
 
 
         hTTPProxyBox.addSelectionListener(new SelectionAdapter() {
@@ -354,4 +343,5 @@ public class MainView extends ViewPart{
         }
         return result;
     }
+
 }

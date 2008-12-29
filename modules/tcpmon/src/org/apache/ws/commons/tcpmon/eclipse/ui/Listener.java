@@ -15,13 +15,12 @@
  */
 package org.apache.ws.commons.tcpmon.eclipse.ui;
 
+import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
-import org.apache.ws.commons.tcpmon.eclipse.ui.Connection;
-import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -115,7 +114,6 @@ class Listener {
 
         portField = new Text(composite, SWT.BORDER);
         portField.setText("" + listenPort);
-        portField.setTextLimit(4);
         gd = new GridData(SWT.FILL, SWT.CENTER, false, false);
         gd.widthHint = 40;
         portField.setLayoutData(gd);
@@ -124,7 +122,6 @@ class Listener {
 
         hostField = new Text(composite, SWT.BORDER);
         hostField.setText(host);
-        hostField.setTextLimit(30);
         gd = new GridData(SWT.FILL, SWT.CENTER, false, false);
         gd.widthHint = 202;
         hostField.setLayoutData(gd);
@@ -133,7 +130,6 @@ class Listener {
 
         tPortField = new Text(composite, SWT.BORDER);
         tPortField.setText("" + targetPort);
-        tPortField.setTextLimit(4);
         gd = new GridData(SWT.FILL, SWT.CENTER, false, false);
         gd.widthHint = 40;
         tPortField.setLayoutData(gd);

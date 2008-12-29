@@ -15,46 +15,26 @@
  */
 package org.apache.ws.commons.tcpmon.eclipse.ui;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowData;
-import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.TabFolder;
-import org.eclipse.swt.widgets.TabItem;
-import org.eclipse.swt.widgets.Text;
-import org.apache.ws.commons.tcpmon.eclipse.ui.MainView;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 
 /**
  *   This is similar to the main swing sender but includes SWT components instead of Swing ones
  */
- class Sender {
+class Sender {
     private TabFolder tabFolder = null;
 
     public Text endpointField;
@@ -86,9 +66,9 @@ import org.apache.ws.commons.tcpmon.eclipse.ui.MainView;
         endpointField.setLayoutData(new GridData(312, SWT.DEFAULT));
 
         (new Label(tabComposite, SWT.NONE)).setText("SOAP Action");
-        ;
 
         actionField = new Text(tabComposite, SWT.BORDER);
+        actionField.setLayoutData(new GridData(60, SWT.DEFAULT));
 
         final Composite textComposite = new Composite(tabComposite, SWT.NONE);
         textComposite.setLayout(new FillLayout(SWT.VERTICAL));
