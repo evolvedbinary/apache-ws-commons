@@ -17,6 +17,7 @@ package org.apache.ws.commons.tcpmon.eclipse.ui;
 
 import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
 import org.apache.ws.commons.tcpmon.TCPMonBundle;
+import org.apache.ws.commons.tcpmon.core.Configuration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -443,7 +444,7 @@ class Listener {
         for (int i = 0; i < selectionIndices.length; i++) {
             index = selectionIndices[i];
             con = (Connection) connections.get(index - 1 - i);
-            if (con.active) {
+            if (con.isActive()) {
                 MessageBox mb = new MessageBox(MainView.display.getActiveShell(), SWT.ICON_INFORMATION | SWT.OK);
                 mb.setMessage(TCPMonBundle.getMessage("inform00", "Connection can be removed only when its status indicates Done"));
                 mb.setText("Connection Active");
@@ -659,4 +660,20 @@ class Listener {
         }
     }
 
+    public Configuration getConfiguration() {
+        final Configuration config = new Configuration();
+        MainView.display.syncExec(new Runnable() {
+            public void run() {
+                config.setListenPort(Integer.parseInt(portField.getText()));
+                config.setTargetHost(hostField.getText());
+                config.setTargetPort(Integer.parseInt(tPortField.getText()));
+                config.setProxy(isProxyBox.getSelection());
+                config.setXmlFormat(xmlFormatBox.getSelection());
+            }
+        });
+        config.setHttpProxyHost(HTTPProxyHost);
+        config.setHttpProxyPort(HTTPProxyPort);
+        config.setSlowLink(slowLink);
+        return config;
+    }
 }

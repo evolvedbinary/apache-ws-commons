@@ -37,6 +37,9 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.basic.BasicButtonListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
+
+import org.apache.ws.commons.tcpmon.core.Configuration;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -688,5 +691,18 @@ class Listener extends JPanel {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public Configuration getConfiguration() {
+        Configuration config = new Configuration();
+        config.setListenPort(Integer.parseInt(portField.getText()));
+        config.setTargetHost(hostField.getText());
+        config.setTargetPort(Integer.parseInt(tPortField.getText()));
+        config.setProxy(isProxyBox.isSelected());
+        config.setXmlFormat(xmlFormatBox.isSelected());
+        config.setHttpProxyHost(HTTPProxyHost);
+        config.setHttpProxyPort(HTTPProxyPort);
+        config.setSlowLink(slowLink);
+        return config;
     }
 }
