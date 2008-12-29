@@ -65,7 +65,6 @@ class SocketWaiter extends Thread {
      * Method run
      */
     public void run() {
-
         try {
             MainView.display.syncExec(new Runnable() {
                 public void run() {
@@ -75,7 +74,6 @@ class SocketWaiter extends Thread {
 
             sSocket = new ServerSocket(port);
             for (; ;) {
-
                 Socket inSocket = sSocket.accept();
                 if (pleaseStop) {
                     break;

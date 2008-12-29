@@ -27,80 +27,80 @@ import java.net.Socket;
  */
 class SocketWaiter extends Thread {
 
-   /**
-    * Field sSocket
-    */
-   ServerSocket sSocket = null;
+    /**
+     * Field sSocket
+     */
+    ServerSocket sSocket = null;
 
-   /**
-    * Field listener
-    */
-   Listener listener;
+    /**
+     * Field listener
+     */
+    Listener listener;
 
-   /**
-    * Field port
-    */
-   int port;
+    /**
+     * Field port
+     */
+    int port;
 
-   /**
-    * Field pleaseStop
-    */
-   boolean pleaseStop = false;
+    /**
+     * Field pleaseStop
+     */
+    boolean pleaseStop = false;
 
-   /**
-    * Constructor SocketWaiter
-    *
-    * @param l
-    * @param p
-    */
-   public SocketWaiter(Listener l, int p) {
-       listener = l;
-       port = p;
-       start();
-   }
+    /**
+     * Constructor SocketWaiter
+     *
+     * @param l
+     * @param p
+     */
+    public SocketWaiter(Listener l, int p) {
+        listener = l;
+        port = p;
+        start();
+    }
 
-   /**
-    * Method run
-    */
-   public void run() {
-       try {
-           listener.setLeft(
-                   new JLabel(
-                		   TCPMon.getMessage("wait00",
-                                   " Waiting for Connection...")));
-           listener.repaint();
-           sSocket = new ServerSocket(port);
-           for (; ;) {
-               Socket inSocket = sSocket.accept();
-               if (pleaseStop) {
-                   break;
-               }
-               new Connection(listener, inSocket);
-               inSocket = null;
-           }
-       } catch (Exception exp) {
-           if (!"socket closed".equals(exp.getMessage())) {
-               JLabel tmp = new JLabel(exp.toString());
-               tmp.setForeground(Color.red);
-               listener.setLeft(tmp);
-               listener.setRight(new JLabel(""));
-               listener.stop();
-           }
-       }
-   }
+    /**
+     * Method run
+     */
+    public void run() {
+        try {
+            listener.setLeft(
+                    new JLabel(
+                 		   TCPMon.getMessage("wait00",
+                                    " Waiting for Connection...")));
+            listener.repaint();
+            sSocket = new ServerSocket(port);
+            for (; ;) {
+                Socket inSocket = sSocket.accept();
+                if (pleaseStop) {
+                    break;
+                }
+                new Connection(listener, inSocket);
+                inSocket = null;
+            }
+        } catch (Exception exp) {
+            if (!"socket closed".equals(exp.getMessage())) {
+                JLabel tmp = new JLabel(exp.toString());
+                tmp.setForeground(Color.red);
+                listener.setLeft(tmp);
+                listener.setRight(new JLabel(""));
+                listener.stop();
+            }
+        }
+    }
 
-   /**
-    * force a halt by connecting to self and then closing the server socket
-    */
-   public void halt() {
-       try {
-           pleaseStop = true;
-           new Socket("127.0.0.1", port);
-           if (sSocket != null) {
-               sSocket.close();
-           }
-       } catch (Exception e) {
-           e.printStackTrace();
-       }
-   }
+    /**
+     * force a halt by connecting to self and then closing the server socket
+     */
+    public void halt() {
+        try {
+            pleaseStop = true;
+            new Socket("127.0.0.1", port);
+            if (sSocket != null) {
+                sSocket.close();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 }

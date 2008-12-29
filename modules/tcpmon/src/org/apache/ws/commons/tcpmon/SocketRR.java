@@ -28,7 +28,7 @@ import java.net.Socket;
  */
 class SocketRR extends Thread {
 
-	/**
+    /**
      * Field inSocket
      */
     Socket inSocket = null;
@@ -137,7 +137,7 @@ class SocketRR extends Thread {
     }
 
     public String getElapsed() {
-    		return String.valueOf(elapsed);
+        return String.valueOf(elapsed);
     }
     
     /**
@@ -165,9 +165,9 @@ class SocketRR extends Thread {
             long start = System.currentTimeMillis();
             a:
             for (; ;) {
-            	
+                
                 elapsed = System.currentTimeMillis() - start;
-            	
+                
                 if (done) {
                     break;
                 }
@@ -229,7 +229,7 @@ class SocketRR extends Thread {
                 }
                 
                 
-               if (xmlFormat) {
+                if (xmlFormat) {
 
                     // Do XML Formatting
                     boolean inXML = false;
@@ -281,6 +281,7 @@ class SocketRR extends Thread {
                             tmpbuffer[i2++] = buffer[i1];
                         }
                     }
+                    
                     textArea.append(new String(tmpbuffer, 0, i2));
 
                     // Shift saved bytes to the beginning

@@ -66,7 +66,7 @@ class Connection extends Thread {
      * Field elapsed time
      */
     long elapsedTime;
-
+    
     /**
      * Field inputText
      */
@@ -167,7 +167,6 @@ class Connection extends Thread {
      * Method run
      */
     public void run() {
-
         try {
             active = true;
             HTTPProxyHost = System.getProperty("http.proxyHost");
@@ -253,7 +252,6 @@ class Connection extends Thread {
             }
             String bufferedData = null;
             StringBuffer buf = null;
-
             int index = listener.connections.indexOf(this);
 
             MainView.display.syncExec(new Runnable() {
@@ -283,7 +281,6 @@ class Connection extends Thread {
                     }
                     break;
                 }
-
                 bufferedData = buf.toString();
                 inputString = bufferedData;
                 MainView.display.syncExec(new Runnable() {
@@ -436,7 +433,6 @@ class Connection extends Thread {
                     });
                 }
             }
-
             if (targetPort == -1) {
                 targetPort = 80;
             }
@@ -470,7 +466,7 @@ class Connection extends Thread {
             rr2 = new SocketRR(this, outSocket, tmpIn2, inSocket, tmpOut1,
                     outputText, format, null, 0, "response:",
                     responseLink);
-
+            
             while ((rr1 != null) || (rr2 != null)) {
 
                 if (rr2 != null) {
@@ -481,12 +477,12 @@ class Connection extends Thread {
                         }
                     });
                 }
-
+                
                 // Only loop as long as the connection to the target
                 // machine is available - once that's gone we can stop.
                 // The old way, loop until both are closed, left us
                 // looping forever since no one closed the 1st one.
-
+                
                 if ((null != rr1) && rr1.isDone()) {
                     if ((index >= 0) && (rr2 != null)) {
                         inputInt = index;
@@ -519,7 +515,6 @@ class Connection extends Thread {
                     this.wait(100);    // Safety just incase we're not told to wake up.
                 }
             }
-
 
             active = false;
 
@@ -567,7 +562,6 @@ class Connection extends Thread {
 
             halt();
         }
-
     }
 
     /**

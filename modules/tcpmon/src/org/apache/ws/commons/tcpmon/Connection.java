@@ -34,7 +34,7 @@ import java.util.Date;
  */
 class Connection extends Thread {
 
-	/**
+    /**
      * Field listener
      */
     Listener listener;
@@ -299,10 +299,9 @@ class Connection extends Thread {
                     }
                 }
             } else {
-
-                // 
+                //
                 // Change Host: header to point to correct host
-                // 
+                //
                 byte[] b1 = new byte[1];
                 buf = new StringBuffer();
                 String s1;
@@ -395,15 +394,15 @@ class Connection extends Thread {
             
             while ((rr1 != null) || (rr2 != null)) {
 
-            		if (rr2 != null) {
-            			listener.tableModel.setValueAt(rr2.getElapsed(), 1 + index, TCPMon.ELAPSED_COLUMN);
-            		}
-            		
+                if (rr2 != null) {
+                    listener.tableModel.setValueAt(rr2.getElapsed(), 1 + index, TCPMon.ELAPSED_COLUMN);
+                }
+                
                 // Only loop as long as the connection to the target
                 // machine is available - once that's gone we can stop.
                 // The old way, loop until both are closed, left us
                 // looping forever since no one closed the 1st one.
-            	
+                
                 if ((null != rr1) && rr1.isDone()) {
                     if ((index >= 0) && (rr2 != null)) {
                         listener.tableModel.setValueAt(

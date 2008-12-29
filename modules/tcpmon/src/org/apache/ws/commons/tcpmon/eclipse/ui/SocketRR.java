@@ -74,7 +74,7 @@ class SocketRR extends Thread {
      * Field tmodel
      */
     volatile long elapsed = 0;
-
+    
     /**
      * Field tmodel
      */
@@ -146,7 +146,7 @@ class SocketRR extends Thread {
     public String getElapsed() {
         return String.valueOf(elapsed);
     }
-
+    
     /**
      * Method run
      */
@@ -179,13 +179,13 @@ class SocketRR extends Thread {
             long start = System.currentTimeMillis();
             a:
             for (; ;) {
-
+                
                 elapsed = System.currentTimeMillis() - start;
-
+                
                 if (done) {
                     break;
                 }
-
+                
                 // try{
                 // len = in.available();
                 // }catch(Exception e){len=0;}
@@ -259,8 +259,8 @@ class SocketRR extends Thread {
                         }
                     });
                 }
-
-
+                
+                
                 if (xmlFormat) {
 
                     // Do XML Formatting
@@ -313,7 +313,7 @@ class SocketRR extends Thread {
                             tmpbuffer[i2++] = buffer[i1];
                         }
                     }
-
+                    
                     inputString = new String(tmpbuffer, 0, i2);
                     MainView.display.syncExec(new Runnable() {
                         public void run() {
@@ -326,7 +326,6 @@ class SocketRR extends Thread {
                         buffer[i] = buffer[bufferLen - saved + i];
                     }
                 } else {
-
                     inputString = new String(buffer, 0, len);
                     MainView.display.syncExec(new Runnable() {
                         public void run() {
