@@ -30,11 +30,6 @@ import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
  */
 class SocketRR extends Thread {
 
-    private int inputInt;
-    private String inputString;
-    private boolean outBool;
-    private String outString;
-
     /**
      * Field inSocket
      */
@@ -163,18 +158,18 @@ class SocketRR extends Thread {
             boolean atMargin = true;
             int thisIndent = -1, nextIndent = -1, previousIndent = -1;
 
-            inputInt = reqSaved;
+            final int[] result = new int[] { reqSaved };
             MainView.display.syncExec(new Runnable() {
                 public void run() {
                     if (tmodel != null) {
                         String tmpStr = tmodel.getItem(tableIndex).getText(MainView.REQ_COLUMN);
                         if (!"".equals(tmpStr)) {
-                            inputInt = tmpStr.length();
+                            result[0] = tmpStr.length();
                         }
                     }
                 }
             });
-            reqSaved = inputInt;
+            reqSaved = result[0];
 
             long start = System.currentTimeMillis();
             a:
@@ -227,21 +222,23 @@ class SocketRR extends Thread {
                     out.write(buffer, saved, len);
                 }
 
+                final boolean[] outBool = new boolean[1];
                 MainView.display.syncExec(new Runnable() {
                     public void run() {
-                        outBool = (tmodel != null);
+                        outBool[0] = (tmodel != null);
                     }
                 });
 
 
-                if (outBool && (reqSaved < 50)) {
+                if (outBool[0] && (reqSaved < 50)) {
+                    final String[] outString = new String[1];
                     MainView.display.syncExec(new Runnable() {
                         public void run() {
-                            outString = tmodel.getItem(tableIndex).getText(MainView.REQ_COLUMN);
+                            outString[0] = tmodel.getItem(tableIndex).getText(MainView.REQ_COLUMN);
                         }
                     });
 
-                    String old = outString;
+                    String old = outString[0];
                     old = old + new String(buffer, saved, len);
                     if (old.length() > 50) {
                         old = old.substring(0, 50);
@@ -252,7 +249,7 @@ class SocketRR extends Thread {
                         reqSaved = 50;
                     }
 
-                    inputString = old;
+                    final String inputString = old;
                     MainView.display.syncExec(new Runnable() {
                         public void run() {
                             tmodel.getItem(tableIndex).setText(MainView.REQ_COLUMN, inputString);
@@ -314,7 +311,7 @@ class SocketRR extends Thread {
                         }
                     }
                     
-                    inputString = new String(tmpbuffer, 0, i2);
+                    final String inputString = new String(tmpbuffer, 0, i2);
                     MainView.display.syncExec(new Runnable() {
                         public void run() {
                             textArea.append(inputString);
@@ -326,7 +323,7 @@ class SocketRR extends Thread {
                         buffer[i] = buffer[bufferLen - saved + i];
                     }
                 } else {
-                    inputString = new String(buffer, 0, len);
+                    final String inputString = new String(buffer, 0, len);
                     MainView.display.syncExec(new Runnable() {
                         public void run() {
                             textArea.append(inputString);

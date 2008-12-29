@@ -36,11 +36,7 @@ import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
  * a connection listens to a single current connection
  */
 class Connection extends Thread {
-    private int inputInt;
-    private String inputString;
-    private ArrayList outValues = new ArrayList();
     public TableItem item;
-
 
     /**
      * Field listener
@@ -192,12 +188,11 @@ class Connection extends Thread {
             String dateformat = MainView.getMessage("dateformat00", "yyyy-MM-dd HH:mm:ss");
             DateFormat df = new SimpleDateFormat(dateformat);
             time = df.format(new Date());
-            int count = listener.connections.size();
+            final int count = listener.connections.size();
 
-            inputInt = count;
             MainView.display.syncExec(new Runnable() {
                 public void run() {
-                    item = new TableItem(listener.connectionTable, SWT.BORDER, inputInt + 1);
+                    item = new TableItem(listener.connectionTable, SWT.BORDER, count + 1);
                     item.setText(new String[]{MainView.getMessage("active00", "Active"),
                             time,
                             fromHost,
@@ -225,9 +220,9 @@ class Connection extends Thread {
 
             }
 
+            final ArrayList outValues = new ArrayList();
             MainView.display.syncExec(new Runnable() {
                 public void run() {
-                    outValues.clear();
                     outValues.add(listener.hostField.getText());
                     outValues.add(listener.tPortField.getText());
                     outValues.add(listener.portField.getText());
@@ -254,15 +249,15 @@ class Connection extends Thread {
             StringBuffer buf = null;
             int index = listener.connections.indexOf(this);
 
+            final ArrayList outValues2 = new ArrayList();
             MainView.display.syncExec(new Runnable() {
                 public void run() {
-                    outValues.clear();
-                    outValues.add(listener.isProxyBox.getSelection() ? "true" : "false");
-                    outValues.add((HTTPProxyHost != null) ? "true" : "false");
+                    outValues2.add(listener.isProxyBox.getSelection() ? "true" : "false");
+                    outValues2.add((HTTPProxyHost != null) ? "true" : "false");
                 }
             });
 
-            if ("true".equals(outValues.get(0)) || "true".equals(outValues.get(1))) {
+            if ("true".equals(outValues2.get(0)) || "true".equals(outValues2.get(1))) {
 
                 // Check if we're a proxy
                 byte[] b = new byte[1];
@@ -282,7 +277,7 @@ class Connection extends Thread {
                     break;
                 }
                 bufferedData = buf.toString();
-                inputString = bufferedData;
+                final String inputString = bufferedData;
                 MainView.display.syncExec(new Runnable() {
                     public void run() {
                         inputText.append(inputString);
@@ -304,14 +299,14 @@ class Connection extends Thread {
                         urlString = urlString.substring(1);
                     }
 
+                    final boolean[] out = new boolean[1];
                     MainView.display.syncExec(new Runnable() {
                         public void run() {
-                            outValues.clear();
-                            outValues.add((listener.isProxyBox.getSelection()) ? "true" : "false");
+                            out[0] = listener.isProxyBox.getSelection();
                         }
                     });
 
-                    if ("true".equals(outValues.get(0))) {
+                    if (out[0]) {
                         url = new URL(urlString);
                         targetHost = url.getHost();
                         targetPort = url.getPort();
@@ -319,11 +314,11 @@ class Connection extends Thread {
                             targetPort = 80;
                         }
 
-                        inputInt = index;
-                        inputString = targetHost;
+                        final int inputInt = index;
+                        final String inputString2 = targetHost;
                         MainView.display.syncExec(new Runnable() {
                             public void run() {
-                                listener.tableEnhancer.setValueAt(inputString,
+                                listener.tableEnhancer.setValueAt(inputString2,
                                         inputInt + 1,
                                         MainView.OUTHOST_COLUMN);
                             }
@@ -336,11 +331,11 @@ class Connection extends Thread {
                         url = new URL("http://" + targetHost + ":"
                                 + targetPort + "/" + urlString);
 
-                        inputInt = index;
-                        inputString = targetHost;
+                        final int inputInt = index;
+                        final String inputString2 = targetHost;
                         MainView.display.syncExec(new Runnable() {
                             public void run() {
-                                listener.tableEnhancer.setValueAt(inputString,
+                                listener.tableEnhancer.setValueAt(inputString2,
                                         inputInt + 1,
                                         MainView.OUTHOST_COLUMN);
                             }
@@ -404,7 +399,7 @@ class Connection extends Thread {
                 }
                 if (bufferedData != null) {
 
-                    inputString = bufferedData;
+                    final String inputString = bufferedData;
                     MainView.display.syncExec(new Runnable() {
                         public void run() {
                             inputText.append(inputString);
@@ -422,11 +417,11 @@ class Connection extends Thread {
                             + "                       ";
                     s1 = s1.substring(0, 51);
 
-                    inputInt = index;
-                    inputString = s1;
+                    final int inputInt = index;
+                    final String inputString2 = s1;
                     MainView.display.syncExec(new Runnable() {
                         public void run() {
-                            listener.tableEnhancer.setValueAt(inputString,
+                            listener.tableEnhancer.setValueAt(inputString2,
                                     inputInt + 1,
                                     MainView.REQ_COLUMN);
                         }
@@ -445,13 +440,13 @@ class Connection extends Thread {
                 slowLink.pump(b.length);
             }
 
+            final boolean[] out = new boolean[1];
             MainView.display.syncExec(new Runnable() {
                 public void run() {
-                    outValues.clear();
-                    outValues.add((listener.xmlFormatBox.getSelection()) ? "true" : "false");
+                    out[0] = listener.xmlFormatBox.getSelection();
                 }
             });
-            boolean format = ("true".equals(outValues.get(0)));
+            boolean format = out[0];
 
             // this is the channel to the endpoint
             rr1 = new SocketRR(this, inSocket, tmpIn1, outSocket, tmpOut2,
@@ -470,7 +465,7 @@ class Connection extends Thread {
             while ((rr1 != null) || (rr2 != null)) {
 
                 if (rr2 != null) {
-                    inputInt = index;
+                    final int inputInt = index;
                     MainView.display.syncExec(new Runnable() {
                         public void run() {
                             listener.tableEnhancer.setValueAt(rr2.getElapsed(), 1 + inputInt, MainView.ELAPSED_COLUMN);
@@ -485,7 +480,7 @@ class Connection extends Thread {
                 
                 if ((null != rr1) && rr1.isDone()) {
                     if ((index >= 0) && (rr2 != null)) {
-                        inputInt = index;
+                        final int inputInt = index;
                         MainView.display.syncExec(new Runnable() {
                             public void run() {
                                 listener.tableEnhancer.setValueAt(
@@ -499,7 +494,7 @@ class Connection extends Thread {
 
                 if ((null != rr2) && rr2.isDone()) {
                     if ((index >= 0) && (rr1 != null)) {
-                        inputInt = index;
+                        final int inputInt = index;
                         MainView.display.syncExec(new Runnable() {
                             public void run() {
                                 listener.tableEnhancer.setValueAt(
@@ -519,7 +514,7 @@ class Connection extends Thread {
             active = false;
 
             if (index >= 0) {
-                inputInt = index;
+                final int inputInt = index;
                 MainView.display.syncExec(new Runnable() {
                     public void run() {
                         listener.tableEnhancer.setValueAt(
@@ -534,7 +529,7 @@ class Connection extends Thread {
             PrintWriter wr = new PrintWriter(st);
             int index = listener.connections.indexOf(this);
             if (index >= 0) {
-                inputInt = index;
+                final int inputInt = index;
                 MainView.display.syncExec(new Runnable() {
                     public void run() {
                         listener.tableEnhancer.setValueAt(
@@ -547,7 +542,7 @@ class Connection extends Thread {
             e.printStackTrace(wr);
             wr.close();
 
-            inputString = st.toString();
+            final String inputString = st.toString();
             MainView.display.syncExec(new Runnable() {
                 public void run() {
                     if (outputText != null) {
