@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements. See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership. The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License. You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied. See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.apache.ws.commons.tcpmon</groupId>
+        <artifactId>tcpmon</artifactId>
+        <version>SNAPSHOT</version>
+        <relativePath>../../pom.xml</relativePath>
+    </parent>
+    <artifactId>tcpmon-eclipse-plugin</artifactId>
+    <name>Apache TCPMon - Eclipse plugin</name>
+    <packaging>bundle</packaging>
+    <description>TCPMon is a utility that allows the messages to be viewed and resent. It is very much useful
+    as a debug tool. It has originally being part of Axis1 and now stands as an independent project.</description>
+    <properties>
+        <eclipse.version>3.2.0</eclipse.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.ws.commons.tcpmon</groupId>
+            <artifactId>tcpmon-core</artifactId>
+            <version>${pom.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.ui</groupId>
+            <artifactId>org.eclipse.ui.workbench</artifactId>
+            <version>${eclipse.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.swt</groupId>
+            <artifactId>org.eclipse.swt.win32.win32.x86</artifactId>
+            <version>${eclipse.version}</version>
+        </dependency>        
+    </dependencies>
+    <repositories>
+        <repository>
+            <id>eclipse-repo</id>
+            <name>Eclipse Maven repository</name>
+            <url>http://repo1.maven.org/eclipse</url>
+        </repository>
+    </repositories>
+    <build>
+        <sourceDirectory>../../src</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>../../resources/eclipse</directory>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.3</source>
+                    <target>1.3</target>
+                    <includes>
+                        <include>org/apache/ws/commons/tcpmon/eclipse/**/*.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Bundle-Version>1.1.0000</Bundle-Version>
+                        <Bundle-SymbolicName>${groupId}.${artifactId};singleton:=true</Bundle-SymbolicName>
+                        <Export-Package>
+                            org.apache.ws.commons.tcpmon,
+                            org.apache.ws.commons.tcpmon.eclipse.*
+                        </Export-Package>
+                        <Bundle-Activator>org.apache.ws.commons.tcpmon.eclipse.plugin.TcpmonitorPlugin</Bundle-Activator>
+                        <Bundle-Localization>plugin</Bundle-Localization>
+                        <Eclipse-LazyStart>true</Eclipse-LazyStart>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
