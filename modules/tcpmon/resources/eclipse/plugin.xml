@@ -12,7 +12,7 @@
             name="TCP Monitor"
             icon="icons/monitor.gif"
             category="tcpmonitor"
-            class="tcpmonitor.views.MainView"
+            class="org.apache.ws.commons.tcpmon.eclipse.ui.MainView"
             id="tcpmonitor.views.MainView">
       </view>
    </extension>
