@@ -153,7 +153,6 @@ public abstract class AbstractConnection extends Thread {
             String targetHost = config.getTargetHost();
             init(time, fromHost, targetHost);
             int targetPort = config.getTargetPort();
-            int listenPort = config.getListenPort();
             InputStream tmpIn1 = inputStream;
             OutputStream tmpOut1 = null;
             InputStream tmpIn2 = null;
@@ -253,7 +252,7 @@ public abstract class AbstractConnection extends Thread {
 
                         // we need to update the hostname to target host
                         String newHost = "Host: " + targetHost + ":"
-                                + listenPort + "\r\n";
+                                + targetPort + "\r\n";
                         bufferedData = bufferedData.concat(newHost);
                         break;
                     }
