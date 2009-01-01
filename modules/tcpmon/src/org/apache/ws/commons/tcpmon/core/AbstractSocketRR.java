@@ -27,6 +27,7 @@ import java.net.Socket;
  * outgoing socket
  */
 public abstract class AbstractSocketRR extends Thread {
+    private final AbstractConnection connection;
 
     /**
      * Field inSocket
@@ -64,11 +65,6 @@ public abstract class AbstractSocketRR extends Thread {
     volatile long elapsed = 0;
     
     /**
-     * Field type
-     */
-    String type = null;
-
-    /**
      * Field slowLink
      */
     SlowLinkSimulator slowLink;
@@ -88,16 +84,16 @@ public abstract class AbstractSocketRR extends Thread {
      * @param type
      * @param slowLink
      */
-    public AbstractSocketRR(Socket inputSocket,
+    public AbstractSocketRR(AbstractConnection connection, Socket inputSocket,
                     InputStream inputStream, Socket outputSocket,
                     OutputStream outputStream, boolean format,
-                    final String type, SlowLinkSimulator slowLink) {
+                    SlowLinkSimulator slowLink) {
+        this.connection = connection;
         inSocket = inputSocket;
         in = inputStream;
         outSocket = outputSocket;
         out = outputStream;
         xmlFormat = format;
-        this.type = type;
         this.slowLink = slowLink;
     }
 
@@ -292,7 +288,7 @@ public abstract class AbstractSocketRR extends Thread {
                 }
             } catch (Exception e) {
             }
-            onFinish();
+            connection.wakeUp();
         }
     }
 
@@ -327,5 +323,4 @@ public abstract class AbstractSocketRR extends Thread {
     protected abstract String getSavedFirstLine();
     protected abstract void setSavedFirstLine(String value);
     protected abstract void appendData(String data);
-    protected abstract void onFinish();
 }

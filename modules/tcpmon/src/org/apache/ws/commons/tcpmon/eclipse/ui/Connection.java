@@ -112,15 +112,14 @@ class Connection extends AbstractConnection {
             SlowLinkSimulator slowLink) {
         return new SocketRR(this, inSocket, inputStream, outSocket, outputStream,
                 inputText, format, listener.connectionTable,
-                listener.connections.indexOf(this) + 1, "request:", slowLink);
+                listener.connections.indexOf(this) + 1, slowLink);
     }
 
     protected AbstractSocketRR createOutputSocketRR(Socket outSocket, InputStream inputStream,
             Socket inSocket, OutputStream outputStream, boolean format,
             SlowLinkSimulator slowLink) {
         return new SocketRR(this, outSocket, inputStream, inSocket, outputStream,
-                outputText, format, null, 0, "response:",
-                slowLink);
+                outputText, format, null, 0, slowLink);
     }
 
     protected void appendInputText(final String data) {

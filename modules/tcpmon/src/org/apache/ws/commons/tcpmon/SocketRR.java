@@ -46,11 +46,6 @@ class SocketRR extends AbstractSocketRR {
     int tableIndex = 0;
 
     /**
-     * Field myConnection
-     */
-    Connection myConnection = null;
-
-    /**
      * Constructor SocketRR
      *
      * @param c
@@ -69,12 +64,11 @@ class SocketRR extends AbstractSocketRR {
                     InputStream inputStream, Socket outputSocket,
                     OutputStream outputStream, JTextArea _textArea,
                     boolean format, TableModel tModel, int index,
-                    final String type, SlowLinkSimulator slowLink) {
-        super(inputSocket, inputStream, outputSocket, outputStream, format, type, slowLink);
+                    SlowLinkSimulator slowLink) {
+        super(c, inputSocket, inputStream, outputSocket, outputStream, format, slowLink);
         textArea = _textArea;
         tmodel = tModel;
         tableIndex = index;
-        myConnection = c;
         start();
     }
 
@@ -92,9 +86,5 @@ class SocketRR extends AbstractSocketRR {
     
     protected void appendData(String data) {
         textArea.append(data);
-    }
-
-    protected void onFinish() {
-        myConnection.wakeUp();
     }
 }
