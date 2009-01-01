@@ -19,10 +19,12 @@ package org.apache.ws.commons.tcpmon.core;
 import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
 import org.apache.ws.commons.tcpmon.TCPMonBundle;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.net.Socket;
 import java.net.URL;
 import java.text.DateFormat;
@@ -89,6 +91,9 @@ public abstract class AbstractConnection extends Thread {
      * Field inputStream
      */
     InputStream inputStream = null;
+
+    protected Writer inputWriter;
+    protected Writer outputWriter;
 
     /**
      * Constructor Connection
@@ -181,7 +186,7 @@ public abstract class AbstractConnection extends Thread {
                     break;
                 }
                 bufferedData = buf.toString();
-                appendInputText(bufferedData);
+                inputWriter.write(bufferedData);
                 if (bufferedData.startsWith("GET ")
                         || bufferedData.startsWith("POST ")
                         || bufferedData.startsWith("PUT ")
@@ -270,7 +275,7 @@ public abstract class AbstractConnection extends Thread {
                     lastLine = line;
                 }
                 if (bufferedData != null) {
-                    appendInputText(bufferedData);
+                    inputWriter.write(bufferedData);
                     int idx = (bufferedData.length() < 50)
                             ? bufferedData.length()
                             : 50;
@@ -351,7 +356,13 @@ public abstract class AbstractConnection extends Thread {
             setState(TCPMonBundle.getMessage("error00", "Error"));
             e.printStackTrace(wr);
             wr.close();
-            appendOutputText(st.toString());
+            if (outputWriter != null) {
+                try {
+                    outputWriter.write(st.toString());
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
             halt();
         }
     }
@@ -398,8 +409,6 @@ public abstract class AbstractConnection extends Thread {
     protected abstract AbstractSocketRR createOutputSocketRR(Socket outSocket,
             InputStream inputStream, Socket inSocket, OutputStream outputStream, boolean format,
             SlowLinkSimulator slowLink);
-    protected abstract void appendInputText(String data);
-    protected abstract void appendOutputText(String data);
     protected abstract void setOutHost(String outHost);
     protected abstract void setState(String state);
     protected abstract void setRequest(String request);

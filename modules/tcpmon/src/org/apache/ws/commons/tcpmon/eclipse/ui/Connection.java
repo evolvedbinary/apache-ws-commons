@@ -105,6 +105,8 @@ class Connection extends AbstractConnection {
             });
 
         }
+        inputWriter = new TextWidgetWriter(inputText);
+        outputWriter = new TextWidgetWriter(outputText);
     }
 
     protected AbstractSocketRR createInputSocketRR(Socket inSocket, InputStream inputStream,
@@ -112,38 +114,16 @@ class Connection extends AbstractConnection {
             SlowLinkSimulator slowLink) {
         return new SocketRR(this, inSocket, inputStream, outSocket, outputStream,
                 format, listener.connectionTable,
-                listener.connections.indexOf(this) + 1, slowLink,
-                new TextWidgetWriter(inputText));
+                listener.connections.indexOf(this) + 1, slowLink, inputWriter);
     }
 
     protected AbstractSocketRR createOutputSocketRR(Socket outSocket, InputStream inputStream,
             Socket inSocket, OutputStream outputStream, boolean format,
             SlowLinkSimulator slowLink) {
         return new SocketRR(this, outSocket, inputStream, inSocket, outputStream,
-                format, null, 0, slowLink, new TextWidgetWriter(outputText));
+                format, null, 0, slowLink, outputWriter);
     }
 
-    protected void appendInputText(final String data) {
-        MainView.display.syncExec(new Runnable() {
-            public void run() {
-                inputText.append(data);
-            }
-        });
-    }
-    
-    protected void appendOutputText(final String data) {
-        MainView.display.syncExec(new Runnable() {
-            public void run() {
-                if (outputText != null) {
-                    outputText.append(data);
-                } else {
-                    // something went wrong before we had the output area
-                    System.out.println(data);
-                }
-            }
-        });
-    }
-    
     private void setValue(final int column, final String value) {
         final int index = listener.connections.indexOf(this);
         if (index >= 0) {

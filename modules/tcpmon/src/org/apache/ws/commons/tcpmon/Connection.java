@@ -122,6 +122,8 @@ class Connection extends AbstractConnection {
             listener.outPane.setDividerLocation(divLoc);
             listener.outPane.setVisible(true);
         }
+        inputWriter = new JTextAreaWriter(inputText);
+        outputWriter = new JTextAreaWriter(outputText);
     }
     
     protected AbstractSocketRR createInputSocketRR(Socket inSocket, InputStream inputStream,
@@ -129,30 +131,16 @@ class Connection extends AbstractConnection {
             SlowLinkSimulator slowLink) {
         return new SocketRR(this, inSocket, inputStream, outSocket, outputStream,
                 format, listener.tableModel,
-                listener.connections.indexOf(this) + 1, slowLink,
-                new JTextAreaWriter(inputText));
+                listener.connections.indexOf(this) + 1, slowLink, inputWriter);
     }
 
     protected AbstractSocketRR createOutputSocketRR(Socket outSocket, InputStream inputStream,
             Socket inSocket, OutputStream outputStream, boolean format,
             SlowLinkSimulator slowLink) {
         return new SocketRR(this, outSocket, inputStream, inSocket, outputStream,
-                format, null, 0, slowLink, new JTextAreaWriter(outputText));
+                format, null, 0, slowLink, outputWriter);
     }
 
-    protected void appendInputText(String data) {
-        inputText.append(data);
-    }
-    
-    protected void appendOutputText(String data) {
-        if (outputText != null) {
-            outputText.append(data);
-        } else {
-            // something went wrong before we had the output area
-            System.out.println(data);
-        }
-    }
-    
     private void setValue(int column, String value) {
         int index = listener.connections.indexOf(this);
         if (index >= 0) {
