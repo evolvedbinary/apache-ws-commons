@@ -48,6 +48,7 @@
                     <includes>
                         <include>org/apache/ws/commons/tcpmon/AdminPane.java</include>
                         <include>org/apache/ws/commons/tcpmon/Connection.java</include>
+                        <include>org/apache/ws/commons/tcpmon/JTextAreaWriter.java</include>
                         <include>org/apache/ws/commons/tcpmon/Listener.java</include>
                         <include>org/apache/ws/commons/tcpmon/Sender.java</include>
                         <include>org/apache/ws/commons/tcpmon/SocketRR.java</include>
