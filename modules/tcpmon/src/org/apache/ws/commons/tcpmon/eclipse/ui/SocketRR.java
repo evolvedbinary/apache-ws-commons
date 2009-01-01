@@ -18,10 +18,10 @@ package org.apache.ws.commons.tcpmon.eclipse.ui;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Writer;
 import java.net.Socket;
 
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.Text;
 import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
 import org.apache.ws.commons.tcpmon.core.AbstractSocketRR;
 
@@ -30,11 +30,6 @@ import org.apache.ws.commons.tcpmon.core.AbstractSocketRR;
  * outgoing socket   Same as the swing one except for the use of SWT components
  */
 class SocketRR extends AbstractSocketRR {
-    /**
-     * Field textArea
-     */
-    Text textArea;
-
     /**
      * Field tmodel
      */
@@ -62,11 +57,10 @@ class SocketRR extends AbstractSocketRR {
      */
     public SocketRR(Connection c, Socket inputSocket,
                     InputStream inputStream, Socket outputSocket,
-                    OutputStream outputStream, Text _textArea,
+                    OutputStream outputStream,
                     boolean format, Table tModel, int index,
-                    SlowLinkSimulator slowLink) {
-        super(c, inputSocket, inputStream, outputSocket, outputStream, format, slowLink);
-        textArea = _textArea;
+                    SlowLinkSimulator slowLink, Writer writer) {
+        super(c, inputSocket, inputStream, outputSocket, outputStream, format, slowLink, writer);
         tmodel = tModel;
         tableIndex = index;
         start();
@@ -90,14 +84,6 @@ class SocketRR extends AbstractSocketRR {
         MainView.display.syncExec(new Runnable() {
             public void run() {
                 tmodel.getItem(tableIndex).setText(MainView.REQ_COLUMN, value);
-            }
-        });
-    }
-    
-    protected void appendData(final String data) {
-        MainView.display.syncExec(new Runnable() {
-            public void run() {
-                textArea.append(data);
             }
         });
     }

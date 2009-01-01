@@ -16,13 +16,13 @@
 
 package org.apache.ws.commons.tcpmon;
 
-import javax.swing.JTextArea;
 import javax.swing.table.TableModel;
 
 import org.apache.ws.commons.tcpmon.core.AbstractSocketRR;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Writer;
 import java.net.Socket;
 
 /**
@@ -30,11 +30,6 @@ import java.net.Socket;
  * outgoing socket
  */
 class SocketRR extends AbstractSocketRR {
-    /**
-     * Field textArea
-     */
-    JTextArea textArea;
-    
     /**
      * Field tmodel
      */
@@ -62,11 +57,10 @@ class SocketRR extends AbstractSocketRR {
      */
     public SocketRR(Connection c, Socket inputSocket,
                     InputStream inputStream, Socket outputSocket,
-                    OutputStream outputStream, JTextArea _textArea,
+                    OutputStream outputStream,
                     boolean format, TableModel tModel, int index,
-                    SlowLinkSimulator slowLink) {
-        super(c, inputSocket, inputStream, outputSocket, outputStream, format, slowLink);
-        textArea = _textArea;
+                    SlowLinkSimulator slowLink, Writer writer) {
+        super(c, inputSocket, inputStream, outputSocket, outputStream, format, slowLink, writer);
         tmodel = tModel;
         tableIndex = index;
         start();
@@ -82,9 +76,5 @@ class SocketRR extends AbstractSocketRR {
     
     protected void setSavedFirstLine(String value) {
         tmodel.setValueAt(value, tableIndex, TCPMon.REQ_COLUMN);
-    }
-    
-    protected void appendData(String data) {
-        textArea.append(data);
     }
 }

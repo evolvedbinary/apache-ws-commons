@@ -128,15 +128,16 @@ class Connection extends AbstractConnection {
             Socket outSocket, OutputStream outputStream, boolean format,
             SlowLinkSimulator slowLink) {
         return new SocketRR(this, inSocket, inputStream, outSocket, outputStream,
-                inputText, format, listener.tableModel,
-                listener.connections.indexOf(this) + 1, slowLink);
+                format, listener.tableModel,
+                listener.connections.indexOf(this) + 1, slowLink,
+                new JTextAreaWriter(inputText));
     }
 
     protected AbstractSocketRR createOutputSocketRR(Socket outSocket, InputStream inputStream,
             Socket inSocket, OutputStream outputStream, boolean format,
             SlowLinkSimulator slowLink) {
         return new SocketRR(this, outSocket, inputStream, inSocket, outputStream,
-                outputText, format, null, 0, slowLink);
+                format, null, 0, slowLink, new JTextAreaWriter(outputText));
     }
 
     protected void appendInputText(String data) {

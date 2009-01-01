@@ -20,6 +20,7 @@ import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
 
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Writer;
 import java.net.Socket;
 
 /**
@@ -69,6 +70,8 @@ public abstract class AbstractSocketRR extends Thread {
      */
     SlowLinkSimulator slowLink;
 
+    private final Writer writer;
+
     /**
      * Constructor SocketRR
      *
@@ -87,7 +90,7 @@ public abstract class AbstractSocketRR extends Thread {
     public AbstractSocketRR(AbstractConnection connection, Socket inputSocket,
                     InputStream inputStream, Socket outputSocket,
                     OutputStream outputStream, boolean format,
-                    SlowLinkSimulator slowLink) {
+                    SlowLinkSimulator slowLink, Writer writer) {
         this.connection = connection;
         inSocket = inputSocket;
         in = inputStream;
@@ -95,6 +98,7 @@ public abstract class AbstractSocketRR extends Thread {
         out = outputStream;
         xmlFormat = format;
         this.slowLink = slowLink;
+        this.writer = writer;
     }
 
     /**
@@ -250,14 +254,14 @@ public abstract class AbstractSocketRR extends Thread {
                         }
                     }
                     
-                    appendData(new String(tmpbuffer, 0, i2));
+                    writer.write(new String(tmpbuffer, 0, i2));
 
                     // Shift saved bytes to the beginning
                     for (i = 0; i < saved; i++) {
                         buffer[i] = buffer[bufferLen - saved + i];
                     }
                 } else {
-                    appendData(new String(buffer, 0, len));
+                    writer.write(new String(buffer, 0, len));
                 }
             }
 
@@ -322,5 +326,4 @@ public abstract class AbstractSocketRR extends Thread {
     protected abstract boolean isSaveFirstLine();
     protected abstract String getSavedFirstLine();
     protected abstract void setSavedFirstLine(String value);
-    protected abstract void appendData(String data);
 }
