@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon;
+package org.apache.ws.commons.tcpmon.core;
 
-import javax.swing.JLabel;
-import java.awt.Color;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -25,7 +23,7 @@ import java.net.Socket;
  * wait for incoming connections, spawn a connection thread when
  * stuff comes in.
  */
-class SocketWaiter extends Thread {
+public class SocketWaiter extends Thread {
 
     /**
      * Field sSocket
@@ -35,7 +33,7 @@ class SocketWaiter extends Thread {
     /**
      * Field listener
      */
-    Listener listener;
+    AbstractListener listener;
 
     /**
      * Field port
@@ -53,7 +51,7 @@ class SocketWaiter extends Thread {
      * @param l
      * @param p
      */
-    public SocketWaiter(Listener l, int p) {
+    public SocketWaiter(AbstractListener l, int p) {
         listener = l;
         port = p;
         start();
@@ -64,27 +62,19 @@ class SocketWaiter extends Thread {
      */
     public void run() {
         try {
-            listener.setLeft(
-                    new JLabel(
-                            TCPMonBundle.getMessage("wait00",
-                                    " Waiting for Connection...")));
-            listener.repaint();
+            listener.onServerSocketStart();
             sSocket = new ServerSocket(port);
             for (; ;) {
                 Socket inSocket = sSocket.accept();
                 if (pleaseStop) {
                     break;
                 }
-                new Connection(listener, inSocket);
+                listener.createConnection(inSocket);
                 inSocket = null;
             }
         } catch (Exception exp) {
             if (!"socket closed".equals(exp.getMessage())) {
-                JLabel tmp = new JLabel(exp.toString());
-                tmp.setForeground(Color.red);
-                listener.setLeft(tmp);
-                listener.setRight(new JLabel(""));
-                listener.stop();
+                listener.onServerSocketError(exp);
             }
         }
     }

@@ -17,7 +17,10 @@ package org.apache.ws.commons.tcpmon.eclipse.ui;
 
 import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
 import org.apache.ws.commons.tcpmon.TCPMonBundle;
+import org.apache.ws.commons.tcpmon.core.AbstractConnection;
+import org.apache.ws.commons.tcpmon.core.AbstractListener;
 import org.apache.ws.commons.tcpmon.core.Configuration;
+import org.apache.ws.commons.tcpmon.core.SocketWaiter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -28,6 +31,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.net.Socket;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -35,7 +39,7 @@ import java.util.Vector;
  * This is similar to the main swing listener but includes SWT components instead of Swing ones
  *
  */
-class Listener {
+class Listener extends AbstractListener {
     private Composite leftPanel = null;
     private Composite rightPanel = null;
     private Composite textComposite = null;
@@ -665,5 +669,27 @@ class Listener {
         config.setHttpProxyPort(HTTPProxyPort);
         config.setSlowLink(slowLink);
         return config;
+    }
+
+    public void onServerSocketStart() {
+        MainView.display.syncExec(new Runnable() {
+            public void run() {
+                setLeft(MainView.SWT_LABEL, TCPMonBundle.getMessage("wait00", " Waiting for Connection..."));
+            }
+        });
+    }
+
+    public void onServerSocketError(final Throwable ex) {
+        MainView.display.syncExec(new Runnable() {
+            public void run() {
+                setLeft(MainView.SWT_LABEL, ex.toString());
+                setRight(MainView.SWT_LABEL, "");
+                stop();
+            }
+        });
+    }
+
+    public AbstractConnection createConnection(Socket inSocket) {
+        return new Connection(this, inSocket);
     }
 }

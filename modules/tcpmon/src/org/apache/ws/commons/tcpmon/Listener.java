@@ -38,9 +38,13 @@ import javax.swing.plaf.basic.BasicButtonListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
+import org.apache.ws.commons.tcpmon.core.AbstractConnection;
+import org.apache.ws.commons.tcpmon.core.AbstractListener;
 import org.apache.ws.commons.tcpmon.core.Configuration;
+import org.apache.ws.commons.tcpmon.core.SocketWaiter;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -49,13 +53,16 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.net.Socket;
 import java.util.Iterator;
 import java.util.Vector;
 
 /**
  * this is one of the tabbed panels that acts as the actual proxy
  */
-class Listener extends JPanel {
+class Listener extends AbstractListener {
+    private final JPanel panel;
+
     /**
      * Field portField
      */
@@ -188,7 +195,7 @@ class Listener extends JPanel {
             // or make up a no-op one.
             this.slowLink = new SlowLinkSimulator(0, 0);
         }
-        this.setLayout(new BorderLayout());
+        panel = new JPanel(new BorderLayout());
 
         // 1st component is just a row of labels and 1-line entry fields
         // ///////////////////////////////////////////////////////////////////
@@ -236,7 +243,7 @@ class Listener extends JPanel {
                 }
             }
         });
-        this.add(top, BorderLayout.NORTH);
+        panel.add(top, BorderLayout.NORTH);
 
         // 2nd component is a split pane with a table on the top
         // and the request/response text areas on the bottom
@@ -442,13 +449,13 @@ class Listener extends JPanel {
         pane1.setTopComponent(tablePane);
         pane1.setBottomComponent(pane2);
         pane1.setDividerLocation(150);
-        this.add(pane1, BorderLayout.CENTER);
+        panel.add(pane1, BorderLayout.CENTER);
 
         // 
         // //////////////////////////////////////////////////////////////////
         sel.setSelectionInterval(0, 0);
         outPane.setDividerLocation(150);
-        notebook.addTab(name, this);
+        notebook.addTab(name, panel);
         start();
     }
 
@@ -478,7 +485,7 @@ class Listener extends JPanel {
     public void start() {
         int port = Integer.parseInt(portField.getText());
         portField.setText("" + port);
-        int i = notebook.indexOfComponent(this);
+        int i = notebook.indexOfComponent(panel);
         notebook.setTitleAt(i, TCPMonBundle.getMessage("port01", "Port") + " " + port);
         int tmp = Integer.parseInt(tPortField.getText());
         tPortField.setText("" + tmp);
@@ -495,7 +502,7 @@ class Listener extends JPanel {
      */
     public void close() {
         stop();
-        notebook.remove(this);
+        notebook.remove(panel);
     }
 
     /**
@@ -551,7 +558,7 @@ class Listener extends JPanel {
      */
     public void save() {
         JFileChooser dialog = new JFileChooser(".");
-        int rc = dialog.showSaveDialog(this);
+        int rc = dialog.showSaveDialog(panel);
         if (rc == JFileChooser.APPROVE_OPTION) {
             try {
                 File file = dialog.getSelectedFile();
@@ -668,5 +675,24 @@ class Listener extends JPanel {
         config.setHttpProxyPort(HTTPProxyPort);
         config.setSlowLink(slowLink);
         return config;
+    }
+
+    public void onServerSocketStart() {
+        setLeft(new JLabel(
+                        TCPMonBundle.getMessage("wait00",
+                                " Waiting for Connection...")));
+        panel.repaint();
+    }
+
+    public void onServerSocketError(Throwable ex) {
+        JLabel tmp = new JLabel(ex.toString());
+        tmp.setForeground(Color.red);
+        setLeft(tmp);
+        setRight(new JLabel(""));
+        stop();
+    }
+
+    public AbstractConnection createConnection(Socket inSocket) {
+        return new Connection(this, inSocket);
     }
 }
