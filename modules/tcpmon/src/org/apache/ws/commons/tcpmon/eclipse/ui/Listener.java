@@ -28,8 +28,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -38,40 +36,32 @@ import java.util.Vector;
  *
  */
 class Listener {
-    public Socket inputSocket = null;
-    public Socket outputSocket = null;
-    public ServerSocket sSocket = null;
-
-    public Composite leftPanel = null;
-    public Composite rightPanel = null;
-    public Composite textComposite = null;
-    public Text portField = null;
-    public Text hostField = null;
-    public Text tPortField = null;
-    public Button isProxyBox = null;
-    public Button stopButton = null;
+    private Composite leftPanel = null;
+    private Composite rightPanel = null;
+    private Composite textComposite = null;
+    private Text portField = null;
+    private Text hostField = null;
+    private Text tPortField = null;
+    private Button isProxyBox = null;
+    private Button stopButton = null;
     public Button removeButton = null;
     public Button removeAllButton = null;
-    public Button xmlFormatBox = null;
+    private Button xmlFormatBox = null;
     public Button saveButton = null;
     public Button resendButton = null;
-    public Button switchButton = null;
-    public Button closeButton = null;
     public Table connectionTable = null;
     public TableEnhancer tableEnhancer = null;
 
     private TabFolder tabFolder;
     private TabItem portTabItem;
 
-    public SocketWaiter sw = null;
-    public SlowLinkSimulator slowLink;
+    private SocketWaiter sw = null;
+    private SlowLinkSimulator slowLink;
 
     public final Vector connections = new Vector();
 
     public String HTTPProxyHost = null;
     public int HTTPProxyPort = 80;
-    public int delayBytes = 0;
-    public int delayTime = 0;
 
     public Listener(TabFolder tabFolder, String name, int listenPort,
                     String host, int targetPort, boolean isProxy,
@@ -295,7 +285,7 @@ class Listener {
             }
         });
 
-        switchButton = new Button(buttonComposite2, SWT.NONE);
+        Button switchButton = new Button(buttonComposite2, SWT.NONE);
         rd = new RowData();
         rd.width = 100;
         switchButton.setLayoutData(rd);
@@ -324,7 +314,7 @@ class Listener {
         gd.widthHint = 27;
         buttonComposite3.setLayoutData(gd);
 
-        closeButton = new Button(buttonComposite3, SWT.None);
+        Button closeButton = new Button(buttonComposite3, SWT.None);
         rd = new RowData();
         rd.width = 60;
         closeButton.setLayoutData(rd);

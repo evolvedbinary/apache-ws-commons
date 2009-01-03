@@ -49,8 +49,6 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -58,41 +56,30 @@ import java.util.Vector;
  * this is one of the tabbed panels that acts as the actual proxy
  */
 class Listener extends JPanel {
-
-	/**
-     * Field inputSocket
-     */
-    public Socket inputSocket = null;
-
-    /**
-     * Field outputSocket
-     */
-    public Socket outputSocket = null;
-
     /**
      * Field portField
      */
-    public JTextField portField = null;
+    private JTextField portField = null;
 
     /**
      * Field hostField
      */
-    public JTextField hostField = null;
+    private JTextField hostField = null;
 
     /**
      * Field tPortField
      */
-    public JTextField tPortField = null;
+    private JTextField tPortField = null;
 
     /**
      * Field isProxyBox
      */
-    public JCheckBox isProxyBox = null;
+    private JCheckBox isProxyBox = null;
 
     /**
      * Field stopButton
      */
-    public JButton stopButton = null;
+    private JButton stopButton = null;
 
     /**
      * Field removeButton
@@ -107,7 +94,7 @@ class Listener extends JPanel {
     /**
      * Field xmlFormatBox
      */
-    public JCheckBox xmlFormatBox = null;
+    private JCheckBox xmlFormatBox = null;
 
     /**
      * Field saveButton
@@ -118,16 +105,6 @@ class Listener extends JPanel {
      * Field resendButton
      */
     public JButton resendButton = null;
-
-    /**
-     * Field switchButton
-     */
-    public JButton switchButton = null;
-
-    /**
-     * Field closeButton
-     */
-    public JButton closeButton = null;
 
     /**
      * Field connectionTable
@@ -145,29 +122,24 @@ class Listener extends JPanel {
     public JSplitPane outPane = null;
 
     /**
-     * Field sSocket
-     */
-    public ServerSocket sSocket = null;
-
-    /**
      * Field sw
      */
-    public SocketWaiter sw = null;
+    private SocketWaiter sw = null;
 
     /**
      * Field leftPanel
      */
-    public JPanel leftPanel = null;
+    private JPanel leftPanel = null;
 
     /**
      * Field rightPanel
      */
-    public JPanel rightPanel = null;
+    private JPanel rightPanel = null;
 
     /**
      * Field notebook
      */
-    public JTabbedPane notebook = null;
+    private JTabbedPane notebook = null;
 
     /**
      * Field HTTPProxyHost
@@ -178,16 +150,6 @@ class Listener extends JPanel {
      * Field HTTPProxyPort
      */
     public int HTTPProxyPort = 80;
-
-    /**
-     * Field delayBytes
-     */
-    public int delayBytes = 0;
-
-    /**
-     * Field delayTime
-     */
-    public int delayTime = 0;
 
     /**
      * Field slowLink
@@ -428,10 +390,12 @@ class Listener extends JPanel {
         bottomButtons.add(resendButton = new JButton(resend));
         bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
         final String switchStr = TCPMonBundle.getMessage("switch00", "Switch Layout");
-        bottomButtons.add(switchButton = new JButton(switchStr));
+        JButton switchButton = new JButton(switchStr);
+        bottomButtons.add(switchButton);
         bottomButtons.add(Box.createHorizontalGlue());
         final String close = TCPMonBundle.getMessage("close00", "Close");
-        bottomButtons.add(closeButton = new JButton(close));
+        JButton closeButton = new JButton(close);
+        bottomButtons.add(closeButton);
         pane2.add(bottomButtons, BorderLayout.SOUTH);
         saveButton.setEnabled(false);
         saveButton.addActionListener(new ActionListener() {
