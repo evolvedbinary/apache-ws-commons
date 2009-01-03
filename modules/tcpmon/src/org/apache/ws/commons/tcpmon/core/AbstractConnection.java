@@ -47,57 +47,32 @@ public abstract class AbstractConnection extends Thread {
     /**
      * Field active
      */
-    boolean active;
+    private boolean active;
 
-    /**
-     * Field fromHost
-     */
-    String fromHost;
-
-    /**
-     * Field time
-     */
-    String time;
-
-    /**
-     * Field elapsed time
-     */
-    long elapsedTime;
-    
     /**
      * Field inSocket
      */
-    Socket inSocket = null;
+    private Socket inSocket = null;
 
     /**
      * Field outSocket
      */
-    volatile Socket outSocket = null;
-
-    /**
-     * Field clientThread
-     */
-    Thread clientThread = null;
-
-    /**
-     * Field serverThread
-     */
-    Thread serverThread = null;
+    private Socket outSocket = null;
 
     /**
      * Field rr1
      */
-    SocketRR rr1 = null;
+    private SocketRR rr1 = null;
 
     /**
      * Field rr2
      */
-    SocketRR rr2 = null;
+    private SocketRR rr2 = null;
 
     /**
      * Field inputStream
      */
-    InputStream inputStream = null;
+    private InputStream inputStream = null;
 
     protected Writer inputWriter;
     protected Writer outputWriter;
@@ -149,6 +124,7 @@ public abstract class AbstractConnection extends Thread {
                     }
                 }
             }
+            String fromHost;
             if (inSocket != null) {
                 fromHost = (inSocket.getInetAddress()).getHostName();
             } else {
@@ -156,9 +132,8 @@ public abstract class AbstractConnection extends Thread {
             }
             String dateformat = TCPMonBundle.getMessage("dateformat00", "yyyy-MM-dd HH:mm:ss");
             DateFormat df = new SimpleDateFormat(dateformat);
-            time = df.format(new Date());
             String targetHost = config.getTargetHost();
-            init(time, fromHost, targetHost);
+            init(df.format(new Date()), fromHost, targetHost);
             int targetPort = config.getTargetPort();
             InputStream tmpIn1 = inputStream;
             OutputStream tmpOut1 = null;
