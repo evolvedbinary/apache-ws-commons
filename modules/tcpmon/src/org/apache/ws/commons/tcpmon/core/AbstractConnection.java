@@ -18,6 +18,14 @@ package org.apache.ws.commons.tcpmon.core;
 
 import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
 import org.apache.ws.commons.tcpmon.TCPMonBundle;
+import org.apache.ws.commons.tcpmon.core.filter.CharsetDecoderFilter;
+import org.apache.ws.commons.tcpmon.core.filter.HttpHeaderRewriter;
+import org.apache.ws.commons.tcpmon.core.filter.HttpProxyClientHandler;
+import org.apache.ws.commons.tcpmon.core.filter.HttpProxyServerHandler;
+import org.apache.ws.commons.tcpmon.core.filter.Pipeline;
+import org.apache.ws.commons.tcpmon.core.filter.RequestLineExtractor;
+import org.apache.ws.commons.tcpmon.core.filter.Tee;
+import org.apache.ws.commons.tcpmon.core.filter.XmlFormatFilter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +34,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.Socket;
-import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -65,7 +72,7 @@ public abstract class AbstractConnection extends Thread {
     /**
      * Field outSocket
      */
-    Socket outSocket = null;
+    volatile Socket outSocket = null;
 
     /**
      * Field clientThread
@@ -80,12 +87,12 @@ public abstract class AbstractConnection extends Thread {
     /**
      * Field rr1
      */
-    AbstractSocketRR rr1 = null;
+    SocketRR rr1 = null;
 
     /**
      * Field rr2
      */
-    AbstractSocketRR rr2 = null;
+    SocketRR rr2 = null;
 
     /**
      * Field inputStream
@@ -155,7 +162,6 @@ public abstract class AbstractConnection extends Thread {
             int targetPort = config.getTargetPort();
             InputStream tmpIn1 = inputStream;
             OutputStream tmpOut1 = null;
-            InputStream tmpIn2 = null;
             OutputStream tmpOut2 = null;
             if (tmpIn1 == null) {
                 tmpIn1 = inSocket.getInputStream();
@@ -163,157 +169,61 @@ public abstract class AbstractConnection extends Thread {
             if (inSocket != null) {
                 tmpOut1 = inSocket.getOutputStream();
             }
-            String bufferedData = null;
-            StringBuffer buf = null;
-            if (config.isProxy() || (HTTPProxyHost != null)) {
-
-                // Check if we're a proxy
-                byte[] b = new byte[1];
-                buf = new StringBuffer();
-                String s;
-                for (; ;) {
-                    int len;
-                    len = tmpIn1.read(b, 0, 1);
-                    if (len == -1) {
-                        break;
-                    }
-                    s = new String(b);
-                    buf.append(s);
-                    if (b[0] != '\n') {
-                        continue;
-                    }
-                    break;
+            
+            Pipeline requestPipeline = new Pipeline();
+            requestPipeline.addFilter(new RequestLineExtractor(50) {
+                protected void done(String requestLine) {
+                    setRequest(requestLine);
                 }
-                bufferedData = buf.toString();
-                inputWriter.write(bufferedData);
-                if (bufferedData.startsWith("GET ")
-                        || bufferedData.startsWith("POST ")
-                        || bufferedData.startsWith("PUT ")
-                        || bufferedData.startsWith("DELETE ")) {
-                    int start, end;
-                    URL url;
-                    start = bufferedData.indexOf(' ') + 1;
-                    while (bufferedData.charAt(start) == ' ') {
-                        start++;
+            });
+            if (config.isProxy()) {
+                requestPipeline.addFilter(new HttpProxyServerHandler() {
+                    protected void handleConnection(String host, int port) throws IOException {
+                        outSocket = new Socket(host, port);
                     }
-                    end = bufferedData.indexOf(' ', start);
-                    String urlString = bufferedData.substring(start, end);
-                    if (urlString.charAt(0) == '/') {
-                        urlString = urlString.substring(1);
-                    }
-                    if (config.isProxy()) {
-                        url = new URL(urlString);
-                        targetHost = url.getHost();
-                        targetPort = url.getPort();
-                        if (targetPort == -1) {
-                            targetPort = 80;
-                        }
-                        setOutHost(targetHost);
-                        bufferedData = bufferedData.substring(0, start)
-                                + url.getFile()
-                                + bufferedData.substring(end);
-                    } else {
-                        url = new URL("http://" + targetHost + ":"
-                                + targetPort + "/" + urlString);
-                        setOutHost(targetHost);
-                        bufferedData = bufferedData.substring(0, start)
-                                + url.toExternalForm()
-                                + bufferedData.substring(end);
-                        targetHost = HTTPProxyHost;
-                        targetPort = HTTPProxyPort;
-                    }
-                }
+                });
+            } else if (HTTPProxyHost != null) {
+                requestPipeline.addFilter(new HttpProxyClientHandler(targetHost, targetPort));
+                outSocket = new Socket(HTTPProxyHost, HTTPProxyPort);
             } else {
-                //
-                // Change Host: header to point to correct host
-                //
-                byte[] b1 = new byte[1];
-                buf = new StringBuffer();
-                String s1;
-                String lastLine = null;
-                for (; ;) {
-                    int len;
-                    len = tmpIn1.read(b1, 0, 1);
-                    if (len == -1) {
-                        break;
-                    }
-                    s1 = new String(b1);
-                    buf.append(s1);
-                    if (b1[0] != '\n') {
-                        continue;
-                    }
-
-                    // we have a complete line
-                    String line = buf.toString();
-                    buf.setLength(0);
-
-                    // check to see if we have found Host: header
-                    if (line.startsWith("Host: ")) {
-
-                        // we need to update the hostname to target host
-                        String newHost = "Host: " + targetHost + ":"
-                                + targetPort + "\r\n";
-                        bufferedData = bufferedData.concat(newHost);
-                        break;
-                    }
-
-                    // add it to our headers so far
-                    if (bufferedData == null) {
-                        bufferedData = line;
-                    } else {
-                        bufferedData = bufferedData.concat(line);
-                    }
-
-                    // failsafe
-                    if (line.equals("\r\n")) {
-                        break;
-                    }
-                    if ("\n".equals(lastLine) && line.equals("\n")) {
-                        break;
-                    }
-                    lastLine = line;
-                }
-                if (bufferedData != null) {
-                    inputWriter.write(bufferedData);
-                    int idx = (bufferedData.length() < 50)
-                            ? bufferedData.length()
-                            : 50;
-                    s1 = bufferedData.substring(0, idx);
-                    int i = s1.indexOf('\n');
-                    if (i > 0) {
-                        s1 = s1.substring(0, i - 1);
-                    }
-                    s1 = s1 + "                           "
-                            + "                       ";
-                    s1 = s1.substring(0, 51);
-                    setRequest(s1);
-                }
+                requestPipeline.addFilter(new HttpHeaderRewriter("Host", targetHost + ":" + targetPort));
+                outSocket = new Socket(targetHost, targetPort);
             }
-            if (targetPort == -1) {
-                targetPort = 80;
+            requestPipeline.addFilter(config.getSlowLink());
+            Tee requestTee = new Tee();
+            requestPipeline.addFilter(requestTee);
+            if (config.isXmlFormat()) {
+                requestPipeline.addFilter(new XmlFormatFilter(3));
             }
-            outSocket = new Socket(targetHost, targetPort);
-            tmpIn2 = outSocket.getInputStream();
+            requestPipeline.addFilter(new CharsetDecoderFilter(inputWriter));
+            
+            // If we act as a proxy, we first need to read the start of the request before
+            // the outSocket is available.
+            while (outSocket == null) {
+                requestPipeline.readFrom(tmpIn1);
+            }
+            
             tmpOut2 = outSocket.getOutputStream();
-            SlowLinkSimulator slowLink = config.getSlowLink();
-            if (bufferedData != null) {
-                byte[] b = bufferedData.getBytes();
-                tmpOut2.write(b);
-                slowLink.pump(b.length);
+            requestTee.setOutputStream(tmpOut2);
+            
+            Pipeline responsePipeline = new Pipeline();
+            responsePipeline.addFilter(new SlowLinkSimulator(config.getSlowLink()));
+            if (tmpOut1 != null) {
+                responsePipeline.addFilter(new Tee(tmpOut1));
             }
-            boolean format = config.isXmlFormat();
-
+            if (config.isXmlFormat()) {
+                responsePipeline.addFilter(new XmlFormatFilter(3));
+            }
+            responsePipeline.addFilter(new CharsetDecoderFilter(outputWriter));
+            
             // this is the channel to the endpoint
-            rr1 = createInputSocketRR(inSocket, tmpIn1, outSocket, tmpOut2,
-                    format, slowLink);
-
-            // create the response slow link from the inbound slow link
-            SlowLinkSimulator responseLink =
-                    new SlowLinkSimulator(slowLink);
+            rr1 = new SocketRR(this, inSocket, tmpIn1, outSocket, tmpOut2, requestPipeline);
 
             // this is the channel from the endpoint
-            rr2 = createOutputSocketRR(outSocket, tmpIn2, inSocket, tmpOut1,
-                    format, responseLink);
+            rr2 = new SocketRR(this, outSocket, outSocket.getInputStream(), inSocket, tmpOut1, responsePipeline);
+            
+            rr1.start();
+            rr2.start();
             
             while ((rr1 != null) || (rr2 != null)) {
 
@@ -402,12 +312,6 @@ public abstract class AbstractConnection extends Thread {
     }
 
     protected abstract void init(String time, String fromHost, String targetHost);
-    protected abstract AbstractSocketRR createInputSocketRR(Socket inSocket,
-            InputStream inputStream, Socket outSocket, OutputStream outputStream, boolean format,
-            SlowLinkSimulator slowLink);
-    protected abstract AbstractSocketRR createOutputSocketRR(Socket outSocket,
-            InputStream inputStream, Socket inSocket, OutputStream outputStream, boolean format,
-            SlowLinkSimulator slowLink);
     protected abstract void setOutHost(String outHost);
     protected abstract void setState(String state);
     protected abstract void setRequest(String request);

@@ -16,10 +16,15 @@
 
 package org.apache.ws.commons.tcpmon;
 
+import java.io.IOException;
+
+import org.apache.ws.commons.tcpmon.core.filter.Stream;
+import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
+
 /**
  * class to simulate slow connections by slowing down the system
  */
-public class SlowLinkSimulator {
+public class SlowLinkSimulator implements StreamFilter {
 
 	/**
      * Field delayBytes
@@ -102,6 +107,11 @@ public class SlowLinkSimulator {
                 // ignore the exception
             }
         }
+    }
+
+    public void invoke(Stream stream) throws IOException {
+        pump(stream.available());
+        stream.skipAll();
     }
 
     /**

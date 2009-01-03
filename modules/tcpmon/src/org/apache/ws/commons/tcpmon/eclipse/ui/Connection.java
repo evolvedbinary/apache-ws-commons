@@ -17,16 +17,13 @@
 package org.apache.ws.commons.tcpmon.eclipse.ui;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
 import org.apache.ws.commons.tcpmon.TCPMonBundle;
 import org.apache.ws.commons.tcpmon.core.AbstractConnection;
-import org.apache.ws.commons.tcpmon.core.AbstractSocketRR;
 
 /**
  * a connection listens to a single current connection
@@ -107,21 +104,6 @@ class Connection extends AbstractConnection {
         }
         inputWriter = new TextWidgetWriter(inputText);
         outputWriter = new TextWidgetWriter(outputText);
-    }
-
-    protected AbstractSocketRR createInputSocketRR(Socket inSocket, InputStream inputStream,
-            Socket outSocket, OutputStream outputStream, boolean format,
-            SlowLinkSimulator slowLink) {
-        return new SocketRR(this, inSocket, inputStream, outSocket, outputStream,
-                format, listener.connectionTable,
-                listener.connections.indexOf(this) + 1, slowLink, inputWriter);
-    }
-
-    protected AbstractSocketRR createOutputSocketRR(Socket outSocket, InputStream inputStream,
-            Socket inSocket, OutputStream outputStream, boolean format,
-            SlowLinkSimulator slowLink) {
-        return new SocketRR(this, outSocket, inputStream, inSocket, outputStream,
-                format, null, 0, slowLink, outputWriter);
     }
 
     private void setValue(final int column, final String value) {

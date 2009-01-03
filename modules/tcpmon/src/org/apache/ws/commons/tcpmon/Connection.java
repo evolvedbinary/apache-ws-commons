@@ -21,10 +21,8 @@ import javax.swing.JTextArea;
 import javax.swing.ListSelectionModel;
 
 import org.apache.ws.commons.tcpmon.core.AbstractConnection;
-import org.apache.ws.commons.tcpmon.core.AbstractSocketRR;
 
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 
 /**
@@ -126,21 +124,6 @@ class Connection extends AbstractConnection {
         outputWriter = new JTextAreaWriter(outputText);
     }
     
-    protected AbstractSocketRR createInputSocketRR(Socket inSocket, InputStream inputStream,
-            Socket outSocket, OutputStream outputStream, boolean format,
-            SlowLinkSimulator slowLink) {
-        return new SocketRR(this, inSocket, inputStream, outSocket, outputStream,
-                format, listener.tableModel,
-                listener.connections.indexOf(this) + 1, slowLink, inputWriter);
-    }
-
-    protected AbstractSocketRR createOutputSocketRR(Socket outSocket, InputStream inputStream,
-            Socket inSocket, OutputStream outputStream, boolean format,
-            SlowLinkSimulator slowLink) {
-        return new SocketRR(this, outSocket, inputStream, inSocket, outputStream,
-                format, null, 0, slowLink, outputWriter);
-    }
-
     private void setValue(int column, String value) {
         int index = listener.connections.indexOf(this);
         if (index >= 0) {
