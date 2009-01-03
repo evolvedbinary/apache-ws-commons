@@ -79,10 +79,28 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-jta_1.0.1B_spec</artifactId>
+            <version>${jta-spec.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.apache.ws.commons.axiom</groupId>
             <artifactId>sciflex-axiom-patch</artifactId>
             <version>${sciflex-axiom-patch.version}</version>
         </dependency>
+        
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockejb</groupId>
+            <artifactId>mockejb</artifactId>
+            <version>0.6-beta2</version>
+            <scope>test</scope>
+        </dependency>        
     </dependencies>
     
     <properties>
@@ -90,6 +108,7 @@
         <commons.logging.version>1.1</commons.logging.version>
         <axis2-transport-base.version>SNAPSHOT</axis2-transport-base.version>
         <jms-1.1-spec.version>1.1</jms-1.1-spec.version>
+        <jta-spec.version>1.0</jta-spec.version>
         <sciflex-axiom-patch.version>0.9-SNAPSHOT</sciflex-axiom-patch.version>
     </properties>
 

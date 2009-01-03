@@ -28,7 +28,7 @@ import java.util.concurrent.ExecutorService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class Acceptor implements Runnable {
+class Acceptor implements Runnable {
     private static final Log log = LogFactory.getLog(Acceptor.class);
     
     private final ServerSocket serverSocket;
@@ -51,8 +51,8 @@ public class Acceptor implements Runnable {
             }
             try {
                 Socket targetSocket = new Socket(target.getAddress(), target.getPort());
-                executorService.execute(new Relay("SENT", socket, targetSocket));
-                executorService.execute(new Relay("RECEIVED", targetSocket, socket));
+                executorService.execute(new Relay(socket, targetSocket, false));
+                executorService.execute(new Relay(targetSocket, socket, true));
             } catch (IOException ex) {
                 log.error(ex);
             }

@@ -15,81 +15,85 @@
 */
 package org.apache.axis2.transport.jms;
 
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants;
-import org.apache.axis2.transport.base.threads.WorkerPool;
 import org.apache.axis2.transport.base.BaseUtils;
 import org.apache.axis2.transport.base.BaseConstants;
 import org.apache.axis2.transport.base.MetricsCollector;
+import org.apache.axis2.transport.jms.ctype.ContentTypeInfo;
 import org.apache.axis2.description.Parameter;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.AxisOperation;
-import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.MessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.jms.*;
 import javax.xml.namespace.QName;
+import javax.transaction.UserTransaction;
 
 /**
- * This is the actual receiver which listens for and accepts JMS messages, and
- * hands them over to be processed by a worker thread. An instance of this
- * class is created for each JMSConnectionFactory, but all instances may and
- * will share the same worker thread pool held by the JMSListener
+ * This is the JMS message receiver which is invoked when a message is received. This processes
+ * the message through the engine
  */
-public class JMSMessageReceiver implements MessageListener {
+public class JMSMessageReceiver {
 
     private static final Log log = LogFactory.getLog(JMSMessageReceiver.class);
 
     /** The JMSListener */
     private JMSListener jmsListener = null;
-    /** The thread pool of workers */
-    private WorkerPool workerPool = null;
-    /** The Axis configuration context */
-    private ConfigurationContext cfgCtx = null;
-    /** A reference to the JMS Connection Factory to which this applies */
+    /** A reference to the JMS Connection Factory */
     private JMSConnectionFactory jmsConnectionFactory = null;
-    /** The name of the service this message receiver is bound to. */
-    final String serviceName;
-    /** Metrics collector */
+    /** The JMS metrics collector */
     private MetricsCollector metrics = null;
+    /** The endpoint this message receiver is bound to */
+    final JMSEndpoint endpoint;
 
     /**
      * Create a new JMSMessage receiver
      *
      * @param jmsListener the JMS transport Listener
-     * @param jmsConFac the JMS connection factory we are associated with
-     * @param workerPool the worker thread pool to be used
-     * @param cfgCtx the axis ConfigurationContext
+     * @param jmsConFac   the JMS connection factory we are associated with
+     * @param workerPool  the worker thread pool to be used
+     * @param cfgCtx      the axis ConfigurationContext
      * @param serviceName the name of the Axis service
+     * @param endpoint    the JMSEndpoint definition to be used
      */
-    JMSMessageReceiver(JMSListener jmsListener, JMSConnectionFactory jmsConFac,
-                       WorkerPool workerPool, ConfigurationContext cfgCtx, String serviceName) {
+    JMSMessageReceiver(JMSListener jmsListener, JMSConnectionFactory jmsConFac, JMSEndpoint endpoint) {
         this.jmsListener = jmsListener;
         this.jmsConnectionFactory = jmsConFac;
-        this.workerPool = workerPool;
-        this.cfgCtx = cfgCtx;
-        this.serviceName = serviceName;
+        this.endpoint = endpoint;
         this.metrics = jmsListener.getMetricsCollector();
     }
 
     /**
-     * The entry point on the reception of each JMS message
+     * Process a new message received
      *
      * @param message the JMS message received
+     * @param ut      UserTransaction which was used to receive the message
+     * @return true if caller should commit
      */
-    public void onMessage(Message message) {
-        // directly create a new worker and delegate processing
+    public boolean onMessage(Message message, UserTransaction ut) {
+
         try {
             if (log.isDebugEnabled()) {
                 StringBuffer sb = new StringBuffer();
-                sb.append("Received JMS message to destination : " + message.getJMSDestination());                
-                sb.append("\nMessage ID : " + message.getJMSMessageID());
-                sb.append("\nCorrelation ID : " + message.getJMSCorrelationID());
-                sb.append("\nReplyTo ID : " + message.getJMSReplyTo());
+                sb.append("Received new JMS message for service :").append(endpoint.getServiceName());
+                sb.append("\nDestination    : ").append(message.getJMSDestination());
+                sb.append("\nMessage ID     : ").append(message.getJMSMessageID());
+                sb.append("\nCorrelation ID : ").append(message.getJMSCorrelationID());
+                sb.append("\nReplyTo        : ").append(message.getJMSReplyTo());
+                sb.append("\nRedelivery ?   : ").append(message.getJMSRedelivered());
+                sb.append("\nPriority       : ").append(message.getJMSPriority());
+                sb.append("\nExpiration     : ").append(message.getJMSExpiration());
+                sb.append("\nTimestamp      : ").append(message.getJMSTimestamp());
+                sb.append("\nMessage Type   : ").append(message.getJMSType());
+                sb.append("\nPersistent ?   : ").append(
+                    DeliveryMode.PERSISTENT == message.getJMSDeliveryMode());
+
                 log.debug(sb.toString());
                 if (log.isTraceEnabled() && message instanceof TextMessage) {
-                    log.trace("\nMessage : " + ((TextMessage) message).getText());    
+                    log.trace("\nMessage : " + ((TextMessage) message).getText());
                 }
             }
         } catch (JMSException e) {
@@ -100,134 +104,130 @@ public class JMSMessageReceiver implements MessageListener {
 
         // update transport level metrics
         try {
-            if (message instanceof BytesMessage) {
-                metrics.incrementBytesReceived((JMSUtils.getBodyLength((BytesMessage) message)));
-            } else if (message instanceof MapMessage) {
-                metrics.incrementBytesReceived((JMSUtils.getBodyLength((MapMessage) message)));
-            } else if (message instanceof TextMessage) {
-                metrics.incrementBytesReceived(((TextMessage) message).getText().getBytes().length);
-            } else {
-                handleException("Unsupported JMS message type : " + message.getClass().getName());
-            }
+            metrics.incrementBytesReceived(JMSUtils.getMessageSize(message));
         } catch (JMSException e) {
             log.warn("Error reading JMS message size to update transport metrics", e);
         }
 
         // has this message already expired? expiration time == 0 means never expires
         try {
-            long expiryTime = message.getJMSExpiration();                        
+            long expiryTime = message.getJMSExpiration();
             if (expiryTime > 0 && System.currentTimeMillis() > expiryTime) {
                 if (log.isDebugEnabled()) {
                     log.debug("Discard expired message with ID : " + message.getJMSMessageID());
                 }
-                return;
+                return true;
             }
         } catch (JMSException ignore) {}
 
-        workerPool.execute(new Worker(message));
-    }
 
-    private void handleException(String msg, Exception e) {
-        log.error(msg, e);
-        throw new AxisJMSException(msg, e);
-    }
+        boolean successful = false;
+        try {
+            successful = processThoughEngine(message, ut);
 
-    private void handleException(String msg) {
-        log.error(msg);
-        throw new AxisJMSException(msg);
-    }
+        } catch (JMSException e) {
+            log.error("JMS Exception encountered while processing", e);
+        } catch (AxisFault e) {
+            log.error("Axis fault processing message", e);
+        } catch (Exception e) {
+            log.error("Unknown error processing message", e);
 
-
-    /**
-     * The actual Worker implementation which will process the
-     * received JMS messages in the worker thread pool
-     */
-    class Worker implements Runnable {
-
-        private Message message = null;
-
-        Worker(Message message) {
-            this.message = message;
+        } finally {
+            if (successful) {
+                metrics.incrementMessagesReceived();
+            } else {
+                metrics.incrementFaultsReceiving();
+            }
         }
 
-        public void run() {
+        return successful;
+    }
 
-            MessageContext msgContext = jmsListener.createMessageContext();
+    /**
+     * Process the new message through Axis2
+     *
+     * @param message the JMS message
+     * @param ut      the UserTransaction used for receipt
+     * @return true if the caller should commit
+     * @throws JMSException, on JMS exceptions
+     * @throws AxisFault     on Axis2 errors
+     */
+    private boolean processThoughEngine(Message message, UserTransaction ut)
+        throws JMSException, AxisFault {
 
-            // set the JMS Message ID as the Message ID of the MessageContext
-            try {
-                msgContext.setMessageID(message.getJMSMessageID());
-                msgContext.setProperty(JMSConstants.JMS_COORELATION_ID, message.getJMSMessageID());
-            } catch (JMSException ignore) {}
+        MessageContext msgContext = jmsListener.createMessageContext();
 
-            AxisService service = null;
-            try {
-                String soapAction = JMSUtils.
-                    getProperty(message, BaseConstants.SOAPACTION);
+        // set the JMS Message ID as the Message ID of the MessageContext
+        try {
+            msgContext.setMessageID(message.getJMSMessageID());
+            msgContext.setProperty(JMSConstants.JMS_COORELATION_ID, message.getJMSMessageID());
+        } catch (JMSException ignore) {}
 
-                // set to bypass dispatching if we know the service - we already should!
-                if (serviceName != null) {
-                    service = cfgCtx.getAxisConfiguration().getService(serviceName);
-                    msgContext.setAxisService(service);
+        String soapAction = JMSUtils.getProperty(message, BaseConstants.SOAPACTION);
 
-                    // find the operation for the message, or default to one
-                    Parameter operationParam = service.getParameter(BaseConstants.OPERATION_PARAM);
-                    QName operationQName = (
-                        operationParam != null ?
-                            BaseUtils.getQNameFromString(operationParam.getValue()) :
-                            BaseConstants.DEFAULT_OPERATION);
+        AxisService service = endpoint.getService();
+        msgContext.setAxisService(service);
 
-                    AxisOperation operation = service.getOperation(operationQName);
-                    if (operation != null) {
-                        msgContext.setAxisOperation(operation);
-                        msgContext.setSoapAction("urn:" + operation.getName().getLocalPart());
-                    }
-                }
+        // find the operation for the message, or default to one
+        Parameter operationParam = service.getParameter(BaseConstants.OPERATION_PARAM);
+        QName operationQName = (
+            operationParam != null ?
+                BaseUtils.getQNameFromString(operationParam.getValue()) :
+                BaseConstants.DEFAULT_OPERATION);
 
-                // set the message property OUT_TRANSPORT_INFO
-                // the reply is assumed to be over the JMSReplyTo destination, using
-                // the same incoming connection factory, if a JMSReplyTo is available
-                if (message.getJMSReplyTo() != null) {
-                    msgContext.setProperty(
-                        Constants.OUT_TRANSPORT_INFO,
-                        new JMSOutTransportInfo(jmsConnectionFactory, message.getJMSReplyTo()));
+        AxisOperation operation = service.getOperation(operationQName);
+        if (operation != null) {
+            msgContext.setAxisOperation(operation);
+            msgContext.setSoapAction("urn:" + operation.getName().getLocalPart());
+        }
 
-                } else if (service != null) {
-                    // does the service specify a default reply destination ?
-                    Parameter param = service.getParameter(JMSConstants.REPLY_PARAM);
-                    if (param != null && param.getValue() != null) {
-                        msgContext.setProperty(
-                            Constants.OUT_TRANSPORT_INFO,
-                            new JMSOutTransportInfo(
-                                jmsConnectionFactory,
-                                jmsConnectionFactory.getDestination((String) param.getValue())));
-                    }
-                }
+        ContentTypeInfo contentTypeInfo =
+            endpoint.getContentTypeRuleSet().getContentTypeInfo(message);
+        if (contentTypeInfo == null) {
+            throw new AxisFault("Unable to determine content type for message " +
+                msgContext.getMessageID());
+        }
 
-                String contentType = null;
-                if (service != null) {
-                    contentType = (String)service.getParameterValue(JMSConstants.CONTENT_TYPE_PARAM);
-                }
-                if (contentType == null) {
-                    contentType
-                        = JMSUtils.getProperty(message, BaseConstants.CONTENT_TYPE);
-                }
-                
-                JMSUtils.setSOAPEnvelope(message, msgContext, contentType);
-
-                jmsListener.handleIncomingMessage(
-                    msgContext,
-                    JMSUtils.getTransportHeaders(message),
-                    soapAction,
-                    contentType
-                );
-                metrics.incrementMessagesReceived();
-
-            } catch (Throwable e) {
-                metrics.incrementFaultsReceiving();
-                jmsListener.error(service, e);
-                log.error("Exception while processing incoming message", e);
+        // set the message property OUT_TRANSPORT_INFO
+        // the reply is assumed to be over the JMSReplyTo destination, using
+        // the same incoming connection factory, if a JMSReplyTo is available
+        Destination replyTo = message.getJMSReplyTo();
+        if (replyTo == null) {
+            // does the service specify a default reply destination ?
+            Parameter param = service.getParameter(JMSConstants.PARAM_REPLY_DESTINATION);
+            if (param != null && param.getValue() != null) {
+                replyTo = jmsConnectionFactory.getDestination((String) param.getValue());
             }
+
+        }
+        if (replyTo != null) {
+            msgContext.setProperty(Constants.OUT_TRANSPORT_INFO,
+                new JMSOutTransportInfo(jmsConnectionFactory, replyTo,
+                    contentTypeInfo.getPropertyName()));
+        }
+
+        JMSUtils.setSOAPEnvelope(message, msgContext, contentTypeInfo.getContentType());
+        if (ut != null) {
+            msgContext.setProperty(BaseConstants.USER_TRANSACTION, ut);
+        }
+
+        try {
+            jmsListener.handleIncomingMessage(
+                msgContext,
+                JMSUtils.getTransportHeaders(message),
+                soapAction,
+                contentTypeInfo.getContentType());
+
+        } finally {
+
+            Object o = msgContext.getProperty(BaseConstants.SET_ROLLBACK_ONLY);
+            if (o != null) {
+                if ((o instanceof Boolean && ((Boolean) o)) ||
+                    (o instanceof String && Boolean.valueOf((String) o))) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

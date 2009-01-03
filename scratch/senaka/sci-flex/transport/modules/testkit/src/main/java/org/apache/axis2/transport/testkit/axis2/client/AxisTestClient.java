@@ -23,6 +23,7 @@ import javax.mail.internet.ContentType;
 import javax.xml.namespace.QName;
 
 import junit.framework.Assert;
+import junit.framework.AssertionFailedError;
 
 import org.apache.axiom.attachments.Attachments;
 import org.apache.axis2.Constants;
@@ -31,8 +32,10 @@ import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.transport.TransportSender;
+import org.apache.axis2.transport.base.BaseConstants;
 import org.apache.axis2.transport.base.ManagementSupport;
 import org.apache.axis2.transport.testkit.MessageExchangeValidator;
+import org.apache.axis2.transport.testkit.axis2.util.MessageLevelMetricsCollectorImpl;
 import org.apache.axis2.transport.testkit.channel.Channel;
 import org.apache.axis2.transport.testkit.client.ClientOptions;
 import org.apache.axis2.transport.testkit.client.TestClient;
@@ -42,15 +45,20 @@ import org.apache.axis2.transport.testkit.tests.Setup;
 import org.apache.axis2.transport.testkit.tests.TearDown;
 import org.apache.axis2.transport.testkit.tests.Transient;
 import org.apache.axis2.transport.testkit.util.ContentTypeUtil;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 @Name("axis")
 public class AxisTestClient implements TestClient, MessageExchangeValidator {
+    private static final Log log = LogFactory.getLog(AxisTestClient.class);
+    
     private @Transient AxisTestClientConfigurator[] configurators;
     private @Transient TransportSender sender;
     protected @Transient ServiceClient serviceClient;
     protected @Transient Options axisOptions;
     private long messagesSent;
     private long bytesSent;
+    private MessageLevelMetricsCollectorImpl metrics;
     
     @Setup @SuppressWarnings("unused")
     private void setUp(AxisTestClientContext context, Channel channel, AxisTestClientConfigurator[] configurators) throws Exception {
@@ -82,6 +90,9 @@ public class AxisTestClient implements TestClient, MessageExchangeValidator {
             ManagementSupport sender = (ManagementSupport)this.sender;
             messagesSent = sender.getMessagesSent();
             bytesSent = sender.getBytesSent();
+            metrics = new MessageLevelMetricsCollectorImpl();
+        } else {
+            metrics = null;
         }
     }
 
@@ -103,6 +114,9 @@ public class AxisTestClient implements TestClient, MessageExchangeValidator {
         }
         mc.setProperty(Constants.Configuration.CHARACTER_SET_ENCODING, options.getCharset());
         mc.setServiceContext(serviceClient.getServiceContext());
+        if (metrics != null) {
+            mc.setProperty(BaseConstants.METRICS_COLLECTOR, metrics);
+        }
         mepClient.addMessageContext(mc);
         mepClient.execute(block);
         return resultMessageLabel == null ? null : mepClient.getMessageContext(resultMessageLabel);
@@ -111,8 +125,32 @@ public class AxisTestClient implements TestClient, MessageExchangeValidator {
     public void afterReceive() throws Exception {
         if (sender instanceof ManagementSupport) {
             ManagementSupport sender = (ManagementSupport)this.sender;
-            Assert.assertEquals(messagesSent+1, sender.getMessagesSent());
-            Assert.assertTrue("No increase in bytes sent", sender.getBytesSent() > bytesSent);
+            synchronized (metrics) {
+                long start = System.currentTimeMillis();
+                while (true) {
+                    try {
+                        Assert.assertEquals(1, metrics.getMessagesSent());
+                        Assert.assertEquals(messagesSent+1, sender.getMessagesSent());
+                        long thisBytesSent = metrics.getBytesSent();
+                        Assert.assertTrue("No increase in bytes sent in message level metrics", thisBytesSent != 0);
+                        long newBytesSent = sender.getBytesSent();
+                        Assert.assertTrue("No increase in bytes sent in transport level metrics", newBytesSent > bytesSent);
+                        Assert.assertEquals("Mismatch between message and transport level metrics", thisBytesSent, newBytesSent - bytesSent);
+                        break;
+                    } catch (AssertionFailedError ex) {
+                        // SYNAPSE-491: Maybe the transport sender didn't finish updating the
+                        // metrics yet. We give it up to one seconds to do so.
+                        long remaining = start + 1000 - System.currentTimeMillis();
+                        if (remaining < 0) {
+                            throw ex;
+                        } else {
+                            log.debug("The transport sender didn't update the metrics yet ("
+                                    + ex.getMessage() + "). Waiting for " + remaining + " ms.");
+                            metrics.wait(remaining);
+                        }
+                    }
+                }
+            }
         }
     }
 }

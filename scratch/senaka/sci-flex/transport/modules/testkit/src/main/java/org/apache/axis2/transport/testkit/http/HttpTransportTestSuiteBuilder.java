@@ -68,11 +68,16 @@ public class HttpTransportTestSuiteBuilder {
         }
         builder.addRESTAsyncTestClient(new JavaNetRESTClient());
         
+        builder.addAxisAsyncEndpoint(new AxisAsyncEndpoint());
+        builder.addByteArrayAsyncEndpoint(new JettyByteArrayAsyncEndpoint());
+        builder.addRESTAsyncEndpoint(new JettyRESTAsyncEndpoint());
         
         builder.addRequestResponseChannel(channel);
         
         builder.addAxisRequestResponseTestClient(new AxisRequestResponseTestClient());
         
+        builder.addEchoEndpoint(new AxisEchoEndpoint());
+        builder.addEchoEndpoint(new JettyEchoEndpoint());
         
         builder.build();
         

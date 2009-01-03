@@ -163,27 +163,6 @@ public interface MessageEncoder<T,U> {
             return result;
         }
     };
-
-    MessageEncoder<Map,AxisMessage> MAP_WRAPPER =
-        new MessageEncoder<Map,AxisMessage>() {
-
-        public ContentType getContentType(ClientOptions options, ContentType contentType) {
-            return contentType;
-        }
-
-        public AxisMessage encode(ClientOptions options, Map message) throws Exception {
-            AxisMessage result = new AxisMessage();
-            result.setMessageType(null);
-            SOAPFactory factory = OMAbstractFactory.getSOAP11Factory();
-            SOAPEnvelope envelope = factory.getDefaultEnvelope();
-            QName wrapperQName = BaseConstants.DEFAULT_MAP_WRAPPER;
-            OMElement wrapper = factory.createOMElement(new MapDataSource(message), wrapperQName.getLocalPart(),
-                factory.createOMNamespace(wrapperQName.getNamespaceURI(), wrapperQName.getPrefix()));
-            envelope.getBody().addChild(wrapper);
-            result.setEnvelope(envelope);
-            return result;
-        }
-    };
     
     MessageEncoder<String,AxisMessage> TEXT_WRAPPER =
         new MessageEncoder<String,AxisMessage>() {
@@ -204,7 +183,28 @@ public interface MessageEncoder<T,U> {
             return result;
         }
     };
-    
+
+    MessageEncoder<Map,AxisMessage> MAP_WRAPPER =
+        new MessageEncoder<Map,AxisMessage>() {
+
+        public ContentType getContentType(ClientOptions options, ContentType contentType) {
+            return contentType;
+        }
+
+        public AxisMessage encode(ClientOptions options, Map message) throws Exception {
+            AxisMessage result = new AxisMessage();
+            result.setMessageType(null);
+            SOAPFactory factory = OMAbstractFactory.getSOAP11Factory();
+            SOAPEnvelope envelope = factory.getDefaultEnvelope();
+            QName wrapperQName = BaseConstants.DEFAULT_MAP_WRAPPER;
+            OMElement wrapper = factory.createOMElement(new MapDataSource(message), wrapperQName.getLocalPart(),
+                factory.createOMNamespace(wrapperQName.getNamespaceURI(), wrapperQName.getPrefix()));
+            envelope.getBody().addChild(wrapper);
+            result.setEnvelope(envelope);
+            return result;
+        }
+    };    
+
     MessageEncoder<String,byte[]> STRING_TO_BYTE =
         new MessageEncoder<String,byte[]>() {
 

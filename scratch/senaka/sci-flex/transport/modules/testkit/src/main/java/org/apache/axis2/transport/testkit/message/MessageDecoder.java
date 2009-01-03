@@ -66,24 +66,6 @@ public interface MessageDecoder<T,U> {
             return baos.toByteArray();
         }
     };
-
-    MessageDecoder<AxisMessage,Map> AXIS_TO_MAP =
-        new MessageDecoder<AxisMessage,Map>() {
-
-        public Map decode(ContentType contentType, AxisMessage message) throws Exception {
-            SOAPEnvelope envelope = message.getEnvelope();
-            OMElement wrapper = envelope.getBody().getFirstElement();
-            Assert.assertEquals(BaseConstants.DEFAULT_MAP_WRAPPER, wrapper.getQName());
-            OMNode firstChild = wrapper.getFirstOMChild();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            firstChild.serialize(baos);
-            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
-            XMLDecoder decoder = new XMLDecoder(bais);
-            Object result = decoder.readObject();
-            decoder.close();
-            return (Map)result;
-        }
-    };
     
     MessageDecoder<AxisMessage,String> AXIS_TO_STRING =
         new MessageDecoder<AxisMessage,String>() {
@@ -136,6 +118,24 @@ public interface MessageDecoder<T,U> {
         }
     };
 
+    MessageDecoder<AxisMessage,Map> AXIS_TO_MAP =
+        new MessageDecoder<AxisMessage,Map>() {
+
+        public Map decode(ContentType contentType, AxisMessage message) throws Exception {
+            SOAPEnvelope envelope = message.getEnvelope();
+            OMElement wrapper = envelope.getBody().getFirstElement();
+            Assert.assertEquals(BaseConstants.DEFAULT_MAP_WRAPPER, wrapper.getQName());
+            OMNode firstChild = wrapper.getFirstOMChild();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            firstChild.serialize(baos);
+            ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+            XMLDecoder decoder = new XMLDecoder(bais);
+            Object result = decoder.readObject();
+            decoder.close();
+            return (Map)result;
+        }
+    };
+
     MessageDecoder<byte[],XMLMessage> BYTE_TO_XML =
         new MessageDecoder<byte[],XMLMessage>() {
     
@@ -162,19 +162,6 @@ public interface MessageDecoder<T,U> {
             }
         }
     };
-
-    MessageDecoder<Map,XMLMessage> MAP_TO_XML =
-        new MessageDecoder<Map,XMLMessage>() {
-
-        public XMLMessage decode(ContentType contentType, Map message) throws Exception {
-            SOAPFactory factory = OMAbstractFactory.getSOAP11Factory();
-            QName wrapperQName = BaseConstants.DEFAULT_MAP_WRAPPER;
-            OMElement wrapper = factory.createOMElement(new MapDataSource(message, wrapperQName.getLocalPart(),
-                factory.createOMNamespace(wrapperQName.getNamespaceURI(), wrapperQName.getPrefix())), wrapperQName.getLocalPart(),
-                factory.createOMNamespace(wrapperQName.getNamespaceURI(), wrapperQName.getPrefix()));
-            return new XMLMessage(wrapper, XMLMessage.Type.SOAP11);
-        }
-    };
     
     MessageDecoder<String,XMLMessage> STRING_TO_XML =
         new MessageDecoder<String,XMLMessage>() {
@@ -192,6 +179,19 @@ public interface MessageDecoder<T,U> {
                 payload = new StAXSOAPModelBuilder(reader).getSOAPEnvelope().getBody().getFirstElement();
             }
             return new XMLMessage(payload, type);
+        }
+    };
+
+    MessageDecoder<Map,XMLMessage> MAP_TO_XML =
+        new MessageDecoder<Map,XMLMessage>() {
+
+        public XMLMessage decode(ContentType contentType, Map message) throws Exception {
+            SOAPFactory factory = OMAbstractFactory.getSOAP11Factory();
+            QName wrapperQName = BaseConstants.DEFAULT_MAP_WRAPPER;
+            OMElement wrapper = factory.createOMElement(new MapDataSource(message, wrapperQName.getLocalPart(),
+                factory.createOMNamespace(wrapperQName.getNamespaceURI(), wrapperQName.getPrefix())), wrapperQName.getLocalPart(),
+                factory.createOMNamespace(wrapperQName.getNamespaceURI(), wrapperQName.getPrefix()));
+            return new XMLMessage(wrapper, XMLMessage.Type.SOAP11);
         }
     };
 

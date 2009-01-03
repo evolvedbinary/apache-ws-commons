@@ -171,6 +171,14 @@ public abstract class AbstractTransportListener implements TransportListener {
         }
         return result;
     }
+
+    public EndpointReference[] getEPRsForService(String serviceName, String ip) throws AxisFault {
+        return getEPRsForService(serviceName);
+    }
+
+    protected EndpointReference[] getEPRsForService(String serviceName) {
+        return null;
+    }
     
     private boolean ignoreService(AxisService service) {
         return service.getName().startsWith("__"); // these are "private" services
@@ -196,8 +204,34 @@ public abstract class AbstractTransportListener implements TransportListener {
     }
 
     private void internalStartListeningForService(AxisService service) {
-        startListeningForService(service);
         String serviceName = service.getName();
+        try {
+            startListeningForService(service);
+        } catch (AxisFault ex) {
+            String transportName = getTransportName().toUpperCase();
+            String msg = "Unable to configure the service " + serviceName + " for the " +
+                    transportName + " transport: " + ex.getMessage() + ". " + 
+                    "This service is being marked as faulty and will not be available over the " +
+                    transportName + " transport.";
+            // Only log the message at level WARN and log the full stack trace at level DEBUG.
+            // TODO: We should have a way to distinguish a missing configuration
+            //       from an error. This may be addressed when implementing the enhancement
+            //       described in point 3 of http://markmail.org/message/umhenrurlrekk5jh
+            log.warn(msg);
+            log.debug("Disabling service " + serviceName + " for the " + transportName +
+                    "transport", ex);
+            BaseUtils.markServiceAsFaulty(serviceName, msg, service.getAxisConfiguration());
+            disableTransportForService(service);
+            return;
+        } catch (Throwable ex) {
+            String msg = "Unexpected error when configuring service " + serviceName +
+                    " for the " + getTransportName().toUpperCase() + " transport. It will be" +
+                    " disabled for this transport and marked as faulty.";
+            log.error(msg, ex);
+            BaseUtils.markServiceAsFaulty(serviceName, msg, service.getAxisConfiguration());
+            disableTransportForService(service);
+            return;
+        }
         registerMBean(new TransportListenerEndpointView(this, serviceName),
                       getEndpointMBeanName(serviceName));
     }
@@ -207,7 +241,7 @@ public abstract class AbstractTransportListener implements TransportListener {
         stopListeningForService(service);
     }
     
-    protected abstract void startListeningForService(AxisService service);
+    protected abstract void startListeningForService(AxisService service) throws AxisFault;
 
     protected abstract void stopListeningForService(AxisService service);
 

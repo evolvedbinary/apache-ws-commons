@@ -126,12 +126,13 @@ public class TransportTestSuiteBuilder {
     private final ResourceList<AsyncEndpoint<RESTMessage>> restAsyncEndpoints = new ResourceList<AsyncEndpoint<RESTMessage>>();
     private final ResourceList<AsyncEndpoint<String>> stringAsyncEndpoints = new ResourceList<AsyncEndpoint<String>>();
     private final ResourceList<AsyncEndpoint<Map>> mapAsyncEndpoints = new ResourceList<AsyncEndpoint<Map>>();
-    
+
     private final ResourceList<RequestResponseChannel> requestResponseChannels = new ResourceList<RequestResponseChannel>();
     
     private final ResourceList<RequestResponseTestClient<XMLMessage,XMLMessage>> xmlRequestResponseClients = new ResourceList<RequestResponseTestClient<XMLMessage,XMLMessage>>();
-    private final ResourceList<RequestResponseTestClient<XMLMessage,XMLMessage>> xmlMapRequestResponseClients = new ResourceList<RequestResponseTestClient<XMLMessage,XMLMessage>>();
-    
+
+    private final ResourceList<RequestResponseTestClient<XMLMessage,XMLMessage>> xmlMapRequestResponseClients = new ResourceList<RequestResponseTestClient<XMLMessage,XMLMessage>>();    
+
     private final ResourceList<InOutEndpoint> echoEndpoints = new ResourceList<InOutEndpoint>();
     
     public TransportTestSuiteBuilder(ManagedTestSuite suite) {
@@ -178,7 +179,7 @@ public class TransportTestSuiteBuilder {
     public void addMapAsyncTestClient(AsyncTestClient<Map> client, Object... relatedResources) {
         mapAsyncClients.add(client, relatedResources);
     }
-    
+
     public void addAxisAsyncEndpoint(AsyncEndpoint<AxisMessage> endpoint, Object... relatedResources) {
         byteAsyncEndpoints.add(adapt(endpoint, MessageDecoder.AXIS_TO_BYTE), relatedResources);
         xmlAsyncEndpoints.add(adapt(endpoint, MessageDecoder.AXIS_TO_XML), relatedResources);

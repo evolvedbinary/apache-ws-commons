@@ -21,6 +21,11 @@ package org.apache.axis2.transport.testkit.endpoint;
 
 import org.apache.axis2.transport.testkit.name.Key;
 
+/**
+ * Interface implemented by in-out test endpoints.
+ * 
+ * @see org.apache.axis2.transport.testkit.endpoint
+ */
 @Key("endpoint")
 public interface InOutEndpoint {
     void addEndpointErrorListener(EndpointErrorListener listener);
