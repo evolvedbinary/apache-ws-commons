@@ -22,7 +22,7 @@
     <groupId>org.apache.ws.commons.axiom</groupId>
     <artifactId>axiom</artifactId>
     <name>Axiom</name>
-    <version>1.2.8-SNAPSHOT</version>
+    <version>1.2.8</version>
     <!-- Should better be ${axiom.version} -->
     <packaging>pom</packaging>
     <description>AXIOM API</description>
@@ -200,7 +200,7 @@
     <contributors>
         <contributor>
             <name>Dharshana Dias</name>
-            <email/>
+            <email />
             <organization>Lanka Software Foundation / University of Moratuwa</organization>
         </contributor>
         <contributor>
@@ -210,7 +210,7 @@
         </contributor>
         <contributor>
             <name>Chinthaka Thilakarathne</name>
-            <email/>
+            <email />
             <organization>Lanka Software Foundation / University of Moratuwa</organization>
         </contributor>
         <contributor>
@@ -226,10 +226,9 @@
         </license>
     </licenses>
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/webservices/commons/trunk/modules/axiom</connection>
-        <developerConnection>
-            scm:svn:https://svn.apache.org/repos/asf/webservices/commons/trunk/modules/axiom</developerConnection>
-        <url>http://svn.apache.org/viewcvs.cgi/webservices/commons/trunk/modules/axiom</url>
+        <connection>scm:svn:http://svn.apache.org/repos/asf/webservices/commons/tags/axiom-1.2.8</connection>
+        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/webservices/commons/tags/axiom-1.2.8</developerConnection>
+        <url>http://svn.apache.org/viewcvs.cgi/webservices/commons/tags/axiom-1.2.8</url>
     </scm>
     <organization>
         <name>The Apache Software Foundation</name>
@@ -259,7 +258,7 @@
             <activation>
                 <property>
                     <name>release</name>
-                    <value/>
+                    <value />
                 </property>
             </activation>
             <build>
@@ -292,7 +291,7 @@
             <activation>
                 <property>
                     <name>rc</name>
-                    <value/>
+                    <value />
                 </property>
             </activation>
             <build>

@@ -22,12 +22,12 @@
     <parent>
         <groupId>org.apache.ws.commons.axiom</groupId>
         <artifactId>axiom</artifactId>
-        <version>1.2.8-SNAPSHOT</version>
+        <version>1.2.8</version>
         <!-- Should better be ${axiom.version} -->
     </parent>
     <artifactId>axiom-api</artifactId>
     <name>Axiom API</name>
-    <version>1.2.8-SNAPSHOT</version>
+    <version>1.2.8</version>
     <description>The Axiom API</description>
     <dependencies>
         <dependency>
@@ -79,8 +79,8 @@
                             <tasks>
                                 <copy todir="${project.build.directory}/legal-files">
                                     <fileset dir="../..">
-                                        <include name="LICENSE.txt"/>
-                                        <include name="NOTICE.txt"/>
+                                        <include name="LICENSE.txt" />
+                                        <include name="NOTICE.txt" />
                                     </fileset>
                                 </copy>
                             </tasks>
@@ -96,6 +96,10 @@
                 <configuration>
                     <archive>
                         <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+                        <manifestEntries>
+                          <!-- Put the correct Bundle-Version: in the manifest -->
+                          <Bundle-Version>${version}</Bundle-Version>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>

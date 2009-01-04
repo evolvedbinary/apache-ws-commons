@@ -102,9 +102,13 @@
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
-                    <archive>
-                        <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
-                    </archive>
+                  <archive>
+                    <manifestFile>src/main/resources/META-INF/MANIFEST.MF</manifestFile>
+                    <manifestEntries>
+                      <!-- Put the correct Bundle-Version: in the manifest -->
+                      <Bundle-Version>${version}</Bundle-Version>
+                    </manifestEntries>
+                  </archive>
                 </configuration>
             </plugin>
             <!-- Attach a JAR with the test classes so that we can reuse them in other modules
