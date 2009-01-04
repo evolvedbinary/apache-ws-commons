@@ -30,16 +30,109 @@ Key Features
     * Two implementations included:
           o Linked list based implementation
           o W3C DOM supporting implementation
-    * High performant
+    * Highly performant
 
     
 
 What's New in This Release
 ==========================
 
-This release contains fixes for following issues.
+This release contains fixes for following issues (see
+                              http://issues.apache.org/jira/browse/WSCOMMONS/component/12310703)
 
-https://issues.apache.org/jira/browse/WSCOMMONS-319	Refactor Optimized Threshold in OMOutputFormat.
-https://issues.apache.org/jira/browse/WSCOMMONS-321 OMStaXWrapper is inadvertently turning off caching
+WSCOMMONS-413	Build failure with JDK 1.4.2
+WSCOMMONS-190	Parser taken from an partly build OMElement using getXMLStreamReaderWithoutCaching() drops namespaces
+WSCOMMONS-103	Implement createSOAPHeaderBlock(String localName, OMNamespace ns) in DOOM SOAPFactory impls.
+WSCOMMONS-107	MTOMBuilder cannot handle mixed content
+WSCOMMONS-360	Prefix mismatch of OMSourcedElement
+WSCOMMONS-374	XOP:Include information is not retained by OMElement clone()
+WSCOMMONS-100	Can't recevie attachment part correctly
+WSCOMMONS-399	SOAP11FaultCodeImpl can not handle fault report correctly
+WSCOMMONS-134	The interface org.apache.axiom.om.OMFactory seems to be incomplete
+WSCOMMONS-126	OMSourceImpl does not handle MTOM Serialisation when trying to serialise non-soap xml's
+WSCOMMONS-66	OMSerializerUtil is not calling XMLStreamWriter in the correct order
+WSCOMMONS-109	OMElement getFirstChildWithName is not case sensitive
+WSCOMMONS-340	Error calling getTextCharacters() on a comment node
+WSCOMMONS-197	SOAP headers added using DOOM are lost during serialization
+WSCOMMONS-372	Sometimes accessing an AXIOM tree while the underlying input stream is closed causes an OutOfMemoryError
+WSCOMMONS-330	Axiom: Get the content length for a streaming inbound message
+WSCOMMONS-331	Adding funtion to give end user the ability to delete temp attachment files.
+WSCOMMONS-325	org.apache.axiom.om.impl.util.OMSerializerUtil.isSetPrefixBeforeStartElement() doing property lookup on every invocation - performance problem
+WSCOMMONS-315	StAXUtils loads a singleton XML*Factory. It should load a singleton XML*Factory per classloader
+WSCOMMONS-324	MTOM Attachment binary data not being inlined into ByteArrayOutputStream when using SOAPEnvelope.serializeAndConsume()
+WSCOMMONS-341	When serializing CDATA STAX Parser throws IllegalArgumentException
+WSCOMMONS-338	OMStAXWrapper#hasText should return true for CDATA sections
+WSCOMMONS-344	OMStaXWrapper Does Not Support Optimized OMText as an XOP:Include
+WSCOMMONS-349	Improved Large Attachment Performance
+WSCOMMONS-351	OMElement.getChildrenWithName(QName) breaks customers dependent on the old semantics
+WSCOMMONS-354	Respect semicolon continuation characters of HTTP Headers
+WSCOMMONS-356	Updating FileDeletor in LifecyclemanagerImpl to be a Daemon Thread
+WSCOMMONS-369	Adding an OMSE node should not propogate incomplete setting to ancestors
+WSCOMMONS-370	Add more servicability to OMStaxWrapper
+WSCOMMONS-382	UnsupportedOperationException rasied when using Transformer API
+WSCOMMONS-384	OMElement.getXMLStreamReader
+WSCOMMONS-388	Creating a model directly from a factory and not a builder AXIOMXPath will always return you null.
+WSCOMMONS-390	Axiom needs to provide a way to control encoding of binary attachment parts when serializing a MIME multipart message
+WSCOMMONS-326	Axiom Is Not Preserving an Attribute's Type
+WSCOMMONS-398	MTOMXMLStreamWriter does not delegate writeEmptyElement properly
+WSCOMMONS-406	Don't expose fields to subclasses
+WSCOMMONS-345	AXIOMUtil.stringToOM doesn't work properly
+WSCOMMONS-245	BoundaryDelimitedStream do not return whole attachment stream
+WSCOMMONS-235	Discard method badly broken
+WSCOMMONS-397	Wrong local name for SOAPFaultSubCode
+WSCOMMONS-320	BAAInputStream.read() returning negative int values
+WSCOMMONS-182	Infinite loop in OMElement possible
+WSCOMMONS-381	StringIndexOutOfBoundsException in org.apache.axiom.attachments.impl.PartFactory.readHeader()
+WSCOMMONS-328	Failure in boundaryPosition condition for checking position validity
+WSCOMMONS-253	mvn: creating axiom.jar (bundle of axiom-api.jar, axiom-dom.jar and axiom-impl.jar)
+WSCOMMONS-255	AXIOM DOM based org.w3c.dom.Element.getElementsByTagName and getElementsByTagNameNS do not funcion according to spec
+WSCOMMONS-323	XML Element lost when there is an OMException inside OMChildrenIterator.next()
+WSCOMMONS-394	StAXUtils: Add Network Detached XMLStreamReader capability
+WSCOMMONS-329	org.apache.axiom.attachments.Attachments#getSOAPPartContentID() does not parse content ids correctly.
+WSCOMMONS-337	insertSiblingAfter() method doesn't set last child
+WSCOMMONS-317	Reverted code, need to review code
+WSCOMMONS-90	Add importNode(OMNode) method into OMFactory
+WSCOMMONS-262	Improve "setPrefix before startElement" XMLStreamWriter toggle.
+WSCOMMONS-146	Axiom NPE
+WSCOMMONS-64	StreamingOMSerializer is invoking the XMLStreamWriter with a wrong sequence of writes.
+WSCOMMONS-140	org.apache.axiom.om.impl.dom.AttrImpl#getQName() fails for null namespace prefixes
+WSCOMMONS-75	Add getter to filed "lastNode" of StAXBuilder
+WSCOMMONS-117	NPE in OMDocumentImpl
+WSCOMMONS-242	OMOutputFormat should surround the start value with <>
+WSCOMMONS-282	Performance: Remove the construction of MimeBodyPart from PartOnMemory
+WSCOMMONS-347	TextHelper is upgraded to include a utility method that creates an OMText from a byte
+WSCOMMONS-194	SOAPEnvelope getHeader processing
+WSCOMMONS-343	Error in serializing SOAP 1.1 SOAP Faults
+WSCOMMONS-130	Axiom NPE
+WSCOMMONS-231	MTOMXMLStreamWriter flush() can cause attachments to be written at the wrong time
+WSCOMMONS-284	Perf: Speedup file creation of PartOnFile
+WSCOMMONS-115	Problem in serialization when comments presents
+WSCOMMONS-101	axiom base64 encoding is incorrect
+WSCOMMONS-233	SecurityException thrown in OMAbstractFactory when run from an applet (2)
+WSCOMMONS-254	AXIOM DOM based implementation fails to parse documents that start with xml comment.
+WSCOMMONS-327	Namespace High verbosity combined with XMLBeans
+WSCOMMONS-393	Error using AxiomSoapMessageFactory with comments in request
+WSCOMMONS-281	xmlns:xml declaration is unnecessary and fails in some parsers
+WSCOMMONS-386	Exception thrown is not descriptive, if content-type missing boundary parameter
+WSCOMMONS-239	org.apache.axiom.om.OMElement#getText() is not documented sufficiently
+WSCOMMONS-357	NPE will result in Axiom code if MD5 algorithm is not in classpath
+WSCOMMONS-415	Provide implementations of javax.xml.transform.Source and javax.xml.transform.Result
+WSCOMMONS-334	OMSourcedElementImpl#serialize produces wrong result when element is expanded
+WSCOMMONS-121	Handling of xml documents with two top level elements is errorneous
+WSCOMMONS-207	Finding namespace based on prefix is broken
+WSCOMMONS-424	BufferUtils#doesDataHandlerExceedLimit needs review
+WSCOMMONS-367	SOAP11BuilderHelper fails with nested CDATA tag
+WSCOMMONS-339	SOAP11BuilderHelper#processText doesn't recognize CDATA sections
+WSCOMMONS-368	OMNodeImpl serialize methods are causing excessive wrappering of MTOMXMLStreamWriter objects
+WSCOMMONS-371	DetachableInputStream should not be detached if the stream is closed
+WSCOMMONS-336	Inconsistent specification for OMDataSource#serialize(OutputStream, OMOutputFormat)
+WSCOMMONS-373	SAXOMBuilder needs to support default namespaces
+WSCOMMONS-333	Add an addNamespaces(OMElement) method to AXIOMXPath
+WSCOMMONS-412	Get rid of the setDOOMRequired hack
+WSCOMMONS-218	Canonical XML based on Axiom
+WSCOMMONS-237	Can't retrieve children from OMDocument
+WSCOMMONS-335	Add a getOutputFormat method to MTOMXMLStreamWriter
+WSCOMMONS-423	DOOM doesn't correctly enforce hierarchy constraints on Document
+WSCOMMONS-420	Attempted validation of DomSource leads to "java.lang.UnsupportedOperationException: TODO" from "org.apache.axiom.om.impl.dom.DocumentImpl.getDoctype"
 
 - The Apache Axiom Team.
