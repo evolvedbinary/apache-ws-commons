@@ -105,11 +105,14 @@ public class SocketRR extends Thread {
      */
     public void run() {
         try {
-            // TODO: we should distinguish here between exceptions thrown when reading from the
-            //       input stream and exceptions thrown in the pipeline
-            while (pipeline.readFrom(in) != -1) {
-                // Just loop
-            }
+            long start = System.currentTimeMillis();
+            int c;
+            do {
+                // TODO: we should distinguish here between exceptions thrown when reading from the
+                //       input stream and exceptions thrown in the pipeline
+                c = pipeline.readFrom(in);
+                elapsed = System.currentTimeMillis() - start;
+            } while (c != -1);
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
