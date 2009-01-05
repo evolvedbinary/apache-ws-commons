@@ -32,12 +32,12 @@ public abstract class HttpRequestFilter implements StreamFilter {
         while (stream.available() > 0) {
             switch (state) {
                 case STATE_REQUEST: {
-                    int eol = searchEndOfLine(stream);
+                    int eol = StreamUtil.searchEndOfLine(stream);
                     if (eol == -1) {
                         // EOL not yet available; maybe next time...
                         return;
                     } else {
-                        String orgRequest = getString(stream, 0, eol);
+                        String orgRequest = StreamUtil.getAsciiString(stream, 0, eol);
                         String request = processRequest(orgRequest);
                         if (request == orgRequest) {
                             stream.skip(eol+2);
@@ -51,7 +51,7 @@ public abstract class HttpRequestFilter implements StreamFilter {
                     break;
                 }
                 case STATE_HEADER: {
-                    int eol = searchEndOfLine(stream);
+                    int eol = StreamUtil.searchEndOfLine(stream);
                     if (eol == -1) {
                         return;
                     }
@@ -66,12 +66,12 @@ public abstract class HttpRequestFilter implements StreamFilter {
                             break;
                         }
                     }
-                    String name = getString(stream, 0, colon);
+                    String name = StreamUtil.getAsciiString(stream, 0, colon);
                     int valueStart = colon+1;
                     while (stream.get(valueStart) == ' ') {
                         valueStart++;
                     }
-                    String orgValue = getString(stream, valueStart, eol);
+                    String orgValue = StreamUtil.getAsciiString(stream, valueStart, eol);
                     String value = processHeader(name, orgValue);
                     if (value == null) {
                         stream.discard(eol+2);
@@ -89,23 +89,6 @@ public abstract class HttpRequestFilter implements StreamFilter {
                     stream.skipAll();
             }
         }
-    }
-    
-    private static int searchEndOfLine(Stream stream) {
-        for (int i=0; i<stream.available()-1; i++) {
-            if (stream.get(i) == '\r' && stream.get(i+1) == '\n') {
-                return i;
-            }
-        }
-        return -1;
-    }
-    
-    private static String getString(Stream stream, int begin, int end) {
-        StringBuffer buffer = new StringBuffer(end-begin);
-        for (int i=begin; i<end; i++) {
-            buffer.append((char)stream.get(i));
-        }
-        return buffer.toString();
     }
     
     private static void insert(Stream stream, String s) throws IOException {
