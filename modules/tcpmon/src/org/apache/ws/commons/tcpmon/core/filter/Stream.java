@@ -113,9 +113,8 @@ public interface Stream {
      * be read, discarded or skipped.
      * 
      * @param b the byte to insert
-     * @throws IOException
      */
-    void insert(byte b) throws IOException;
+    void insert(byte b);
     
     /**
      * Insert a byte sequence at the current position in the stream.
@@ -125,9 +124,8 @@ public interface Stream {
      * @param buffer a byte array containing the sequence to be inserted in the stream
      * @param offset the start offset in the byte array
      * @param length the number of bytes to insert
-     * @throws IOException
      */
-    void insert(byte[] buffer, int offset, int length) throws IOException;
+    void insert(byte[] buffer, int offset, int length);
     
     /**
      * Skip the byte at the current position in the stream.
@@ -135,25 +133,21 @@ public interface Stream {
      * to the next filter.
      * 
      * @return the byte at the current position in the stream 
-     * @throws IOException
      */
-    byte skip() throws IOException;
+    byte skip();
     
     /**
      * Skip a given number of bytes in the stream, starting
      * from the current position.
      * 
      * @param len the number of bytes to skip
-     * @throws IOException
      */
-    void skip(int len) throws IOException;
+    void skip(int len);
     
     /**
      * Skip all the bytes currently available in the stream.
      * The instruction <code>s.skipAll()</code> is equivalent to
      * <code>s.skip(s.available())</code>.
-     * 
-     * @throws IOException
      */
-    void skipAll() throws IOException;
+    void skipAll();
 }

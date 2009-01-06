@@ -61,12 +61,12 @@ public class Pipeline {
             this.next = next;
         }
 
-        public void invoke(byte[] buffer, int offset, int length, boolean eos, boolean preserve) throws IOException {
+        public void invoke(byte[] buffer, int offset, int length, boolean eos, boolean preserve) {
             while (length > 0) {
                 if (inLength > 0) {
                     int c = fillBuffer(buffer, offset, length);
                     if (c == 0) {
-                        throw new IOException("Pipeline buffer overflow");
+                        throw new StreamException("Pipeline buffer overflow");
                     }
                     offset += c;
                     length -= c;
@@ -97,7 +97,7 @@ public class Pipeline {
             }
         }
         
-        private void setBuffer(byte[] buffer, int offset, int length, boolean preserve) throws IOException {
+        private void setBuffer(byte[] buffer, int offset, int length, boolean preserve) {
             flushSkip(false);
             if (inBuffer != null) {
                 if (inLength > 0) {
@@ -113,7 +113,7 @@ public class Pipeline {
             this.preserve = preserve;
         }
         
-        private int fillBuffer(byte[] buffer, int offset, int length) throws IOException {
+        private int fillBuffer(byte[] buffer, int offset, int length) {
             if (!preserve && length <= inBuffer.length-inOffset-inLength) {
                 System.arraycopy(buffer, offset, inBuffer, inOffset+inLength, length);
                 inLength += length;
@@ -127,7 +127,7 @@ public class Pipeline {
             }
         }
         
-        private void compactBuffer() throws IOException {
+        private void compactBuffer() {
             flushSkip(false);
             byte[] src = inBuffer;
             if (preserve) {
@@ -138,7 +138,7 @@ public class Pipeline {
             inOffset = 0;
         }
         
-        private void invokeNext(byte[] buffer, int offset, int length, boolean eos, boolean preserve) throws IOException {
+        private void invokeNext(byte[] buffer, int offset, int length, boolean eos, boolean preserve) {
             if (eos && eosSignalled) {
                 throw new IllegalStateException();
             }
@@ -150,7 +150,7 @@ public class Pipeline {
             eosSignalled = eos;
         }
 
-        private void flushSkip(boolean eos) throws IOException {
+        private void flushSkip(boolean eos) {
             if (skipLength > 0) {
                 if (outLength > 0) {
                     throw new IllegalStateException();
@@ -166,7 +166,7 @@ public class Pipeline {
             }
         }
         
-        private void flushOutput(boolean eos) throws IOException {
+        private void flushOutput(boolean eos) {
             if (outLength > 0) {
                 if (skipLength > 0) {
                     throw new IllegalStateException();
@@ -227,7 +227,7 @@ public class Pipeline {
             inLength -= len;
         }
 
-        public void insert(byte b) throws IOException {
+        public void insert(byte b) {
             flushSkip(false);
             if (outLength > 0 && outLength == outBuffer.length) {
                 flushOutput(false);
@@ -238,19 +238,19 @@ public class Pipeline {
             outBuffer[outLength++] = b;
         }
         
-        public void insert(byte[] buffer, int offset, int length) throws IOException {
+        public void insert(byte[] buffer, int offset, int length) {
             flushSkip(false);
             flushOutput(false);
             invokeNext(buffer, offset, length, false, true);
         }
 
-        public byte skip() throws IOException {
+        public byte skip() {
             byte b = inBuffer[inOffset];
             skip(1);
             return b;
         }
 
-        public void skip(int len) throws IOException {
+        public void skip(int len) {
             if (len < 0 || len > inLength) {
                 throw new ArrayIndexOutOfBoundsException();
             }
@@ -271,7 +271,7 @@ public class Pipeline {
             inLength -= len;
         }
 
-        public void skipAll() throws IOException {
+        public void skipAll() {
             skip(inLength);
         }
     }

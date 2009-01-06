@@ -16,20 +16,25 @@
 
 package org.apache.ws.commons.tcpmon.core.filter;
 
-import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
  * Filter that rewrites an HTTP proxy request to a plain HTTP request.
  */
 public abstract class HttpProxyServerHandler extends HttpRequestFilter {
-    protected String processRequest(String request) throws IOException {
+    protected String processRequest(String request) {
         String[] parts = request.split(" ");
-        URL url = new URL(parts[1]);
+        URL url;
+        try {
+            url = new URL(parts[1]);
+        } catch (MalformedURLException ex) {
+            throw new StreamException(ex);
+        }
         int port = url.getPort();
         handleConnection(url.getHost(), port == -1 ? 80 : port);
         return parts[0] + " " + url.getFile() + " " + parts[2];
     }
     
-    protected abstract void handleConnection(String host, int port) throws IOException;
+    protected abstract void handleConnection(String host, int port);
 }

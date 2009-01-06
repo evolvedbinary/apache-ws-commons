@@ -16,28 +16,22 @@
 
 package org.apache.ws.commons.tcpmon.core.filter;
 
-import java.io.IOException;
-import java.io.Writer;
+public class StreamException extends RuntimeException {
+    private static final long serialVersionUID = 3318471666512565646L;
 
-/**
- * Filter that decodes the stream to character data and sends it to a {@link Writer}.
- */
-public class CharsetDecoderFilter implements StreamFilter {
-    private final Writer writer;
-
-    public CharsetDecoderFilter(Writer writer) {
-        this.writer = writer;
+    public StreamException() {
+        super();
     }
 
-    public void invoke(Stream stream) {
-        StringBuffer buffer = new StringBuffer(stream.available());
-        while (stream.available() > 0) {
-            buffer.append((char)stream.skip());
-        }
-        try {
-            writer.write(buffer.toString());
-        } catch (IOException ex) {
-            throw new StreamException(ex);
-        }
+    public StreamException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public StreamException(String message) {
+        super(message);
+    }
+
+    public StreamException(Throwable cause) {
+        super(cause);
     }
 }

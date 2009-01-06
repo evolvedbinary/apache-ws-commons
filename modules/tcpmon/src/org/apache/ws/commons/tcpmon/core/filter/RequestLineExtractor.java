@@ -16,7 +16,7 @@
 
 package org.apache.ws.commons.tcpmon.core.filter;
 
-import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Filter that extracts the first line of a request, up to a given
@@ -31,7 +31,7 @@ public abstract class RequestLineExtractor implements StreamFilter {
         this.buffer = new byte[maxLength];
     }
     
-    public void invoke(Stream stream) throws IOException {
+    public void invoke(Stream stream) {
         if (done) {
             stream.skipAll();
         } else {
@@ -48,7 +48,14 @@ public abstract class RequestLineExtractor implements StreamFilter {
             }
             if (done) {
                 stream.skipAll();
-                done(new String(buffer, 0, length, "ascii"));
+                String requestLine;
+                try {
+                    requestLine = new String(buffer, 0, length, "ascii");
+                } catch (UnsupportedEncodingException ex) {
+                    // We should never get here
+                    throw new StreamException(ex);
+                }
+                done(requestLine);
             }
         }
     }

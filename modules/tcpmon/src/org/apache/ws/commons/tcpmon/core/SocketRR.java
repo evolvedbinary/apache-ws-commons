@@ -18,6 +18,7 @@ package org.apache.ws.commons.tcpmon.core;
 
 import org.apache.ws.commons.tcpmon.core.filter.Pipeline;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
@@ -108,9 +109,13 @@ public class SocketRR extends Thread {
             long start = System.currentTimeMillis();
             int c;
             do {
-                // TODO: we should distinguish here between exceptions thrown when reading from the
-                //       input stream and exceptions thrown in the pipeline
-                c = pipeline.readFrom(in);
+                try {
+                    c = pipeline.readFrom(in);
+                } catch (IOException ex) {
+                    // When reading from the socket, consider an I/O exception (such as connection
+                    // reset) as the end of stream and silently discard the exception.
+                    c = -1;
+                }
                 elapsed = System.currentTimeMillis() - start;
             } while (c != -1);
         } catch (Exception e) {

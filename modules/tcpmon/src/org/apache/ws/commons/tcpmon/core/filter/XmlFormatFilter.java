@@ -16,8 +16,6 @@
 
 package org.apache.ws.commons.tcpmon.core.filter;
 
-import java.io.IOException;
-
 /**
  * Filter that reformats XML data so that it is properly indented.
  */
@@ -30,7 +28,7 @@ public class XmlFormatFilter implements StreamFilter {
         this.tabWidth = tabWidth;
     }
 
-    public void invoke(Stream stream) throws IOException {
+    public void invoke(Stream stream) {
         try {
             boolean inXML = false;
             while (stream.available() > 0) {

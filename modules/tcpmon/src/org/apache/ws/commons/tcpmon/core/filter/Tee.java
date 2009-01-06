@@ -46,9 +46,13 @@ public class Tee implements StreamFilter {
         this.out = out;
     }
 
-    public void invoke(Stream stream) throws IOException {
+    public void invoke(Stream stream) {
         if (out != null) {
-            stream.readAll(out);
+            try {
+                stream.readAll(out);
+            } catch (IOException ex) {
+                throw new StreamException(ex);
+            }
             stream.skipAll();
         }
     }

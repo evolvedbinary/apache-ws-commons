@@ -16,8 +16,6 @@
 
 package org.apache.ws.commons.tcpmon.core.filter;
 
-import java.io.IOException;
-
 /**
  * A filter acting on a stream.
  */
@@ -37,7 +35,6 @@ public interface StreamFilter {
      * of the filter. 
      * 
      * @param stream the stream to process
-     * @throws IOException
      */
-    void invoke(Stream stream) throws IOException;
+    void invoke(Stream stream);
 }

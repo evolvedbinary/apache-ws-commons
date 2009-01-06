@@ -16,7 +16,7 @@
 
 package org.apache.ws.commons.tcpmon.core.filter;
 
-import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 /**
  * Abstract filter that allows HTTP request rewriting.
@@ -28,7 +28,7 @@ public abstract class HttpRequestFilter implements StreamFilter {
     
     private int state = STATE_REQUEST;
     
-    public void invoke(Stream stream) throws IOException {
+    public void invoke(Stream stream) {
         while (stream.available() > 0) {
             switch (state) {
                 case STATE_REQUEST: {
@@ -91,16 +91,22 @@ public abstract class HttpRequestFilter implements StreamFilter {
         }
     }
     
-    private static void insert(Stream stream, String s) throws IOException {
-        byte[] b = s.getBytes("ascii");
+    private static void insert(Stream stream, String s) {
+        byte[] b;
+        try {
+            b = s.getBytes("ascii");
+        } catch (UnsupportedEncodingException ex) {
+            // We should never get here
+            throw new StreamException(ex);
+        }
         stream.insert(b, 0, b.length);
     }
     
-    protected String processRequest(String request) throws IOException {
+    protected String processRequest(String request) {
         return request;
     }
     
-    protected String processHeader(String name, String value) throws IOException {
+    protected String processHeader(String name, String value) {
         return value;
     }
 }

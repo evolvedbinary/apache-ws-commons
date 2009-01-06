@@ -24,6 +24,7 @@ import org.apache.ws.commons.tcpmon.core.filter.HttpProxyClientHandler;
 import org.apache.ws.commons.tcpmon.core.filter.HttpProxyServerHandler;
 import org.apache.ws.commons.tcpmon.core.filter.Pipeline;
 import org.apache.ws.commons.tcpmon.core.filter.RequestLineExtractor;
+import org.apache.ws.commons.tcpmon.core.filter.StreamException;
 import org.apache.ws.commons.tcpmon.core.filter.Tee;
 import org.apache.ws.commons.tcpmon.core.filter.XmlFormatFilter;
 
@@ -153,8 +154,12 @@ public abstract class AbstractConnection extends Thread {
             });
             if (config.isProxy()) {
                 requestPipeline.addFilter(new HttpProxyServerHandler() {
-                    protected void handleConnection(String host, int port) throws IOException {
-                        outSocket = new Socket(host, port);
+                    protected void handleConnection(String host, int port) {
+                        try {
+                            outSocket = new Socket(host, port);
+                        } catch (IOException ex) {
+                            throw new StreamException(ex);
+                        }
                     }
                 });
             } else if (HTTPProxyHost != null) {

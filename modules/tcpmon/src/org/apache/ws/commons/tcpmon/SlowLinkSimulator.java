@@ -16,8 +16,6 @@
 
 package org.apache.ws.commons.tcpmon;
 
-import java.io.IOException;
-
 import org.apache.ws.commons.tcpmon.core.filter.Stream;
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
 
@@ -109,7 +107,7 @@ public class SlowLinkSimulator implements StreamFilter {
         }
     }
 
-    public void invoke(Stream stream) throws IOException {
+    public void invoke(Stream stream) {
         pump(stream.available());
         stream.skipAll();
     }
