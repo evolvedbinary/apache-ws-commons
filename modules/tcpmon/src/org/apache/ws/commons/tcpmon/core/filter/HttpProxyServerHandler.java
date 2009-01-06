@@ -20,10 +20,10 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * Filter that rewrites an HTTP proxy request to a plain HTTP request.
+ * Handler that rewrites an HTTP proxy request to a plain HTTP request.
  */
-public abstract class HttpProxyServerHandler extends HttpRequestFilter {
-    protected String processRequest(String request) {
+public abstract class HttpProxyServerHandler extends AbstractHttpRequestHandler {
+    public String processRequest(String request) {
         String[] parts = request.split(" ");
         URL url;
         try {

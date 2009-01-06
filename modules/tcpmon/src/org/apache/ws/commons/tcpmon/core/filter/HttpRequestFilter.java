@@ -17,17 +17,26 @@
 package org.apache.ws.commons.tcpmon.core.filter;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Abstract filter that allows HTTP request rewriting.
+ * Filter that parses HTTP requests and invokes a set of {@link HTTPRequestHandler}
+ * implementation.
  */
-public abstract class HttpRequestFilter implements StreamFilter {
+public class HttpRequestFilter implements StreamFilter {
     private static final int STATE_REQUEST = 0;
     private static final int STATE_HEADER = 1;
     private static final int STATE_DONE = 2;
     
+    private List handlers = new LinkedList();
     private int state = STATE_REQUEST;
-    
+
+    public void addHandler(HttpRequestHandler handler) {
+        handlers.add(handler);
+    }
+
     public void invoke(Stream stream) {
         while (stream.available() > 0) {
             switch (state) {
@@ -102,11 +111,20 @@ public abstract class HttpRequestFilter implements StreamFilter {
         stream.insert(b, 0, b.length);
     }
     
-    protected String processRequest(String request) {
+    private String processRequest(String request) {
+        for (Iterator it = handlers.iterator(); it.hasNext(); ) {
+            request = ((HttpRequestHandler)it.next()).processRequest(request);
+        }
         return request;
     }
     
-    protected String processHeader(String name, String value) {
+    private String processHeader(String name, String value) {
+        for (Iterator it = handlers.iterator(); it.hasNext(); ) {
+            value = ((HttpRequestHandler)it.next()).processHeader(name, value);
+            if (value == null) {
+                break;
+            }
+        }
         return value;
     }
 }

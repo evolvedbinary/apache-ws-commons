@@ -17,9 +17,9 @@
 package org.apache.ws.commons.tcpmon.core.filter;
 
 /**
- * Filter that replaces the value of a given HTTP header.
+ * Handler that replaces the value of a given HTTP header.
  */
-public class HttpHeaderRewriter extends HttpRequestFilter {
+public class HttpHeaderRewriter extends AbstractHttpRequestHandler {
     private final String headerName;
     private final String newValue;
     
@@ -28,7 +28,7 @@ public class HttpHeaderRewriter extends HttpRequestFilter {
         this.newValue = newValue;
     }
 
-    protected String processHeader(String name, String value) {
+    public String processHeader(String name, String value) {
         return headerName.equals(name) ? newValue : value;
     }
 }

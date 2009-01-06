@@ -22,6 +22,7 @@ import org.apache.ws.commons.tcpmon.core.filter.CharsetDecoderFilter;
 import org.apache.ws.commons.tcpmon.core.filter.HttpHeaderRewriter;
 import org.apache.ws.commons.tcpmon.core.filter.HttpProxyClientHandler;
 import org.apache.ws.commons.tcpmon.core.filter.HttpProxyServerHandler;
+import org.apache.ws.commons.tcpmon.core.filter.HttpRequestFilter;
 import org.apache.ws.commons.tcpmon.core.filter.Pipeline;
 import org.apache.ws.commons.tcpmon.core.filter.RequestLineExtractor;
 import org.apache.ws.commons.tcpmon.core.filter.StreamException;
@@ -152,8 +153,10 @@ public abstract class AbstractConnection extends Thread {
                     setRequest(requestLine);
                 }
             });
+            HttpRequestFilter requestFilter = new HttpRequestFilter();
+            requestPipeline.addFilter(requestFilter);
             if (config.isProxy()) {
-                requestPipeline.addFilter(new HttpProxyServerHandler() {
+                requestFilter.addHandler(new HttpProxyServerHandler() {
                     protected void handleConnection(String host, int port) {
                         try {
                             outSocket = new Socket(host, port);
@@ -163,10 +166,10 @@ public abstract class AbstractConnection extends Thread {
                     }
                 });
             } else if (HTTPProxyHost != null) {
-                requestPipeline.addFilter(new HttpProxyClientHandler(targetHost, targetPort));
+                requestFilter.addHandler(new HttpProxyClientHandler(targetHost, targetPort));
                 outSocket = new Socket(HTTPProxyHost, HTTPProxyPort);
             } else {
-                requestPipeline.addFilter(new HttpHeaderRewriter("Host", targetHost + ":" + targetPort));
+                requestFilter.addHandler(new HttpHeaderRewriter("Host", targetHost + ":" + targetPort));
                 outSocket = new Socket(targetHost, targetPort);
             }
             requestPipeline.addFilter(config.getSlowLink());

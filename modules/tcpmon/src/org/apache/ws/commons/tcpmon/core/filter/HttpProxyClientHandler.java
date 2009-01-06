@@ -17,9 +17,9 @@
 package org.apache.ws.commons.tcpmon.core.filter;
 
 /**
- * Filter that rewrites a plain HTTP request to an HTTP proxy request.
+ * Handler that rewrites a plain HTTP request to an HTTP proxy request.
  */
-public class HttpProxyClientHandler extends HttpRequestFilter {
+public class HttpProxyClientHandler extends AbstractHttpRequestHandler {
     private final String targetHost;
     private final int targetPort;
     
@@ -28,7 +28,7 @@ public class HttpProxyClientHandler extends HttpRequestFilter {
         this.targetPort = targetPort;
     }
     
-    protected String processRequest(String request) {
+    public String processRequest(String request) {
         String[] parts = request.split(" ");
         return parts[0] + " http://" + targetHost + ":" + targetPort + parts[1] + " " + parts[2];
     }
