@@ -150,4 +150,8 @@ public interface Stream {
      * <code>s.skip(s.available())</code>.
      */
     void skipAll();
+    
+    void pushFilter(StreamFilter filter);
+    
+    void popFilter();
 }

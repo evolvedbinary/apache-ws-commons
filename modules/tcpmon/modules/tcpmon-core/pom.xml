@@ -30,6 +30,13 @@
     <packaging>jar</packaging>
     <description>TCPMon is a utility that allows the messages to be viewed and resent. It is very much useful
     as a debug tool. It has originally being part of Axis1 and now stands as an independent project.</description>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-activation_1.1_spec</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+    </dependencies>
     <build>
         <sourceDirectory>../../src</sourceDirectory>
         <resources>

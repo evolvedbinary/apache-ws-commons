@@ -17,14 +17,19 @@
 package org.apache.ws.commons.tcpmon.core.filter;
 
 /**
- * Abstract implementation of {@link HttpRequestHandler} with default behavior.
+ * Entity processor that processes HTTP identity transfer encoding.
  */
-public abstract class AbstractHttpRequestHandler implements HttpRequestHandler {
-    public String processRequestLine(String requestLine) {
-        return requestLine;
+public class IdentityDecoder implements EntityProcessor {
+    private int remaining;
+
+    public IdentityDecoder(int contentLength) {
+        remaining = contentLength;
     }
 
-    public String handleHeader(String name, String value) {
-        return value;
+    public boolean process(Stream stream) {
+        int c = Math.min(stream.available(), remaining);
+        stream.skip(c);
+        remaining -= c;
+        return remaining == 0;
     }
 }

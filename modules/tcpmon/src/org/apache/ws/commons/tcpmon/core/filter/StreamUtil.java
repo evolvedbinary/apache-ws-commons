@@ -16,6 +16,8 @@
 
 package org.apache.ws.commons.tcpmon.core.filter;
 
+import java.io.UnsupportedEncodingException;
+
 /**
  * Class containing utility methods to work with streams.
  */
@@ -50,5 +52,43 @@ public class StreamUtil {
             buffer.append((char)stream.get(i));
         }
         return buffer.toString();
+    }
+    
+    public static void insertAsciiString(Stream stream, String s) {
+        byte[] b;
+        try {
+            b = s.getBytes("ascii");
+        } catch (UnsupportedEncodingException ex) {
+            // We should never get here
+            throw new StreamException(ex);
+        }
+        stream.insert(b, 0, b.length);
+    }
+    
+    public static int search(Stream stream, byte[][] patterns) {
+        int[] matchLengths = new int[patterns.length];
+        for (int i=0; i<stream.available(); i++) {
+            byte b = (byte)stream.get(i);
+            for (int j=0; j<patterns.length; j++) {
+                byte[] pattern = patterns[j];
+                int matchLength = matchLengths[j];
+                if (pattern[matchLength] == b) {
+                    matchLength++;
+                    if (matchLength == pattern.length) {
+                        stream.skip(i+1-matchLength);
+                        return j;
+                    }
+                } else {
+                    matchLength = 0;
+                }
+                matchLengths[j] = matchLength;
+            }
+        }
+        int maxMatchLength = 0;
+        for (int j=0; j<patterns.length; j++) {
+            maxMatchLength = Math.max(maxMatchLength, matchLengths[j]);
+        }
+        stream.skip(stream.available()-maxMatchLength);
+        return -1;
     }
 }

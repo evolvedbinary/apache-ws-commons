@@ -52,6 +52,7 @@ public class Pipeline {
         private byte[] outBuffer;
         private int outLength;
         private boolean eosSignalled; // Set to true if the next filter has been invoked with eos == true
+        private StreamImpl nested;
         
         public StreamImpl(StreamFilter filter) {
             this.filter = filter;
@@ -142,6 +143,7 @@ public class Pipeline {
             if (eos && eosSignalled) {
                 throw new IllegalStateException();
             }
+            StreamImpl next = nested == null ? this.next : nested;
             if (next != null) {
                 next.invoke(buffer, offset, length, eos, preserve);
             } else if (!preserve) {
@@ -273,6 +275,20 @@ public class Pipeline {
 
         public void skipAll() {
             skip(inLength);
+        }
+
+        public void pushFilter(StreamFilter filter) {
+            flushSkip(false);
+            flushOutput(false);
+            StreamImpl stream = new StreamImpl(filter);
+            stream.setNext(nested == null ? next : nested);
+            nested = stream;
+        }
+
+        public void popFilter() {
+            flushSkip(false);
+            flushOutput(false);
+            nested = nested.next == next ? null : nested.next;
         }
     }
     

@@ -17,14 +17,16 @@
 package org.apache.ws.commons.tcpmon.core.filter;
 
 /**
- * Abstract implementation of {@link HttpRequestHandler} with default behavior.
+ * Factory that returns filters for given content types.
  */
-public abstract class AbstractHttpRequestHandler implements HttpRequestHandler {
-    public String processRequestLine(String requestLine) {
-        return requestLine;
-    }
-
-    public String handleHeader(String name, String value) {
-        return value;
-    }
+public interface ContentFilterFactory {
+    /**
+     * Get a new filter for the given content type.
+     * 
+     * @param contentType the content type
+     * @return the filter to apply to the content or
+     *         <code>null</code> if no filter should
+     *         be applied
+     */
+    StreamFilter getContentFilter(String contentType);
 }

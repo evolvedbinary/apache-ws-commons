@@ -16,15 +16,25 @@
 
 package org.apache.ws.commons.tcpmon.core.filter;
 
+import java.util.Iterator;
+
 /**
- * Abstract implementation of {@link HttpRequestHandler} with default behavior.
+ * Filter that parses HTTP responses and invokes a set of {@link HTTPResponseHandler}
+ * implementations.
  */
-public abstract class AbstractHttpRequestHandler implements HttpRequestHandler {
-    public String processRequestLine(String requestLine) {
-        return requestLine;
+public class HttpResponseFilter extends HttpFilter {
+    public HttpResponseFilter(boolean decodeTransferEncoding) {
+        super(decodeTransferEncoding);
     }
 
-    public String handleHeader(String name, String value) {
-        return value;
+    public void addHandler(HttpResponseHandler handler) {
+        handlers.add(handler);
+    }
+
+    protected String processFirstLine(String firstLine) {
+        for (Iterator it = handlers.iterator(); it.hasNext(); ) {
+            firstLine = ((HttpResponseHandler)it.next()).processResponseLine(firstLine);
+        }
+        return firstLine;
     }
 }

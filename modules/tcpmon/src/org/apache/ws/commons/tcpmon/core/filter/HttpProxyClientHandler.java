@@ -28,8 +28,8 @@ public class HttpProxyClientHandler extends AbstractHttpRequestHandler {
         this.targetPort = targetPort;
     }
     
-    public String processRequest(String request) {
-        String[] parts = request.split(" ");
+    public String processRequestLine(String requestLine) {
+        String[] parts = requestLine.split(" ");
         return parts[0] + " http://" + targetHost + ":" + targetPort + parts[1] + " " + parts[2];
     }
 }

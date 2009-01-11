@@ -17,14 +17,16 @@
 package org.apache.ws.commons.tcpmon.core.filter;
 
 /**
- * Abstract implementation of {@link HttpRequestHandler} with default behavior.
+ * Handle headers extracted by {@link HeaderProcessor}.
  */
-public abstract class AbstractHttpRequestHandler implements HttpRequestHandler {
-    public String processRequestLine(String requestLine) {
-        return requestLine;
-    }
-
-    public String handleHeader(String name, String value) {
-        return value;
-    }
+public interface HeaderHandler {
+    /**
+     * Handle a header.
+     * 
+     * @param name the name of the header
+     * @param value the value of the header
+     * @return the new value of the header or <code>null</code> if
+     *         the {@link HeaderProcessor} should remove the header
+     */
+    String handleHeader(String name, String value);
 }

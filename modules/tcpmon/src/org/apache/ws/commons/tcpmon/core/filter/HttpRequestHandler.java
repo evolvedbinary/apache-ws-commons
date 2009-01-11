@@ -19,7 +19,6 @@ package org.apache.ws.commons.tcpmon.core.filter;
 /**
  * Interface implemented by handlers invoked by {@link HttpRequestFilter}.
  */
-public interface HttpRequestHandler {
-    String processRequest(String request);
-    String processHeader(String name, String value);
+public interface HttpRequestHandler extends HeaderHandler {
+    String processRequestLine(String requestLine);
 }

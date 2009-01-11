@@ -23,8 +23,8 @@ import java.net.URL;
  * Handler that rewrites an HTTP proxy request to a plain HTTP request.
  */
 public abstract class HttpProxyServerHandler extends AbstractHttpRequestHandler {
-    public String processRequest(String request) {
-        String[] parts = request.split(" ");
+    public String processRequestLine(String requestLine) {
+        String[] parts = requestLine.split(" ");
         URL url;
         try {
             url = new URL(parts[1]);

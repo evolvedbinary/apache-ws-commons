@@ -19,15 +19,16 @@ package org.apache.ws.commons.tcpmon.core;
 import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
 import org.apache.ws.commons.tcpmon.TCPMonBundle;
 import org.apache.ws.commons.tcpmon.core.filter.CharsetDecoderFilter;
+import org.apache.ws.commons.tcpmon.core.filter.DefaultContentFilterFactory;
 import org.apache.ws.commons.tcpmon.core.filter.HttpHeaderRewriter;
 import org.apache.ws.commons.tcpmon.core.filter.HttpProxyClientHandler;
 import org.apache.ws.commons.tcpmon.core.filter.HttpProxyServerHandler;
 import org.apache.ws.commons.tcpmon.core.filter.HttpRequestFilter;
+import org.apache.ws.commons.tcpmon.core.filter.HttpResponseFilter;
 import org.apache.ws.commons.tcpmon.core.filter.Pipeline;
 import org.apache.ws.commons.tcpmon.core.filter.RequestLineExtractor;
 import org.apache.ws.commons.tcpmon.core.filter.StreamException;
 import org.apache.ws.commons.tcpmon.core.filter.Tee;
-import org.apache.ws.commons.tcpmon.core.filter.XmlFormatFilter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -153,7 +154,7 @@ public abstract class AbstractConnection extends Thread {
                     setRequest(requestLine);
                 }
             });
-            HttpRequestFilter requestFilter = new HttpRequestFilter();
+            HttpRequestFilter requestFilter = new HttpRequestFilter(false);
             requestPipeline.addFilter(requestFilter);
             if (config.isProxy()) {
                 requestFilter.addHandler(new HttpProxyServerHandler() {
@@ -176,7 +177,9 @@ public abstract class AbstractConnection extends Thread {
             Tee requestTee = new Tee();
             requestPipeline.addFilter(requestTee);
             if (config.isXmlFormat()) {
-                requestPipeline.addFilter(new XmlFormatFilter(3));
+                HttpRequestFilter filter = new HttpRequestFilter(true);
+                filter.setContentFilterFactory(new DefaultContentFilterFactory());
+                requestPipeline.addFilter(filter);
             }
             requestPipeline.addFilter(new CharsetDecoderFilter(inputWriter));
             
@@ -195,7 +198,9 @@ public abstract class AbstractConnection extends Thread {
                 responsePipeline.addFilter(new Tee(tmpOut1));
             }
             if (config.isXmlFormat()) {
-                responsePipeline.addFilter(new XmlFormatFilter(3));
+                HttpResponseFilter filter = new HttpResponseFilter(true);
+                filter.setContentFilterFactory(new DefaultContentFilterFactory());
+                responsePipeline.addFilter(filter);
             }
             responsePipeline.addFilter(new CharsetDecoderFilter(outputWriter));
             

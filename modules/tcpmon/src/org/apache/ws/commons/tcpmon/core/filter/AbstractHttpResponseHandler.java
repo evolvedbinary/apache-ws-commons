@@ -17,11 +17,11 @@
 package org.apache.ws.commons.tcpmon.core.filter;
 
 /**
- * Abstract implementation of {@link HttpRequestHandler} with default behavior.
+ * Abstract implementation of {@link HttpResponseHandler} with default behavior.
  */
-public abstract class AbstractHttpRequestHandler implements HttpRequestHandler {
-    public String processRequestLine(String requestLine) {
-        return requestLine;
+public class AbstractHttpResponseHandler implements HttpResponseHandler {
+    public String processResponseLine(String responseLine) {
+        return responseLine;
     }
 
     public String handleHeader(String name, String value) {
