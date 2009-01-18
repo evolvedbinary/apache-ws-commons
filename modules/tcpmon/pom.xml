@@ -58,6 +58,15 @@
             scm:svn:https://svn.apache.org/repos/asf/webservices/commons/trunk/modules/tcpmon</developerConnection>
         <url>http://svn.apache.org/viewcvs.cgi/webservices/commons/trunk/modules/tcpmon</url>
     </scm>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>3.8.2</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
     <modules>
         <module>modules/tcpmon-core</module>
         <module>modules/tcpmon-ui</module>

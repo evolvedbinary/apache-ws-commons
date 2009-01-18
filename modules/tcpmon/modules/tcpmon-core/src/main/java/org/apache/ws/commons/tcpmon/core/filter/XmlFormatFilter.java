@@ -21,6 +21,7 @@ package org.apache.ws.commons.tcpmon.core.filter;
  */
 public class XmlFormatFilter implements StreamFilter {
     private final int tabWidth;
+    private boolean firstIndent = true;
     private int nextIndent = -1;
     private int previousIndent = -1;
     
@@ -30,32 +31,29 @@ public class XmlFormatFilter implements StreamFilter {
 
     public void invoke(Stream stream) {
         try {
-            boolean inXML = false;
             while (stream.available() > 0) {
-                int thisIndent = -1;
+                boolean doIndent = false;
                 if (stream.get(0) == '<' && stream.get(1) != '/') {
                     previousIndent = nextIndent++;
-                    thisIndent = nextIndent;
-                    inXML = true;
+                    doIndent = true;
                 } else if (stream.get(0) == '<' && stream.get(1) == '/') {
-                    if (previousIndent > nextIndent) {
-                        thisIndent = nextIndent;
-                    }
+                    doIndent = previousIndent > nextIndent;
                     previousIndent = nextIndent--;
-                    inXML = true;
-                } else if (stream.get(0) == '/' && stream.get(1) == '>') {
+                } else if ((stream.get(0) == '/' || stream.get(0) == '?')
+                        && stream.get(1) == '>') {
                     previousIndent = nextIndent--;
-                    inXML = true;
                 }
-                if (thisIndent != -1) {
-                    if (thisIndent > 0) {
+                if (doIndent) {
+                    if (firstIndent) {
+                        firstIndent = false;
+                    } else {
                         stream.insert((byte) '\n');
                     }
-                    for (int i = tabWidth * thisIndent; i > 0; i--) {
+                    for (int i = tabWidth * nextIndent; i > 0; i--) {
                         stream.insert((byte) ' ');
                     }
                 }
-                if (!inXML || (stream.get(0) != '\n' && stream.get(0) != '\r')) {
+                if (stream.get(0) != '\n' && stream.get(0) != '\r') {
                     stream.skip();
                 } else {
                     stream.discard();
