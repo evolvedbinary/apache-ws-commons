@@ -73,9 +73,6 @@
                 <configuration>
                     <xdocDirectory>xdocs</xdocDirectory>
                     <siteDirectory>site</siteDirectory>
-                    <moduleExcludes>
-                        <xdoc>navigation.xml</xdoc>
-                    </moduleExcludes>
                 </configuration>
             </plugin>
             <plugin>
