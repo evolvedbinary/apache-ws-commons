@@ -498,14 +498,6 @@ class Listener extends AbstractListener {
     }
 
     /**
-     * Method close
-     */
-    public void close() {
-        stop();
-        notebook.remove(panel);
-    }
-
-    /**
      * Method stop
      */
     public void stop() {
@@ -551,6 +543,14 @@ class Listener extends AbstractListener {
             ((Connection) connections.get(0)).remove();
         }
         lsm.setSelectionInterval(0, 0);
+    }
+
+    /**
+     * Method close
+     */
+    public void close() {
+        stop();
+        notebook.remove(panel);
     }
 
     /**
@@ -608,8 +608,8 @@ class Listener extends AbstractListener {
      * Method resend
      */
     public void resend() {
-        int rc;
         try {
+            int rc;
             ListSelectionModel lsm = connectionTable.getSelectionModel();
             rc = lsm.getLeadSelectionIndex();
             if (rc == 0) {
@@ -626,7 +626,6 @@ class Listener extends AbstractListener {
             // Fix Content-Length HTTP headers
             if (text.startsWith("POST ") || text.startsWith("GET ")) {
 
-                // System.err.println("IN CL" );
                 int pos1, pos2, pos3;
                 String headers;
                 pos3 = text.indexOf("\n\n");
@@ -641,8 +640,6 @@ class Listener extends AbstractListener {
                 headers = text.substring(0, pos3);
                 pos1 = headers.indexOf("Content-Length:");
 
-                // System.err.println("pos1: " + pos1 );
-                // System.err.println("pos3: " + pos3 );
                 if (pos1 != -1) {
                     int newLen = text.length() - pos3;
                     pos2 = headers.indexOf("\n", pos1);

@@ -399,6 +399,20 @@ class Listener extends AbstractListener {
         }
     }
 
+    public void start() {
+        int port = Integer.parseInt(portField.getText());
+        portField.setText("" + port);
+        portTabItem.setText(TCPMonBundle.getMessage("port01", "Port") + " " + port);
+        int tmp = Integer.parseInt(tPortField.getText());
+        tPortField.setText("" + tmp);
+        sw = new SocketWaiter(this, port);
+        stopButton.setText(TCPMonBundle.getMessage("stop00", "Stop"));
+        portField.setEditable(false);
+        hostField.setEditable(false);
+        tPortField.setEditable(false);
+        isProxyBox.setEnabled(false);
+    }
+
     public void stop() {
         try {
             for (int i = 0; i < connections.size(); i++) {
@@ -415,21 +429,6 @@ class Listener extends AbstractListener {
             e.printStackTrace();
         }
     }
-
-    public void start() {
-        int port = Integer.parseInt(portField.getText());
-        portField.setText("" + port);
-        portTabItem.setText(TCPMonBundle.getMessage("port01", "Port") + " " + port);
-        int tmp = Integer.parseInt(tPortField.getText());
-        tPortField.setText("" + tmp);
-        sw = new SocketWaiter(this, port);
-        stopButton.setText(TCPMonBundle.getMessage("stop00", "Stop"));
-        portField.setEditable(false);
-        hostField.setEditable(false);
-        tPortField.setEditable(false);
-        isProxyBox.setEnabled(false);
-    }
-
 
     public void remove() {
         int index;
@@ -480,47 +479,46 @@ class Listener extends AbstractListener {
         fd.setText("Save");
         fd.setFilterPath(".");
         String path = fd.open();
-        if (path == null) {
-            return;
-        }
-        try {
-            File file = new File(path);
-            FileOutputStream out = new FileOutputStream(file);
-            int rc = tableEnhancer.getLeadSelectionIndex();
-            int n = 0;
-            for (Iterator i = connections.iterator(); i.hasNext();
-                 n++) {
-                Connection conn = (Connection) i.next();
-                if (tableEnhancer.isSelectedIndex(n + 1)
-                        || (!(i.hasNext())
-                        && (tableEnhancer.getLeadSelectionIndex() == 0))) {
-                    rc = Integer.parseInt(portField.getText());
-                    out.write("\n==============\n".getBytes());
-                    out.write(((TCPMonBundle.getMessage("listenPort01",
-                            "Listen Port:")
-                            + " " + rc + "\n")).getBytes());
-                    out.write((TCPMonBundle.getMessage("targetHost01",
-                            "Target Host:")
-                            + " " + hostField.getText()
-                            + "\n").getBytes());
-                    rc = Integer.parseInt(tPortField.getText());
-                    out.write(((TCPMonBundle.getMessage("targetPort01",
-                            "Target Port:")
-                            + " " + rc + "\n")).getBytes());
-                    out.write((("==== "
-                            + TCPMonBundle.getMessage("request01", "Request")
-                            + " ====\n")).getBytes());
-                    out.write(conn.inputText.getText().getBytes());
-                    out.write((("==== "
-                            + TCPMonBundle.getMessage("response00", "Response")
-                            + " ====\n")).getBytes());
-                    out.write(conn.outputText.getText().getBytes());
-                    out.write("\n==============\n".getBytes());
+        if (path != null) {
+            try {
+                File file = new File(path);
+                FileOutputStream out = new FileOutputStream(file);
+                int rc = tableEnhancer.getLeadSelectionIndex();
+                int n = 0;
+                for (Iterator i = connections.iterator(); i.hasNext();
+                     n++) {
+                    Connection conn = (Connection) i.next();
+                    if (tableEnhancer.isSelectedIndex(n + 1)
+                            || (!(i.hasNext())
+                            && (tableEnhancer.getLeadSelectionIndex() == 0))) {
+                        rc = Integer.parseInt(portField.getText());
+                        out.write("\n==============\n".getBytes());
+                        out.write(((TCPMonBundle.getMessage("listenPort01",
+                                "Listen Port:")
+                                + " " + rc + "\n")).getBytes());
+                        out.write((TCPMonBundle.getMessage("targetHost01",
+                                "Target Host:")
+                                + " " + hostField.getText()
+                                + "\n").getBytes());
+                        rc = Integer.parseInt(tPortField.getText());
+                        out.write(((TCPMonBundle.getMessage("targetPort01",
+                                "Target Port:")
+                                + " " + rc + "\n")).getBytes());
+                        out.write((("==== "
+                                + TCPMonBundle.getMessage("request01", "Request")
+                                + " ====\n")).getBytes());
+                        out.write(conn.inputText.getText().getBytes());
+                        out.write((("==== "
+                                + TCPMonBundle.getMessage("response00", "Response")
+                                + " ====\n")).getBytes());
+                        out.write(conn.outputText.getText().getBytes());
+                        out.write("\n==============\n".getBytes());
+                    }
                 }
+                out.close();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
