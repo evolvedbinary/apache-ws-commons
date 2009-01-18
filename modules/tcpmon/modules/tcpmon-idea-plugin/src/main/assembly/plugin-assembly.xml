@@ -28,8 +28,11 @@
             <outputDirectory>classes</outputDirectory>
          </fileSet>
         <fileSet>
-            <directory>${basedir}/../../resources/idea</directory>
+            <directory>/</directory>
             <outputDirectory>META-INF</outputDirectory>
+            <includes>
+                <include>plugin.xml</include>
+            </includes>
          </fileSet>
     </fileSets>
     <dependencySets>

@@ -33,7 +33,7 @@
             <filtered>true</filtered>
         </fileSet>
         <fileSet>
-            <directory>scripts</directory>
+            <directory>modules/tcpmon-ui/src/main/scripts</directory>
             <outputDirectory>build</outputDirectory>
             <filtered>true</filtered>
         </fileSet>
