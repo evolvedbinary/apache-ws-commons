@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon.core.filter;
+package org.apache.ws.commons.tcpmon.core.filter.mime;
+
+import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
 
 /**
  * Factory that returns filters for given content types.

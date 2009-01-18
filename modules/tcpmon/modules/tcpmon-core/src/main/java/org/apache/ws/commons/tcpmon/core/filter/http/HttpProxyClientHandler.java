@@ -14,27 +14,22 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon.core.filter;
-
-import java.net.MalformedURLException;
-import java.net.URL;
+package org.apache.ws.commons.tcpmon.core.filter.http;
 
 /**
- * Handler that rewrites an HTTP proxy request to a plain HTTP request.
+ * Handler that rewrites a plain HTTP request to an HTTP proxy request.
  */
-public abstract class HttpProxyServerHandler extends AbstractHttpRequestHandler {
-    public String processRequestLine(String requestLine) {
-        String[] parts = requestLine.split(" ");
-        URL url;
-        try {
-            url = new URL(parts[1]);
-        } catch (MalformedURLException ex) {
-            throw new StreamException(ex);
-        }
-        int port = url.getPort();
-        handleConnection(url.getHost(), port == -1 ? 80 : port);
-        return parts[0] + " " + url.getFile() + " " + parts[2];
+public class HttpProxyClientHandler extends AbstractHttpRequestHandler {
+    private final String targetHost;
+    private final int targetPort;
+    
+    public HttpProxyClientHandler(String targetHost, int targetPort) {
+        this.targetHost = targetHost;
+        this.targetPort = targetPort;
     }
     
-    protected abstract void handleConnection(String host, int port);
+    public String processRequestLine(String requestLine) {
+        String[] parts = requestLine.split(" ");
+        return parts[0] + " http://" + targetHost + ":" + targetPort + parts[1] + " " + parts[2];
+    }
 }

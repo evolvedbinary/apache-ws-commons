@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon.core.filter;
+package org.apache.ws.commons.tcpmon.core.filter.http;
+
+import org.apache.ws.commons.tcpmon.core.filter.EntityProcessor;
+import org.apache.ws.commons.tcpmon.core.filter.Stream;
+import org.apache.ws.commons.tcpmon.core.filter.StreamException;
+import org.apache.ws.commons.tcpmon.core.filter.StreamUtil;
 
 /**
  * Entity processor that processes HTTP chunked transfer encoding.

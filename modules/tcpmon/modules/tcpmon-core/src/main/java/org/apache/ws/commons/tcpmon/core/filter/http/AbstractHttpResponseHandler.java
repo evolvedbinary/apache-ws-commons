@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon.core.filter;
+package org.apache.ws.commons.tcpmon.core.filter.http;
 
 /**
  * Abstract implementation of {@link HttpResponseHandler} with default behavior.

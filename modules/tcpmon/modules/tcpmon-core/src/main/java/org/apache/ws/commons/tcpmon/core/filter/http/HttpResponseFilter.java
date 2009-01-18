@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon.core.filter;
+package org.apache.ws.commons.tcpmon.core.filter.http;
 
 import java.util.Iterator;
 

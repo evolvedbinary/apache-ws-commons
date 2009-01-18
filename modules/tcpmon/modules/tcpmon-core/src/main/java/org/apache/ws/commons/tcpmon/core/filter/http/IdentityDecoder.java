@@ -14,11 +14,25 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon.core.filter;
+package org.apache.ws.commons.tcpmon.core.filter.http;
+
+import org.apache.ws.commons.tcpmon.core.filter.EntityProcessor;
+import org.apache.ws.commons.tcpmon.core.filter.Stream;
 
 /**
- * Interface implemented by handlers invoked by {@link HttpResponseFilter}.
+ * Entity processor that processes HTTP identity transfer encoding.
  */
-public interface HttpResponseHandler extends HeaderHandler {
-    String processResponseLine(String responseLine);
+public class IdentityDecoder implements EntityProcessor {
+    private int remaining;
+
+    public IdentityDecoder(int contentLength) {
+        remaining = contentLength;
+    }
+
+    public boolean process(Stream stream) {
+        int c = Math.min(stream.available(), remaining);
+        stream.skip(c);
+        remaining -= c;
+        return remaining == 0;
+    }
 }

@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon.core.filter;
+package org.apache.ws.commons.tcpmon.core.filter.http;
+
+import org.apache.ws.commons.tcpmon.core.filter.HeaderHandler;
 
 /**
- * Abstract implementation of {@link HttpRequestHandler} with default behavior.
+ * Interface implemented by handlers invoked by {@link HttpRequestFilter}.
  */
-public abstract class AbstractHttpRequestHandler implements HttpRequestHandler {
-    public String processRequestLine(String requestLine) {
-        return requestLine;
-    }
-
-    public String handleHeader(String name, String value) {
-        return value;
-    }
+public interface HttpRequestHandler extends HeaderHandler {
+    String processRequestLine(String requestLine);
 }

@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon.core.filter;
+package org.apache.ws.commons.tcpmon.core.filter.mime;
+
+import org.apache.ws.commons.tcpmon.core.filter.HeaderHandler;
+import org.apache.ws.commons.tcpmon.core.filter.HeaderProcessor;
+import org.apache.ws.commons.tcpmon.core.filter.Stream;
+import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
 
 /**
  * Filter that processes a MIME part.

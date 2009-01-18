@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon.core.filter;
+package org.apache.ws.commons.tcpmon.core.filter.http;
 
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.apache.ws.commons.tcpmon.core.filter.EntityProcessor;
+import org.apache.ws.commons.tcpmon.core.filter.HeaderHandler;
+import org.apache.ws.commons.tcpmon.core.filter.HeaderProcessor;
+import org.apache.ws.commons.tcpmon.core.filter.ReadOnlyStream;
+import org.apache.ws.commons.tcpmon.core.filter.Stream;
+import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
+import org.apache.ws.commons.tcpmon.core.filter.StreamUtil;
+import org.apache.ws.commons.tcpmon.core.filter.mime.ContentFilterFactory;
 
 /**
  * Base class for {@link HttpRequestFilter} and {@link HttpResponseFilter}.

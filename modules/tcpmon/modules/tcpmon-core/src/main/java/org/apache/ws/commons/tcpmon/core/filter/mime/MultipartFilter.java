@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon.core.filter;
+package org.apache.ws.commons.tcpmon.core.filter.mime;
 
 import java.io.UnsupportedEncodingException;
 
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
+
+import org.apache.ws.commons.tcpmon.core.filter.Stream;
+import org.apache.ws.commons.tcpmon.core.filter.StreamException;
+import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
+import org.apache.ws.commons.tcpmon.core.filter.StreamUtil;
 
 /**
  * Filter that processes multipart/* messages.

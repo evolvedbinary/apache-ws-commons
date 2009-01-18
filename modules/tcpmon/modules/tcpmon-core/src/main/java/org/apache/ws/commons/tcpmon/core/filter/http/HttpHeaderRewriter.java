@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon.core.filter;
+package org.apache.ws.commons.tcpmon.core.filter.http;
 
 /**
- * Handler that rewrites a plain HTTP request to an HTTP proxy request.
+ * Handler that replaces the value of a given HTTP header.
  */
-public class HttpProxyClientHandler extends AbstractHttpRequestHandler {
-    private final String targetHost;
-    private final int targetPort;
+public class HttpHeaderRewriter extends AbstractHttpRequestHandler {
+    private final String headerName;
+    private final String newValue;
     
-    public HttpProxyClientHandler(String targetHost, int targetPort) {
-        this.targetHost = targetHost;
-        this.targetPort = targetPort;
+    public HttpHeaderRewriter(String headerName, String newValue) {
+        this.headerName = headerName;
+        this.newValue = newValue;
     }
-    
-    public String processRequestLine(String requestLine) {
-        String[] parts = requestLine.split(" ");
-        return parts[0] + " http://" + targetHost + ":" + targetPort + parts[1] + " " + parts[2];
+
+    public String handleHeader(String name, String value) {
+        return headerName.equals(name) ? newValue : value;
     }
 }

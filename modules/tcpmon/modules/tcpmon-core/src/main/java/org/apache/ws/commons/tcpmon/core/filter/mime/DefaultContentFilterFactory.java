@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon.core.filter;
+package org.apache.ws.commons.tcpmon.core.filter.mime;
+
+import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
+import org.apache.ws.commons.tcpmon.core.filter.XmlFormatFilter;
 
 /**
  * Default {@link ContentFilterFactory} implementation.
