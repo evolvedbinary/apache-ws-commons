@@ -17,6 +17,7 @@
   ~ under the License.
   -->
 <assembly>
+    <id>plugin-assembly</id>
     <includeBaseDirectory>false</includeBaseDirectory>
     <formats>
         <format>zip</format>
