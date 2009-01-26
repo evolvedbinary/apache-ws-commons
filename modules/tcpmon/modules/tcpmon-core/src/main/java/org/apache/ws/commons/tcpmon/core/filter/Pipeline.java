@@ -19,6 +19,7 @@ package org.apache.ws.commons.tcpmon.core.filter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.util.LinkedList;
 
 /**
@@ -211,6 +212,12 @@ public class Pipeline {
             return c;
         }
 
+        public int read(ByteBuffer buffer) {
+            int c = Math.min(buffer.remaining(), inLength);
+            buffer.put(inBuffer, inOffset, c);
+            return c;
+        }
+
         public void readAll(OutputStream out) throws IOException {
             out.write(inBuffer, inOffset, inLength);
         }
@@ -229,7 +236,7 @@ public class Pipeline {
             inLength -= len;
         }
 
-        public void insert(byte b) {
+        private void prepareOutput() {
             flushSkip(false);
             if (outLength > 0 && outLength == outBuffer.length) {
                 flushOutput(false);
@@ -237,6 +244,10 @@ public class Pipeline {
             if (outBuffer == null) {
                 outBuffer = allocateBuffer();
             }
+        }
+
+        public void insert(byte b) {
+            prepareOutput();
             outBuffer[outLength++] = b;
         }
         
@@ -244,6 +255,15 @@ public class Pipeline {
             flushSkip(false);
             flushOutput(false);
             invokeNext(buffer, offset, length, false, true);
+        }
+
+        public void insert(ByteBuffer buffer) {
+            while (buffer.hasRemaining()) {
+                prepareOutput();
+                int c = Math.min(outBuffer.length-outLength, buffer.remaining());
+                buffer.get(outBuffer, outLength, c);
+                outLength += c;
+            }
         }
 
         public byte skip() {

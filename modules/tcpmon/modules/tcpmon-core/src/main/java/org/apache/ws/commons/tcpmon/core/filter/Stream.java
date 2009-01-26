@@ -18,6 +18,7 @@ package org.apache.ws.commons.tcpmon.core.filter;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 
 /**
  * Interface used by a filter to access the stream flowing through a pipeline.
@@ -78,6 +79,20 @@ public interface Stream {
     int read(byte[] buffer, int offset, int length);
     
     /**
+     * Read data from the stream into a byte buffer, starting from the
+     * current position in the stream.
+     * Calling this method will not modify the current position in
+     * the stream.
+     * The number of bytes read is only limited by the number of available
+     * bytes in the stream and the remaining bytes in the buffer (as returned
+     * by {@link ByteBuffer#remaining()}.
+     * 
+     * @param buffer the buffer into which the data is read
+     * @return the total number of bytes read into the buffer
+     */
+    int read(ByteBuffer buffer);
+    
+    /**
      * Read all currently available data from the stream and
      * copy it to an {@link OutputStream} object.
      * Calling this method will not modify the current position in
@@ -126,6 +141,15 @@ public interface Stream {
      * @param length the number of bytes to insert
      */
     void insert(byte[] buffer, int offset, int length);
+    
+    /**
+     * Insert the content of a byte buffer at the current position in the stream.
+     * The logical position after invocation of this method will
+     * be just after the last inserted byte.
+     * 
+     * @param buffer the byte buffer containing the sequence to be inserted in the stream
+     */
+    void insert(ByteBuffer buffer);
     
     /**
      * Skip the byte at the current position in the stream.

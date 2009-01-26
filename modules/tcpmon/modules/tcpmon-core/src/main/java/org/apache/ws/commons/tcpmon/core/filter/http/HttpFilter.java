@@ -44,7 +44,7 @@ public abstract class HttpFilter implements StreamFilter {
     private int state = STATE_FIRST_LINE;
     private ContentFilterFactory contentFilterFactory;
     private EntityProcessor transferDecoder;
-    private StreamFilter contentFilter;
+    private StreamFilter[] contentFilterChain;
     
     public HttpFilter(boolean decodeTransferEncoding) {
         this.decodeTransferEncoding = decodeTransferEncoding;
@@ -87,8 +87,10 @@ public abstract class HttpFilter implements StreamFilter {
                 case STATE_HEADER: {
                     if (headerProcessor.process(stream)) {
                         state = STATE_CONTENT;
-                        if (contentFilter != null) {
-                            stream.pushFilter(contentFilter);
+                        if (contentFilterChain != null) {
+                            for (int i=contentFilterChain.length-1; i>=0; i--) {
+                                stream.pushFilter(contentFilterChain[i]);
+                            }
                         }
                         break;
                     } else {
@@ -101,8 +103,10 @@ public abstract class HttpFilter implements StreamFilter {
                                 decodeTransferEncoding ? stream : new ReadOnlyStream(stream);
                         if (transferDecoder.process(decoderStream)) {
                             state = STATE_COMPLETE;
-                            if (contentFilter != null) {
-                                stream.popFilter();
+                            if (contentFilterChain != null) {
+                                for (int i=0; i<contentFilterChain.length; i++) {
+                                    stream.popFilter();
+                                }
                             }
                         }
                         break;
@@ -126,7 +130,7 @@ public abstract class HttpFilter implements StreamFilter {
             }
         } else if (name.equalsIgnoreCase("Content-Type")) {
             if (contentFilterFactory != null) {
-                contentFilter = contentFilterFactory.getContentFilter(value);
+                contentFilterChain = contentFilterFactory.getContentFilterChain(value);
             }
         }
         for (Iterator it = handlers.iterator(); it.hasNext(); ) {

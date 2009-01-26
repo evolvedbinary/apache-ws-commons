@@ -18,26 +18,44 @@ package org.apache.ws.commons.tcpmon.core.filter;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CoderResult;
 
 /**
  * Filter that decodes the stream to character data and sends it to a {@link Writer}.
  */
 public class CharsetDecoderFilter implements StreamFilter {
     private final Writer writer;
+    private final CharsetDecoder decoder;
+    private final ByteBuffer inBuffer = ByteBuffer.allocate(64);
+    private final CharBuffer outBuffer = CharBuffer.allocate(64);
 
-    public CharsetDecoderFilter(Writer writer) {
+    public CharsetDecoderFilter(Writer writer, Charset charset) {
         this.writer = writer;
+        decoder = charset.newDecoder();
+    }
+    
+    public CharsetDecoderFilter(Writer writer, String charsetName) {
+        this(writer, Charset.forName(charsetName));
     }
 
     public void invoke(Stream stream) {
-        StringBuffer buffer = new StringBuffer(stream.available());
-        while (stream.available() > 0) {
-            buffer.append((char)stream.skip());
-        }
-        try {
-            writer.write(buffer.toString());
-        } catch (IOException ex) {
-            throw new StreamException(ex);
-        }
+        CoderResult coderResult;
+        do {
+            stream.skip(stream.read(inBuffer));
+            inBuffer.flip();
+            coderResult = decoder.decode(inBuffer, outBuffer, stream.isEndOfStream());
+            outBuffer.flip();
+            try {
+                writer.write(outBuffer.array(), outBuffer.position(), outBuffer.remaining());
+            } catch (IOException ex) {
+                throw new StreamException(ex);
+            }
+            outBuffer.clear();
+            inBuffer.compact();
+        } while (stream.available() > 0 || coderResult == CoderResult.OVERFLOW);
     }
 }

@@ -23,12 +23,12 @@ import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
  */
 public interface ContentFilterFactory {
     /**
-     * Get a new filter for the given content type.
+     * Get a new filter (chain) for the given content type.
      * 
      * @param contentType the content type
-     * @return the filter to apply to the content or
-     *         <code>null</code> if no filter should
-     *         be applied
+     * @return the filters to apply to the content or
+     *         <code>null</code> (or an empty array) if no
+     *         filter should be applied
      */
-    StreamFilter getContentFilter(String contentType);
+    StreamFilter[] getContentFilterChain(String contentType);
 }

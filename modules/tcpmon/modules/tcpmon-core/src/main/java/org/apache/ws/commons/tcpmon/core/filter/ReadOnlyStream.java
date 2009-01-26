@@ -18,6 +18,7 @@ package org.apache.ws.commons.tcpmon.core.filter;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
 
 public class ReadOnlyStream implements Stream {
     private final Stream parent;
@@ -56,12 +57,20 @@ public class ReadOnlyStream implements Stream {
         // Ignore this
     }
 
+    public void insert(ByteBuffer buffer) {
+        // Ignore this
+    }
+
     public boolean isEndOfStream() {
         return parent.isEndOfStream();
     }
 
     public int read(byte[] buffer, int offset, int length) {
         return parent.read(buffer, offset, length);
+    }
+
+    public int read(ByteBuffer buffer) {
+        return parent.read(buffer);
     }
 
     public void readAll(OutputStream out) throws IOException {

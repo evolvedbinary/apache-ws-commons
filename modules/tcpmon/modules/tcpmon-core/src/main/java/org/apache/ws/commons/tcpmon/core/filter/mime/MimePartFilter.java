@@ -26,14 +26,14 @@ import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
  */
 public class MimePartFilter implements StreamFilter {
     private HeaderProcessor headerProcessor;
-    private StreamFilter contentFilter;
+    private StreamFilter[] contentFilterChain;
 
     public MimePartFilter(final ContentFilterFactory contentFilterFactory) {
         headerProcessor = new HeaderProcessor();
         headerProcessor.addHandler(new HeaderHandler() {
             public String handleHeader(String name, String value) {
                 if (name.equalsIgnoreCase("Content-Type")) {
-                    contentFilter = contentFilterFactory.getContentFilter(value);
+                    contentFilterChain = contentFilterFactory.getContentFilterChain(value);
                 }
                 return value;
             }
@@ -47,8 +47,10 @@ public class MimePartFilter implements StreamFilter {
             } else {
                 if (headerProcessor.process(stream)) {
                     headerProcessor = null;
-                    if (contentFilter != null) {
-                        stream.pushFilter(contentFilter);
+                    if (contentFilterChain != null) {
+                        for (int i=contentFilterChain.length-1; i>=0; i--) {
+                            stream.pushFilter(contentFilterChain[i]);
+                        }
                     }
                 } else {
                     return;

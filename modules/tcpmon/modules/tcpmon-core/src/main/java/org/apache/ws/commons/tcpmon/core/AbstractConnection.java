@@ -37,6 +37,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.Socket;
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -45,6 +46,8 @@ import java.util.Date;
  * a connection listens to a single current connection
  */
 public abstract class AbstractConnection extends Thread {
+    private static final Charset UTF8 = Charset.forName("utf-8");
+    
     private final Configuration config;
 
     /**
@@ -181,7 +184,7 @@ public abstract class AbstractConnection extends Thread {
                 filter.setContentFilterFactory(new DefaultContentFilterFactory());
                 requestPipeline.addFilter(filter);
             }
-            requestPipeline.addFilter(new CharsetDecoderFilter(inputWriter));
+            requestPipeline.addFilter(new CharsetDecoderFilter(inputWriter, UTF8));
             
             // If we act as a proxy, we first need to read the start of the request before
             // the outSocket is available.
@@ -202,7 +205,7 @@ public abstract class AbstractConnection extends Thread {
                 filter.setContentFilterFactory(new DefaultContentFilterFactory());
                 responsePipeline.addFilter(filter);
             }
-            responsePipeline.addFilter(new CharsetDecoderFilter(outputWriter));
+            responsePipeline.addFilter(new CharsetDecoderFilter(outputWriter, UTF8));
             
             // this is the channel to the endpoint
             rr1 = new SocketRR(this, inSocket, tmpIn1, outSocket, tmpOut2, requestPipeline);
