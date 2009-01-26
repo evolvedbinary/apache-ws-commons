@@ -29,9 +29,12 @@ import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.basic.BasicButtonListener;
@@ -49,6 +52,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -84,9 +89,9 @@ class Listener extends AbstractListener {
     private JCheckBox isProxyBox = null;
 
     /**
-     * Field stopButton
+     * Field startButton
      */
-    private JButton stopButton = null;
+    private JToggleButton startButton = null;
 
     /**
      * Field removeButton
@@ -101,7 +106,7 @@ class Listener extends AbstractListener {
     /**
      * Field xmlFormatBox
      */
-    private JCheckBox xmlFormatBox = null;
+    private JToggleButton xmlFormatBox = null;
 
     /**
      * Field saveButton
@@ -112,6 +117,8 @@ class Listener extends AbstractListener {
      * Field resendButton
      */
     public JButton resendButton = null;
+
+    private final JButton switchButton;
 
     /**
      * Field connectionTable
@@ -199,23 +206,20 @@ class Listener extends AbstractListener {
 
         // 1st component is just a row of labels and 1-line entry fields
         // ///////////////////////////////////////////////////////////////////
-        JPanel top = new JPanel();
-        top.setLayout(new BoxLayout(top, BoxLayout.X_AXIS));
-        top.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        final String start = TCPMonBundle.getMessage("start00", "Start");
-        top.add(stopButton = new JButton(start));
-        top.add(Box.createRigidArea(new Dimension(5, 0)));
-        top.add(new JLabel("  "
-                + TCPMonBundle.getMessage("listenPort01", "Listen Port:")
+        JToolBar top = new JToolBar();
+        top.add(startButton = new JToggleButton(Icons.START));
+        startButton.setToolTipText(TCPMonBundle.getMessage("start00", "Start") + " / " +
+                TCPMonBundle.getMessage("stop00", "Stop"));
+        top.addSeparator();
+        top.add(new JLabel(TCPMonBundle.getMessage("listenPort01", "Listen Port:")
                 + " ", SwingConstants.RIGHT));
         top.add(portField = new JTextField("" + listenPort, 4));
-        top.add(new JLabel("  " + TCPMonBundle.getMessage("host00", "Host:"),
+        top.add(new JLabel("  " + TCPMonBundle.getMessage("host00", "Host:") + " ",
                 SwingConstants.RIGHT));
-        top.add(hostField = new JTextField(host, 30));
+        top.add(hostField = new JTextField(host, 15));
         top.add(new JLabel("  " + TCPMonBundle.getMessage("port02", "Port:") + " ",
                 SwingConstants.RIGHT));
         top.add(tPortField = new JTextField("" + targetPort, 4));
-        top.add(Box.createRigidArea(new Dimension(5, 0)));
         top.add(isProxyBox = new JCheckBox(TCPMonBundle.getMessage("proxy00", "Proxy")));
         isProxyBox.addChangeListener(new BasicButtonListener(isProxyBox) {
             public void stateChanged(ChangeEvent event) {
@@ -227,19 +231,17 @@ class Listener extends AbstractListener {
         });
         isProxyBox.setSelected(isProxy);
         portField.setEditable(false);
-        portField.setMaximumSize(new Dimension(50, Short.MAX_VALUE));
+        portField.setMaximumSize(portField.getPreferredSize());
         hostField.setEditable(false);
-        hostField.setMaximumSize(new Dimension(85, Short.MAX_VALUE));
+        hostField.setMaximumSize(hostField.getPreferredSize());
         tPortField.setEditable(false);
-        tPortField.setMaximumSize(new Dimension(50, Short.MAX_VALUE));
-        stopButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                if (TCPMonBundle.getMessage("stop00",
-                        "Stop").equals(event.getActionCommand())) {
-                    stop();
-                }
-                if (start.equals(event.getActionCommand())) {
+        tPortField.setMaximumSize(tPortField.getPreferredSize());
+        startButton.addItemListener(new ItemListener() {
+            public void itemStateChanged(ItemEvent event) {
+                if (startButton.isSelected()) {
                     start();
+                } else {
+                    stop();
                 }
             }
         });
@@ -381,67 +383,54 @@ class Listener extends AbstractListener {
         outPane = new JSplitPane(0, leftPanel, rightPanel);
         outPane.setDividerSize(4);
         pane2.add(outPane, BorderLayout.CENTER);
-        JPanel bottomButtons = new JPanel();
-        bottomButtons.setLayout(new BoxLayout(bottomButtons,
-                BoxLayout.X_AXIS));
-        bottomButtons.setBorder(BorderFactory.createEmptyBorder(5, 5, 5,
-                5));
-        bottomButtons.add(
-                xmlFormatBox =
-                new JCheckBox(TCPMonBundle.getMessage("xmlFormat00", "XML Format")));
-        bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
-        final String save = TCPMonBundle.getMessage("save00", "Save");
-        bottomButtons.add(saveButton = new JButton(save));
-        bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
-        final String resend = TCPMonBundle.getMessage("resend00", "Resend");
-        bottomButtons.add(resendButton = new JButton(resend));
-        bottomButtons.add(Box.createRigidArea(new Dimension(5, 0)));
-        final String switchStr = TCPMonBundle.getMessage("switch00", "Switch Layout");
-        JButton switchButton = new JButton(switchStr);
-        bottomButtons.add(switchButton);
-        bottomButtons.add(Box.createHorizontalGlue());
-        final String close = TCPMonBundle.getMessage("close00", "Close");
-        JButton closeButton = new JButton(close);
-        bottomButtons.add(closeButton);
-        pane2.add(bottomButtons, BorderLayout.SOUTH);
+        top.addSeparator();
+        top.add(xmlFormatBox = new JToggleButton(Icons.XML_FORMAT));
+        xmlFormatBox.setToolTipText(TCPMonBundle.getMessage("xmlFormat00", "XML Format"));
+        top.addSeparator();
+        top.add(saveButton = new JButton(Icons.SAVE));
+        saveButton.setToolTipText(TCPMonBundle.getMessage("save00", "Save"));
+        top.add(resendButton = new JButton(Icons.RESEND));
+        resendButton.setToolTipText(TCPMonBundle.getMessage("resend00", "Resend"));
+        top.addSeparator();
+        switchButton = new JButton();
+        switchButton.setToolTipText(TCPMonBundle.getMessage("switch00", "Switch Layout"));
+        updateSwitchButton();
+        top.add(switchButton);
+        top.add(Box.createHorizontalGlue());
+        JButton closeButton = new JButton(Icons.CLOSE);
+        closeButton.setToolTipText(TCPMonBundle.getMessage("close00", "Close"));
+        top.add(closeButton);
         saveButton.setEnabled(false);
         saveButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                if (save.equals(event.getActionCommand())) {
-                    save();
-                }
+                save();
             }
         });
         resendButton.setEnabled(false);
         resendButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                if (resend.equals(event.getActionCommand())) {
-                    resend();
-                }
+                resend();
             }
         });
         switchButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                if (switchStr.equals(event.getActionCommand())) {
-                    int v = outPane.getOrientation();
-                    if (v == 0) {
+                int v = outPane.getOrientation();
+                if (v == 0) {
 
-                        // top/bottom
-                        outPane.setOrientation(1);
-                    } else {
+                    // top/bottom
+                    outPane.setOrientation(1);
+                } else {
 
-                        // left/right
-                        outPane.setOrientation(0);
-                    }
-                    outPane.setDividerLocation(0.5);
+                    // left/right
+                    outPane.setOrientation(0);
                 }
+                outPane.setDividerLocation(0.5);
+                updateSwitchButton();
             }
         });
         closeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
-                if (close.equals(event.getActionCommand())) {
-                    close();
-                }
+                close();
             }
         });
         JSplitPane pane1 = new JSplitPane(0);
@@ -457,6 +446,11 @@ class Listener extends AbstractListener {
         outPane.setDividerLocation(150);
         notebook.addTab(name, panel);
         start();
+    }
+
+    private void updateSwitchButton() {
+        switchButton.setIcon(outPane.getOrientation() == 0 ? Icons.LAYOUT_VERTICAL :
+                Icons.LAYOUT_HORIZONTAL);  
     }
 
     /**
@@ -483,37 +477,42 @@ class Listener extends AbstractListener {
      * Method start
      */
     public void start() {
-        int port = Integer.parseInt(portField.getText());
-        portField.setText("" + port);
-        int i = notebook.indexOfComponent(panel);
-        notebook.setTitleAt(i, TCPMonBundle.getMessage("port01", "Port") + " " + port);
-        int tmp = Integer.parseInt(tPortField.getText());
-        tPortField.setText("" + tmp);
-        sw = new SocketWaiter(this, port);
-        stopButton.setText(TCPMonBundle.getMessage("stop00", "Stop"));
-        portField.setEditable(false);
-        hostField.setEditable(false);
-        tPortField.setEditable(false);
-        isProxyBox.setEnabled(false);
+        if (sw == null) {
+            int port = Integer.parseInt(portField.getText());
+            portField.setText("" + port);
+            int i = notebook.indexOfComponent(panel);
+            notebook.setTitleAt(i, TCPMonBundle.getMessage("port01", "Port") + " " + port);
+            int tmp = Integer.parseInt(tPortField.getText());
+            tPortField.setText("" + tmp);
+            sw = new SocketWaiter(this, port);
+            startButton.setSelected(true);
+            portField.setEditable(false);
+            hostField.setEditable(false);
+            tPortField.setEditable(false);
+            isProxyBox.setEnabled(false);
+        }
     }
 
     /**
      * Method stop
      */
     public void stop() {
-        try {
-            for (int i = 0; i < connections.size(); i++) {
-                Connection conn = (Connection) connections.get(i);
-                conn.halt();
+        if (sw != null) {
+            try {
+                for (int i = 0; i < connections.size(); i++) {
+                    Connection conn = (Connection) connections.get(i);
+                    conn.halt();
+                }
+                sw.halt();
+                sw = null;
+                startButton.setSelected(false);
+                portField.setEditable(true);
+                hostField.setEditable(true);
+                tPortField.setEditable(true);
+                isProxyBox.setEnabled(true);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            sw.halt();
-            stopButton.setText(TCPMonBundle.getMessage("start00", "Start"));
-            portField.setEditable(true);
-            hostField.setEditable(true);
-            tPortField.setEditable(true);
-            isProxyBox.setEnabled(true);
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 
