@@ -35,4 +35,14 @@ public class XmlFormatFilterTest extends TestCase {
     public void test3() {
         assertFormat("<root>\n  <a>test</a>\n</root>", "<root><a>test</a></root>");
     }
+    
+    public void test4() {
+        assertFormat("<root>\n  <child>\n    <a/>\n  </child>\n</root>",
+                     "<root><child><a/></child></root>");
+    }
+
+    public void test5() {
+        assertFormat("<root>\n  <child>\n    <a>test</a>\n  </child>\n</root>",
+                     "<root><child><a>test</a></child></root>");
+    }
 }
