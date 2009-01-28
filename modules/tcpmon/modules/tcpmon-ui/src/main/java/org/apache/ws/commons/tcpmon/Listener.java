@@ -34,7 +34,6 @@ import javax.swing.JToolBar;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.basic.BasicButtonListener;
@@ -96,12 +95,12 @@ class Listener extends AbstractListener {
     /**
      * Field removeButton
      */
-    public JButton removeButton = null;
+    private final JButton removeButton;
 
     /**
      * Field removeAllButton
      */
-    public JButton removeAllButton = null;
+    private final JButton removeAllButton;
 
     /**
      * Field xmlFormatBox
@@ -111,19 +110,19 @@ class Listener extends AbstractListener {
     /**
      * Field saveButton
      */
-    public JButton saveButton = null;
+    private final JButton saveButton;
 
     /**
      * Field resendButton
      */
-    public JButton resendButton = null;
+    private final JButton resendButton;
 
     private final JButton switchButton;
 
     /**
      * Field connectionTable
      */
-    public JTable connectionTable = null;
+    private final JTable connectionTable;
 
     /**
      * Field tableModel
@@ -133,7 +132,7 @@ class Listener extends AbstractListener {
     /**
      * Field outPane
      */
-    public JSplitPane outPane = null;
+    private final JSplitPane outPane;
 
     /**
      * Field sw
@@ -275,61 +274,9 @@ class Listener extends AbstractListener {
         ListSelectionModel sel = connectionTable.getSelectionModel();
         sel.addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent event) {
-                if (event.getValueIsAdjusting()) {
-                    return;
+                if (!event.getValueIsAdjusting()) {
+                    handleSelection();
                 }
-                ListSelectionModel m =
-                        (ListSelectionModel) event.getSource();
-                int divLoc = outPane.getDividerLocation();
-                if (m.isSelectionEmpty()) {
-                    setLeft(
-                            new JLabel(
-                                    " "
-                            +
-                            TCPMonBundle.getMessage("wait00",
-                                    "Waiting for Connection...")));
-                    setRight(new JLabel(""));
-                    removeButton.setEnabled(false);
-                    removeAllButton.setEnabled(false);
-                    saveButton.setEnabled(false);
-                    resendButton.setEnabled(false);
-                } else {
-                    int row = m.getLeadSelectionIndex();
-                    if (row == 0) {
-                        if (connections.size() == 0) {
-                            setLeft(
-                                    new JLabel(
-                                            " "
-                                    +
-                                    TCPMonBundle.getMessage("wait00",
-                                            "Waiting for connection...")));
-                            setRight(new JLabel(""));
-                            removeButton.setEnabled(false);
-                            removeAllButton.setEnabled(false);
-                            saveButton.setEnabled(false);
-                            resendButton.setEnabled(false);
-                        } else {
-                            Connection conn =
-                                    (Connection) connections.lastElement();
-                            setLeft(conn.inputScroll);
-                            setRight(conn.outputScroll);
-                            removeButton.setEnabled(false);
-                            removeAllButton.setEnabled(true);
-                            saveButton.setEnabled(true);
-                            resendButton.setEnabled(true);
-                        }
-                    } else {
-                        Connection conn = (Connection) connections.get(row
-                                - 1);
-                        setLeft(conn.inputScroll);
-                        setRight(conn.outputScroll);
-                        removeButton.setEnabled(true);
-                        removeAllButton.setEnabled(true);
-                        saveButton.setEnabled(true);
-                        resendButton.setEnabled(true);
-                    }
-                }
-                outPane.setDividerLocation(divLoc);
             }
         });
         JPanel tablePane = new JPanel();
@@ -453,12 +400,47 @@ class Listener extends AbstractListener {
                 Icons.LAYOUT_HORIZONTAL);  
     }
 
+    public void handleSelection() {
+        ListSelectionModel m = connectionTable.getSelectionModel();
+        int divLoc = outPane.getDividerLocation();
+        Connection conn;
+        if (m.isSelectionEmpty()) {
+            conn = null;
+            removeButton.setEnabled(false);
+        } else {
+            int row = m.getLeadSelectionIndex();
+            if (row == 0) {
+                if (connections.size() == 0) {
+                    conn = null;
+                } else {
+                    conn = (Connection) connections.lastElement();
+                }
+                removeButton.setEnabled(false);
+            } else {
+                conn = (Connection) connections.get(row - 1);
+                removeButton.setEnabled(true);
+            }
+        }
+        if (conn == null) {
+            setLeft(new JLabel(" " + TCPMonBundle.getMessage("wait00",
+                    "Waiting for Connection...")));
+            setRight(new JLabel(""));
+        } else {
+            setLeft(conn.inputScroll);
+            setRight(conn.outputScroll);
+        }
+        saveButton.setEnabled(conn != null);
+        resendButton.setEnabled(conn != null);
+        removeAllButton.setEnabled(!connections.isEmpty());
+        outPane.setDividerLocation(divLoc);
+    }
+
     /**
      * Method setLeft
      *
      * @param left
      */
-    public void setLeft(Component left) {
+    private void setLeft(Component left) {
         leftPanel.removeAll();
         leftPanel.add(left);
     }
@@ -468,7 +450,7 @@ class Listener extends AbstractListener {
      *
      * @param right
      */
-    public void setRight(Component right) {
+    private void setRight(Component right) {
         rightPanel.removeAll();
         rightPanel.add(right);
     }

@@ -18,7 +18,6 @@ package org.apache.ws.commons.tcpmon;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.ListSelectionModel;
 
 import org.apache.ws.commons.tcpmon.core.AbstractConnection;
 
@@ -107,19 +106,7 @@ class Connection extends AbstractConnection {
         inputScroll = new JScrollPane(inputText);
         outputText = new JTextArea(null, null, 20, 80);
         outputScroll = new JScrollPane(outputText);
-        ListSelectionModel lsm = listener.connectionTable.getSelectionModel();
-        if ((count == 0) || (lsm.getLeadSelectionIndex() == 0)) {
-            listener.outPane.setVisible(false);
-            int divLoc = listener.outPane.getDividerLocation();
-            listener.setLeft(inputScroll);
-            listener.setRight(outputScroll);
-            listener.removeButton.setEnabled(false);
-            listener.removeAllButton.setEnabled(true);
-            listener.saveButton.setEnabled(true);
-            listener.resendButton.setEnabled(true);
-            listener.outPane.setDividerLocation(divLoc);
-            listener.outPane.setVisible(true);
-        }
+        listener.handleSelection();
         inputWriter = new JTextAreaWriter(inputText);
         outputWriter = new JTextAreaWriter(outputText);
     }
