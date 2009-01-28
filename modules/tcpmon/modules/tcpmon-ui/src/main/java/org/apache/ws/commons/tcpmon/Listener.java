@@ -278,36 +278,6 @@ class Listener extends AbstractListener {
                 }
             }
         });
-        JPanel tablePane = new JPanel();
-        tablePane.setLayout(new BorderLayout());
-        JScrollPane tableScrollPane = new JScrollPane(connectionTable);
-        tablePane.add(tableScrollPane, BorderLayout.CENTER);
-        JPanel buttons = new JPanel();
-        buttons.setLayout(new BoxLayout(buttons, BoxLayout.X_AXIS));
-        buttons.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-        final String removeSelected = TCPMonBundle.getMessage("removeSelected00",
-                "Remove Selected");
-        buttons.add(removeButton = new JButton(removeSelected));
-        buttons.add(Box.createRigidArea(new Dimension(5, 0)));
-        final String removeAll = TCPMonBundle.getMessage("removeAll00", "Remove All");
-        buttons.add(removeAllButton = new JButton(removeAll));
-        tablePane.add(buttons, BorderLayout.SOUTH);
-        removeButton.setEnabled(false);
-        removeButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                if (removeSelected.equals(event.getActionCommand())) {
-                    remove();
-                }
-            }
-        });
-        removeAllButton.setEnabled(false);
-        removeAllButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-                if (removeAll.equals(event.getActionCommand())) {
-                    removeAll();
-                }
-            }
-        });
 
         // Add Response Section
         // ///////////////////////////////////////////////////////////////////
@@ -332,12 +302,33 @@ class Listener extends AbstractListener {
         top.addSeparator();
         top.add(xmlFormatBox = new JToggleButton(Icons.XML_FORMAT));
         xmlFormatBox.setToolTipText(TCPMonBundle.getMessage("xmlFormat00", "XML Format"));
+        
         top.addSeparator();
+        
         top.add(saveButton = new JButton(Icons.SAVE));
         saveButton.setToolTipText(TCPMonBundle.getMessage("save00", "Save"));
         top.add(resendButton = new JButton(Icons.RESEND));
         resendButton.setToolTipText(TCPMonBundle.getMessage("resend00", "Resend"));
+        top.add(removeButton = new JButton(Icons.REMOVE));
+        removeButton.setToolTipText(TCPMonBundle.getMessage("removeSelected00",
+                "Remove Selected"));
+        top.add(removeAllButton = new JButton(Icons.REMOVE_ALL));
+        removeAllButton.setToolTipText(TCPMonBundle.getMessage("removeAll00", "Remove All"));
+        removeButton.setEnabled(false);
+        removeButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                remove();
+            }
+        });
+        removeAllButton.setEnabled(false);
+        removeAllButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent event) {
+                removeAll();
+            }
+        });
+        
         top.addSeparator();
+        
         switchButton = new JButton();
         switchButton.setToolTipText(TCPMonBundle.getMessage("switch00", "Switch Layout"));
         updateSwitchButton();
@@ -381,7 +372,7 @@ class Listener extends AbstractListener {
         });
         JSplitPane pane1 = new JSplitPane(0);
         pane1.setDividerSize(4);
-        pane1.setTopComponent(tablePane);
+        pane1.setTopComponent(new JScrollPane(connectionTable));
         pane1.setBottomComponent(pane2);
         pane1.setDividerLocation(150);
         panel.add(pane1, BorderLayout.CENTER);

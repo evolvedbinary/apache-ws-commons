@@ -80,7 +80,9 @@
                                         **/connect.png,
                                         **/cross.png,
                                         **/disk.png,
-                                        **/tag.png
+                                        **/tag.png,
+                                        **/table_delete.png,
+                                        **/table_row_delete.png
                                     </includes>
                                 </artifactItem>
                             </artifactItems>

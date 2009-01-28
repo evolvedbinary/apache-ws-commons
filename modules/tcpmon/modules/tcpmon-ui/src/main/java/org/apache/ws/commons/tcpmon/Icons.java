@@ -27,6 +27,8 @@ public class Icons {
     public static final Icon LAYOUT_VERTICAL = createIcon("application_split");
     public static final Icon XML_FORMAT = createIcon("tag");
     public static final Icon CLOSE = createIcon("cross");
+    public static final Icon REMOVE = createIcon("table_row_delete");
+    public static final Icon REMOVE_ALL = createIcon("table_delete");
     
     private static ImageIcon createIcon(String name) {
         return new ImageIcon(Icons.class.getResource("/com/famfamfam/silk/" + name + ".png"), "TEST");
