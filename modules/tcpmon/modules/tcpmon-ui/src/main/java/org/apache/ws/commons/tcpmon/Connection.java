@@ -31,12 +31,12 @@ class Connection extends AbstractConnection {
     /**
      * Field listener
      */
-    Listener listener;
+    private final Listener listener;
 
     /**
      * Field inputText
      */
-    JTextArea inputText = null;
+    private JTextArea inputText;
 
     /**
      * Field inputScroll
@@ -46,7 +46,7 @@ class Connection extends AbstractConnection {
     /**
      * Field outputText
      */
-    JTextArea outputText = null;
+    private JTextArea outputText;
 
     /**
      * Field outputScroll
@@ -132,5 +132,13 @@ class Connection extends AbstractConnection {
     
     protected void setElapsed(String elapsed) {
         setValue(TCPMon.ELAPSED_COLUMN, elapsed);
+    }
+
+    public String getRequestAsString() {
+        return inputText.getText();
+    }
+
+    public String getResponseAsString() {
+        return outputText.getText();
     }
 }

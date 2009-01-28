@@ -27,7 +27,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -507,11 +506,11 @@ class Listener extends AbstractListener {
                         out.write((("==== "
                                 + TCPMonBundle.getMessage("request01", "Request")
                                 + " ====\n")).getBytes());
-                        out.write(conn.inputText.getText().getBytes());
+                        out.write(conn.getRequestAsString().getBytes());
                         out.write((("==== "
                                 + TCPMonBundle.getMessage("response00", "Response")
                                 + " ====\n")).getBytes());
-                        out.write(conn.outputText.getText().getBytes());
+                        out.write(conn.getResponseAsString().getBytes());
                         out.write("\n==============\n".getBytes());
                     }
                 }
@@ -523,59 +522,20 @@ class Listener extends AbstractListener {
     }
 
     public void resend() {
-        try {
-            int rc;
-            Connection conn;
-            rc = tableEnhancer.getMaxSelectionIndex();
-            if (rc == 0) {
-                conn = (Connection) connections.lastElement();
-            } else {
-                conn = (Connection) connections.get(rc - 1);
-            }
-
-            if (rc > 0) {
-                tableEnhancer.clearSelection();
-                tableEnhancer.setSelectionInterval(0, 0);
-            }
-            InputStream in = null;
-            String text = conn.inputText.getText();
-
-            // Fix Content-Length HTTP headers
-            if (text.startsWith("POST ") || text.startsWith("GET ")) {
-
-                int pos1, pos2, pos3;
-                String headers;
-                pos3 = text.indexOf("\n\n");
-                if (pos3 == -1) {
-                    pos3 = text.indexOf("\r\n\r\n");
-                    if (pos3 != -1) {
-                        pos3 = pos3 + 4;
-                    }
-                } else {
-                    pos3 += 2;
-                }
-                headers = text.substring(0, pos3);
-                pos1 = headers.indexOf("Content-Length:");
-
-                if (pos1 != -1) {
-                    int newLen = text.length() - pos3;
-                    pos2 = headers.indexOf("\n", pos1);
-                    System.err.println("CL: " + newLen);
-                    System.err.println("Hdrs: '" + headers + "'");
-                    System.err.println("subTEXT: '"
-                            + text.substring(pos3, pos3 + newLen)
-                            + "'");
-                    text = headers.substring(0, pos1) + "Content-Length: "
-                            + newLen + "\n" + headers.substring(pos2 + 1)
-                            + text.substring(pos3);
-                    System.err.println("\nTEXT: '" + text + "'");
-                }
-            }
-            in = new ByteArrayInputStream(text.getBytes());
-            new Connection(this, in);
-        } catch (Exception e) {
-            e.printStackTrace();
+        int rc;
+        Connection conn;
+        rc = tableEnhancer.getMaxSelectionIndex();
+        if (rc == 0) {
+            conn = (Connection) connections.lastElement();
+        } else {
+            conn = (Connection) connections.get(rc - 1);
         }
+
+        if (rc > 0) {
+            tableEnhancer.clearSelection();
+            tableEnhancer.setSelectionInterval(0, 0);
+        }
+        resend(conn);
     }
 
 
@@ -689,5 +649,9 @@ class Listener extends AbstractListener {
 
     public AbstractConnection createConnection(Socket inSocket) {
         return new Connection(this, inSocket);
+    }
+
+    public AbstractConnection createConnection(InputStream in) {
+        return new Connection(this, in);
     }
 }

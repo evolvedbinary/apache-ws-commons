@@ -29,12 +29,10 @@ import org.apache.ws.commons.tcpmon.core.AbstractConnection;
  * a connection listens to a single current connection
  */
 class Connection extends AbstractConnection {
-    public TableItem item;
-
     /**
      * Field listener
      */
-    Listener listener;
+    private final Listener listener;
 
     /**
      * Field inputText
@@ -75,7 +73,7 @@ class Connection extends AbstractConnection {
 
         MainView.display.syncExec(new Runnable() {
             public void run() {
-                item = new TableItem(listener.connectionTable, SWT.BORDER, count + 1);
+                TableItem item = new TableItem(listener.connectionTable, SWT.BORDER, count + 1);
                 item.setText(new String[]{TCPMonBundle.getMessage("active00", "Active"),
                         time,
                         fromHost,
@@ -131,5 +129,13 @@ class Connection extends AbstractConnection {
     
     protected void setElapsed(String elapsed) {
         setValue(MainView.ELAPSED_COLUMN, elapsed);
+    }
+
+    public String getRequestAsString() {
+        return inputText.getText();
+    }
+
+    public String getResponseAsString() {
+        return outputText.getText();
     }
 }

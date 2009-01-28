@@ -307,4 +307,7 @@ public abstract class AbstractConnection extends Thread {
     protected abstract void setState(String state);
     protected abstract void setRequest(String request);
     protected abstract void setElapsed(String elapsed);
+    
+    public abstract String getRequestAsString();
+    public abstract String getResponseAsString();
 }
