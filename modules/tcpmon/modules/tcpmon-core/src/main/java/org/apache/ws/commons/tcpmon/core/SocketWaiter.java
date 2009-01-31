@@ -18,6 +18,8 @@ package org.apache.ws.commons.tcpmon.core;
 
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * wait for incoming connections, spawn a connection thread when
@@ -45,6 +47,8 @@ public class SocketWaiter extends Thread {
      */
     boolean pleaseStop = false;
 
+    private final Vector connections = new Vector();
+
     /**
      * Constructor SocketWaiter
      *
@@ -69,7 +73,11 @@ public class SocketWaiter extends Thread {
                 if (pleaseStop) {
                     break;
                 }
-                listener.createConnection(inSocket);
+                Connection connection = new Connection(listener, inSocket);
+                // TODO: at some point we need to remove closed connections,
+                //       otherwise this will be a memory leak.
+                connections.add(connection);
+                connection.start();
                 inSocket = null;
             }
         } catch (Exception exp) {
@@ -88,6 +96,9 @@ public class SocketWaiter extends Thread {
             new Socket("127.0.0.1", port);
             if (sSocket != null) {
                 sSocket.close();
+            }
+            for (Iterator it = connections.iterator(); it.hasNext(); ) {
+                ((Connection)it.next()).halt();
             }
         } catch (Exception e) {
             e.printStackTrace();

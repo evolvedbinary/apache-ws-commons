@@ -28,7 +28,7 @@ import java.net.Socket;
  * outgoing socket
  */
 public class SocketRR extends Thread {
-    private final AbstractConnection connection;
+    private final Connection connection;
 
     /**
      * Field inSocket
@@ -77,7 +77,7 @@ public class SocketRR extends Thread {
      * @param type
      * @param slowLink
      */
-    public SocketRR(AbstractConnection connection, Socket inputSocket,
+    public SocketRR(Connection connection, Socket inputSocket,
                     InputStream inputStream, Socket outputSocket,
                     OutputStream outputStream, Pipeline pipeline) {
         this.connection = connection;

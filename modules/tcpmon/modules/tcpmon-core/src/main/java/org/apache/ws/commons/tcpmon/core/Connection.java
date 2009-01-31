@@ -45,9 +45,10 @@ import java.util.Date;
 /**
  * a connection listens to a single current connection
  */
-public abstract class AbstractConnection extends Thread {
+public class Connection extends Thread {
     private static final Charset UTF8 = Charset.forName("utf-8");
     
+    private final AbstractListener listener;
     private final Configuration config;
 
     /**
@@ -79,29 +80,33 @@ public abstract class AbstractConnection extends Thread {
      * Field inputStream
      */
     private InputStream inputStream = null;
-
-    protected Writer inputWriter;
-    protected Writer outputWriter;
+    
+    private IRequestResponse requestResponse;
+    
+    private Writer inputWriter;
+    private Writer outputWriter;
 
     /**
      * Constructor Connection
      *
-     * @param config
+     * @param listener
      * @param s
      */
-    public AbstractConnection(Configuration config, Socket s) {
-        this.config = config;
+    public Connection(AbstractListener listener, Socket s) {
+        this.listener = listener;
+        config = listener.getConfiguration();
         inSocket = s;
     }
 
     /**
      * Constructor Connection
      *
-     * @param config
+     * @param listener
      * @param in
      */
-    public AbstractConnection(Configuration config, InputStream in) {
-        this.config = config;
+    public Connection(AbstractListener listener, InputStream in) {
+        this.listener = listener;
+        config = listener.getConfiguration();
         inputStream = in;
     }
 
@@ -139,7 +144,10 @@ public abstract class AbstractConnection extends Thread {
             String dateformat = TCPMonBundle.getMessage("dateformat00", "yyyy-MM-dd HH:mm:ss");
             DateFormat df = new SimpleDateFormat(dateformat);
             String targetHost = config.getTargetHost();
-            init(df.format(new Date()), fromHost, targetHost);
+            requestResponse = listener.createRequestResponse(
+                    df.format(new Date()), fromHost, targetHost);
+            inputWriter = requestResponse.getRequestWriter();
+            outputWriter = requestResponse.getResponseWriter();
             int targetPort = config.getTargetPort();
             InputStream tmpIn1 = inputStream;
             OutputStream tmpOut1 = null;
@@ -154,7 +162,7 @@ public abstract class AbstractConnection extends Thread {
             Pipeline requestPipeline = new Pipeline();
             requestPipeline.addFilter(new RequestLineExtractor(50) {
                 protected void done(String requestLine) {
-                    setRequest(requestLine);
+                    requestResponse.setRequest(requestLine);
                 }
             });
             HttpRequestFilter requestFilter = new HttpRequestFilter(false);
@@ -219,7 +227,7 @@ public abstract class AbstractConnection extends Thread {
             while ((rr1 != null) || (rr2 != null)) {
 
                 if (rr2 != null) {
-                    setElapsed(rr2.getElapsed());
+                    requestResponse.setElapsed(rr2.getElapsed());
                 }
                 
                 // Only loop as long as the connection to the target
@@ -229,14 +237,14 @@ public abstract class AbstractConnection extends Thread {
                 
                 if ((null != rr1) && rr1.isDone()) {
                     if (rr2 != null) {
-                        setState(TCPMonBundle.getMessage("resp00", "Resp"));
+                        requestResponse.setState(TCPMonBundle.getMessage("resp00", "Resp"));
                     }
                     rr1 = null;
                 }
 
                 if ((null != rr2) && rr2.isDone()) {
                     if (rr1 != null) {
-                        setState(TCPMonBundle.getMessage("req00", "Req"));
+                        requestResponse.setState(TCPMonBundle.getMessage("req00", "Req"));
                     }
                     rr2 = null;
                 }
@@ -248,12 +256,14 @@ public abstract class AbstractConnection extends Thread {
 
             active = false;
 
-            setState(TCPMonBundle.getMessage("done00", "Done"));
+            requestResponse.setState(TCPMonBundle.getMessage("done00", "Done"));
 
         } catch (Exception e) {
             StringWriter st = new StringWriter();
             PrintWriter wr = new PrintWriter(st);
-            setState(TCPMonBundle.getMessage("error00", "Error"));
+            if (requestResponse != null) {
+                requestResponse.setState(TCPMonBundle.getMessage("error00", "Error"));
+            }
             e.printStackTrace(wr);
             wr.close();
             if (outputWriter != null) {
@@ -301,13 +311,4 @@ public abstract class AbstractConnection extends Thread {
             e.printStackTrace();
         }
     }
-
-    protected abstract void init(String time, String fromHost, String targetHost);
-    protected abstract void setOutHost(String outHost);
-    protected abstract void setState(String state);
-    protected abstract void setRequest(String request);
-    protected abstract void setElapsed(String elapsed);
-    
-    public abstract String getRequestAsString();
-    public abstract String getResponseAsString();
 }

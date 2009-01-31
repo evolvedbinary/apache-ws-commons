@@ -16,22 +16,15 @@
 
 package org.apache.ws.commons.tcpmon.eclipse.ui;
 
-import java.io.InputStream;
-import java.net.Socket;
+import java.io.Writer;
 
+import org.apache.ws.commons.tcpmon.TCPMonBundle;
+import org.apache.ws.commons.tcpmon.core.IRequestResponse;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
-import org.apache.ws.commons.tcpmon.TCPMonBundle;
-import org.apache.ws.commons.tcpmon.core.AbstractConnection;
 
-/**
- * a connection listens to a single current connection
- */
-class Connection extends AbstractConnection {
-    /**
-     * Field listener
-     */
+public class RequestResponse implements IRequestResponse {
     private final Listener listener;
 
     /**
@@ -44,32 +37,9 @@ class Connection extends AbstractConnection {
      */
     Text outputText = null;
 
-    /**
-     * Constructor Connection
-     *
-     * @param l
-     * @param s
-     */
-    public Connection(Listener l, Socket s) {
-        super(l.getConfiguration(), s);
-        listener = l;
-        start();
-    }
-
-    /**
-     * Constructor Connection
-     *
-     * @param l
-     * @param in
-     */
-    public Connection(Listener l, InputStream in) {
-        super(l.getConfiguration(), in);
-        listener = l;
-        start();
-    }
-
-    protected void init(final String time, final String fromHost, final String targetHost) {
-        final int count = listener.connections.size();
+    public RequestResponse(final Listener listener, final String time, final String fromHost, final String targetHost) {
+        this.listener = listener;
+        final int count = listener.requestResponses.size();
 
         MainView.display.syncExec(new Runnable() {
             public void run() {
@@ -84,7 +54,7 @@ class Connection extends AbstractConnection {
         });
 
 
-        listener.connections.add(this);
+        listener.requestResponses.add(this);
         TableEnhancer te = listener.tableEnhancer;
         if ((count == 0) || (te.getLeadSelectionIndex() == 0)) {
 
@@ -100,12 +70,10 @@ class Connection extends AbstractConnection {
             });
 
         }
-        inputWriter = new TextWidgetWriter(inputText);
-        outputWriter = new TextWidgetWriter(outputText);
     }
 
     private void setValue(final int column, final String value) {
-        final int index = listener.connections.indexOf(this);
+        final int index = listener.requestResponses.indexOf(this);
         if (index >= 0) {
             MainView.display.syncExec(new Runnable() {
                 public void run() {
@@ -115,20 +83,28 @@ class Connection extends AbstractConnection {
         }
     }
     
-    protected void setOutHost(String outHost) {
+    public void setOutHost(String outHost) {
         setValue(MainView.OUTHOST_COLUMN, outHost);
     }
     
-    protected void setState(String state) {
+    public void setState(String state) {
         setValue(MainView.STATE_COLUMN, state);
     }
 
-    protected void setRequest(String request) {
+    public void setRequest(String request) {
         setValue(MainView.REQ_COLUMN, request);
     }
     
-    protected void setElapsed(String elapsed) {
+    public void setElapsed(String elapsed) {
         setValue(MainView.ELAPSED_COLUMN, elapsed);
+    }
+
+    public Writer getRequestWriter() {
+        return new TextWidgetWriter(inputText);
+    }
+
+    public Writer getResponseWriter() {
+        return new TextWidgetWriter(outputText);
     }
 
     public String getRequestAsString() {

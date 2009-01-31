@@ -17,9 +17,9 @@ package org.apache.ws.commons.tcpmon.eclipse.ui;
 
 import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
 import org.apache.ws.commons.tcpmon.TCPMonBundle;
-import org.apache.ws.commons.tcpmon.core.AbstractConnection;
 import org.apache.ws.commons.tcpmon.core.AbstractListener;
 import org.apache.ws.commons.tcpmon.core.Configuration;
+import org.apache.ws.commons.tcpmon.core.IRequestResponse;
 import org.apache.ws.commons.tcpmon.core.SocketWaiter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -29,8 +29,6 @@ import org.eclipse.swt.widgets.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.Socket;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -61,7 +59,7 @@ class Listener extends AbstractListener {
     private SocketWaiter sw = null;
     private SlowLinkSimulator slowLink;
 
-    public final Vector connections = new Vector();
+    public final Vector requestResponses = new Vector();
 
     public String HTTPProxyHost = null;
     public int HTTPProxyPort = 80;
@@ -352,7 +350,7 @@ class Listener extends AbstractListener {
                 row = tableEnhancer.getMaxSelectionIndex();
             }
             if (row == 0) {
-                if (connections.size() == 0) {
+                if (requestResponses.size() == 0) {
                     setLeft(MainView.SWT_LABEL, " " + TCPMonBundle.getMessage("wait00",
                             "Waiting for connection..."));
                     setRight(MainView.SWT_LABEL, "");
@@ -364,13 +362,13 @@ class Listener extends AbstractListener {
                     rightPanel.layout();
                     textComposite.layout();
                 } else {
-                    Connection conn = (Connection) connections.lastElement();
+                    RequestResponse requestResponse = (RequestResponse) requestResponses.lastElement();
                     removeChildren(leftPanel.getChildren());
                     removeChildren(rightPanel.getChildren());
-                    ((GridData) conn.inputText.getLayoutData()).exclude = false;
-                    conn.inputText.setVisible(true);
-                    ((GridData) conn.outputText.getLayoutData()).exclude = false;
-                    conn.outputText.setVisible(true);
+                    ((GridData) requestResponse.inputText.getLayoutData()).exclude = false;
+                    requestResponse.inputText.setVisible(true);
+                    ((GridData) requestResponse.outputText.getLayoutData()).exclude = false;
+                    requestResponse.outputText.setVisible(true);
                     removeButton.setEnabled(false);
                     removeAllButton.setEnabled(true);
                     saveButton.setEnabled(true);
@@ -380,13 +378,13 @@ class Listener extends AbstractListener {
                     textComposite.layout();
                 }
             } else {
-                Connection conn = (Connection) connections.get(row - 1);
+                RequestResponse requestResponse = (RequestResponse) requestResponses.get(row - 1);
                 removeChildren(leftPanel.getChildren());
                 removeChildren(rightPanel.getChildren());
-                ((GridData) conn.inputText.getLayoutData()).exclude = false;
-                conn.inputText.setVisible(true);
-                ((GridData) conn.outputText.getLayoutData()).exclude = false;
-                conn.outputText.setVisible(true);
+                ((GridData) requestResponse.inputText.getLayoutData()).exclude = false;
+                requestResponse.inputText.setVisible(true);
+                ((GridData) requestResponse.outputText.getLayoutData()).exclude = false;
+                requestResponse.outputText.setVisible(true);
                 removeButton.setEnabled(true);
                 removeAllButton.setEnabled(true);
                 saveButton.setEnabled(true);
@@ -414,10 +412,6 @@ class Listener extends AbstractListener {
 
     public void stop() {
         try {
-            for (int i = 0; i < connections.size(); i++) {
-                Connection conn = (Connection) connections.get(i);
-                conn.halt();
-            }
             sw.halt();
             stopButton.setText(TCPMonBundle.getMessage("start00", "Start"));
             portField.setEditable(true);
@@ -431,22 +425,22 @@ class Listener extends AbstractListener {
 
     public void remove() {
         int index;
-        Connection con;
+        RequestResponse requestResponse;
         int[] selectionIndices = tableEnhancer.getSelectionIndicesWithoutZero();
         for (int i = 0; i < selectionIndices.length; i++) {
             index = selectionIndices[i];
-            con = (Connection) connections.get(index - 1 - i);
-            if (con.isActive()) {
-                MessageBox mb = new MessageBox(MainView.display.getActiveShell(), SWT.ICON_INFORMATION | SWT.OK);
-                mb.setMessage(TCPMonBundle.getMessage("inform00", "Connection can be removed only when its status indicates Done"));
-                mb.setText("Connection Active");
-                mb.open();
-                continue;
-            }
-            con.halt();
-            con.inputText.dispose();
-            con.outputText.dispose();
-            connections.remove(con);
+            requestResponse = (RequestResponse) requestResponses.get(index - 1 - i);
+//            if (con.isActive()) {
+//                MessageBox mb = new MessageBox(MainView.display.getActiveShell(), SWT.ICON_INFORMATION | SWT.OK);
+//                mb.setMessage(TCPMonBundle.getMessage("inform00", "Connection can be removed only when its status indicates Done"));
+//                mb.setText("Connection Active");
+//                mb.open();
+//                continue;
+//            }
+//            con.halt();
+            requestResponse.inputText.dispose();
+            requestResponse.outputText.dispose();
+            requestResponses.remove(requestResponse);
             tableEnhancer.remove(index - i);
             tableEnhancer.setSelectionInterval(0, 0);
         }
@@ -484,9 +478,9 @@ class Listener extends AbstractListener {
                 FileOutputStream out = new FileOutputStream(file);
                 int rc = tableEnhancer.getLeadSelectionIndex();
                 int n = 0;
-                for (Iterator i = connections.iterator(); i.hasNext();
+                for (Iterator i = requestResponses.iterator(); i.hasNext();
                      n++) {
-                    Connection conn = (Connection) i.next();
+                    RequestResponse requestResponse = (RequestResponse) i.next();
                     if (tableEnhancer.isSelectedIndex(n + 1)
                             || (!(i.hasNext())
                             && (tableEnhancer.getLeadSelectionIndex() == 0))) {
@@ -506,11 +500,11 @@ class Listener extends AbstractListener {
                         out.write((("==== "
                                 + TCPMonBundle.getMessage("request01", "Request")
                                 + " ====\n")).getBytes());
-                        out.write(conn.getRequestAsString().getBytes());
+                        out.write(requestResponse.getRequestAsString().getBytes());
                         out.write((("==== "
                                 + TCPMonBundle.getMessage("response00", "Response")
                                 + " ====\n")).getBytes());
-                        out.write(conn.getResponseAsString().getBytes());
+                        out.write(requestResponse.getResponseAsString().getBytes());
                         out.write("\n==============\n".getBytes());
                     }
                 }
@@ -523,19 +517,19 @@ class Listener extends AbstractListener {
 
     public void resend() {
         int rc;
-        Connection conn;
+        RequestResponse requestResponse;
         rc = tableEnhancer.getMaxSelectionIndex();
         if (rc == 0) {
-            conn = (Connection) connections.lastElement();
+            requestResponse = (RequestResponse) requestResponses.lastElement();
         } else {
-            conn = (Connection) connections.get(rc - 1);
+            requestResponse = (RequestResponse) requestResponses.get(rc - 1);
         }
 
         if (rc > 0) {
             tableEnhancer.clearSelection();
             tableEnhancer.setSelectionInterval(0, 0);
         }
-        resend(conn);
+        resend(requestResponse);
     }
 
 
@@ -647,11 +641,7 @@ class Listener extends AbstractListener {
         });
     }
 
-    public AbstractConnection createConnection(Socket inSocket) {
-        return new Connection(this, inSocket);
-    }
-
-    public AbstractConnection createConnection(InputStream in) {
-        return new Connection(this, in);
+    public IRequestResponse createRequestResponse(String time, String fromHost, String targetHost) {
+        return new RequestResponse(this, time, fromHost, targetHost);
     }
 }

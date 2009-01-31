@@ -16,23 +16,16 @@
 
 package org.apache.ws.commons.tcpmon;
 
+import java.io.Writer;
+
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.apache.ws.commons.tcpmon.core.AbstractConnection;
+import org.apache.ws.commons.tcpmon.core.IRequestResponse;
 
-import java.io.InputStream;
-import java.net.Socket;
-
-/**
- * a connection listens to a single current connection
- */
-class Connection extends AbstractConnection {
-    /**
-     * Field listener
-     */
+public class RequestResponse implements IRequestResponse {
     private final Listener listener;
-
+    
     /**
      * Field inputText
      */
@@ -52,29 +45,24 @@ class Connection extends AbstractConnection {
      * Field outputScroll
      */
     JScrollPane outputScroll = null;
-
-    /**
-     * Constructor Connection
-     *
-     * @param l
-     * @param s
-     */
-    public Connection(Listener l, Socket s) {
-        super(l.getConfiguration(), s);
-        listener = l;
-        start();
-    }
-
-    /**
-     * Constructor Connection
-     *
-     * @param l
-     * @param in
-     */
-    public Connection(Listener l, InputStream in) {
-        super(l.getConfiguration(), in);
-        listener = l;
-        start();
+    
+    public RequestResponse(Listener listener, String time, String fromHost,
+            String targetHost) {
+        this.listener = listener;
+        int count = listener.requestResponses.size();
+        listener.tableModel.insertRow(count + 1,
+                new Object[]{
+                    TCPMonBundle.getMessage("active00","Active"),
+                    time,
+                    fromHost,
+                    targetHost,
+                    ""});
+        listener.requestResponses.add(this);
+        inputText = new JTextArea(null, null, 20, 80);
+        inputScroll = new JScrollPane(inputText);
+        outputText = new JTextArea(null, null, 20, 80);
+        outputScroll = new JScrollPane(outputText);
+        listener.handleSelection();
     }
 
     /**
@@ -83,55 +71,43 @@ class Connection extends AbstractConnection {
     public void remove() {
         int index = -1;
         try {
-            halt();
-            index = listener.connections.indexOf(this);
+            index = listener.requestResponses.indexOf(this);
             listener.tableModel.removeRow(index + 1);
-            listener.connections.remove(index);
+            listener.requestResponses.remove(index);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
     
-    protected void init(String time, String fromHost, String targetHost) {
-        int count = listener.connections.size();
-        listener.tableModel.insertRow(count + 1,
-                new Object[]{
-                    TCPMonBundle.getMessage("active00","Active"),
-                    time,
-                    fromHost,
-                    targetHost,
-                    ""});
-        listener.connections.add(this);
-        inputText = new JTextArea(null, null, 20, 80);
-        inputScroll = new JScrollPane(inputText);
-        outputText = new JTextArea(null, null, 20, 80);
-        outputScroll = new JScrollPane(outputText);
-        listener.handleSelection();
-        inputWriter = new JTextAreaWriter(inputText);
-        outputWriter = new JTextAreaWriter(outputText);
-    }
-    
     private void setValue(int column, String value) {
-        int index = listener.connections.indexOf(this);
+        int index = listener.requestResponses.indexOf(this);
         if (index >= 0) {
             listener.tableModel.setValueAt(value, 1 + index, column);
         }
     }
     
-    protected void setOutHost(String outHost) {
+    public void setOutHost(String outHost) {
         setValue(TCPMon.OUTHOST_COLUMN, outHost);
     }
     
-    protected void setState(String state) {
+    public void setState(String state) {
         setValue(TCPMon.STATE_COLUMN, state);
     }
     
-    protected void setRequest(String request) {
+    public void setRequest(String request) {
         setValue(TCPMon.REQ_COLUMN, request);
     }
     
-    protected void setElapsed(String elapsed) {
+    public void setElapsed(String elapsed) {
         setValue(TCPMon.ELAPSED_COLUMN, elapsed);
+    }
+    
+    public Writer getRequestWriter() {
+        return new JTextAreaWriter(inputText);
+    }
+
+    public Writer getResponseWriter() {
+        return new JTextAreaWriter(outputText);
     }
 
     public String getRequestAsString() {

@@ -18,13 +18,12 @@ package org.apache.ws.commons.tcpmon.core;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.net.Socket;
 
 public abstract class AbstractListener {
-    protected void resend(AbstractConnection conn) {
+    protected void resend(IRequestResponse requestResponse) {
         try {
             InputStream in = null;
-            String text = conn.getRequestAsString();
+            String text = requestResponse.getRequestAsString();
 
             // Fix Content-Length HTTP headers
             if (text.startsWith("POST ") || text.startsWith("GET ")) {
@@ -58,14 +57,14 @@ public abstract class AbstractListener {
                 }
             }
             in = new ByteArrayInputStream(text.getBytes());
-            createConnection(in);
+            new Connection(this, in).start();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
     
+    public abstract Configuration getConfiguration();
     public abstract void onServerSocketStart();
     public abstract void onServerSocketError(Throwable ex);
-    public abstract AbstractConnection createConnection(Socket inSocket);
-    public abstract AbstractConnection createConnection(InputStream in);
+    public abstract IRequestResponse createRequestResponse(String time, String fromHost, String targetHost);
 }

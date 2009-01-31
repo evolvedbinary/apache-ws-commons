@@ -40,9 +40,9 @@ import javax.swing.plaf.basic.BasicButtonListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
-import org.apache.ws.commons.tcpmon.core.AbstractConnection;
 import org.apache.ws.commons.tcpmon.core.AbstractListener;
 import org.apache.ws.commons.tcpmon.core.Configuration;
+import org.apache.ws.commons.tcpmon.core.IRequestResponse;
 import org.apache.ws.commons.tcpmon.core.SocketWaiter;
 
 import java.awt.BorderLayout;
@@ -55,8 +55,6 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.Socket;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -171,7 +169,7 @@ class Listener extends AbstractListener {
     /**
      * Field connections
      */
-    public final Vector connections = new Vector();
+    public final Vector requestResponses = new Vector();
 
     /**
      * create a listener
@@ -393,35 +391,35 @@ class Listener extends AbstractListener {
     public void handleSelection() {
         ListSelectionModel m = connectionTable.getSelectionModel();
         int divLoc = outPane.getDividerLocation();
-        Connection conn;
+        RequestResponse requestResponse;
         if (m.isSelectionEmpty()) {
-            conn = null;
+            requestResponse = null;
             removeButton.setEnabled(false);
         } else {
             int row = m.getLeadSelectionIndex();
             if (row == 0) {
-                if (connections.size() == 0) {
-                    conn = null;
+                if (requestResponses.size() == 0) {
+                    requestResponse = null;
                 } else {
-                    conn = (Connection) connections.lastElement();
+                    requestResponse = (RequestResponse)requestResponses.lastElement();
                 }
                 removeButton.setEnabled(false);
             } else {
-                conn = (Connection) connections.get(row - 1);
+                requestResponse = (RequestResponse)requestResponses.get(row - 1);
                 removeButton.setEnabled(true);
             }
         }
-        if (conn == null) {
+        if (requestResponse == null) {
             setLeft(new JLabel(" " + TCPMonBundle.getMessage("wait00",
                     "Waiting for Connection...")));
             setRight(new JLabel(""));
         } else {
-            setLeft(conn.inputScroll);
-            setRight(conn.outputScroll);
+            setLeft(requestResponse.inputScroll);
+            setRight(requestResponse.outputScroll);
         }
-        saveButton.setEnabled(conn != null);
-        resendButton.setEnabled(conn != null);
-        removeAllButton.setEnabled(!connections.isEmpty());
+        saveButton.setEnabled(requestResponse != null);
+        resendButton.setEnabled(requestResponse != null);
+        removeAllButton.setEnabled(!requestResponses.isEmpty());
         outPane.setDividerLocation(divLoc);
     }
 
@@ -471,10 +469,6 @@ class Listener extends AbstractListener {
     public void stop() {
         if (sw != null) {
             try {
-                for (int i = 0; i < connections.size(); i++) {
-                    Connection conn = (Connection) connections.get(i);
-                    conn.halt();
-                }
                 sw.halt();
                 sw = null;
                 startButton.setSelected(false);
@@ -496,10 +490,10 @@ class Listener extends AbstractListener {
         int bot = lsm.getMinSelectionIndex();
         int top = lsm.getMaxSelectionIndex();
         for (int i = top; i >= bot; i--) {
-            ((Connection) connections.get(i - 1)).remove();
+            ((RequestResponse)requestResponses.get(i - 1)).remove();
         }
-        if (bot > connections.size()) {
-            bot = connections.size();
+        if (bot > requestResponses.size()) {
+            bot = requestResponses.size();
         }
         lsm.setSelectionInterval(bot, bot);
     }
@@ -510,8 +504,8 @@ class Listener extends AbstractListener {
     public void removeAll() {
         ListSelectionModel lsm = connectionTable.getSelectionModel();
         lsm.clearSelection();
-        while (connections.size() > 0) {
-            ((Connection) connections.get(0)).remove();
+        while (requestResponses.size() > 0) {
+            ((RequestResponse)requestResponses.get(0)).remove();
         }
         lsm.setSelectionInterval(0, 0);
     }
@@ -538,9 +532,9 @@ class Listener extends AbstractListener {
                         connectionTable.getSelectionModel();
                 rc = lsm.getLeadSelectionIndex();
                 int n = 0;
-                for (Iterator i = connections.iterator(); i.hasNext();
+                for (Iterator i = requestResponses.iterator(); i.hasNext();
                      n++) {
-                    Connection conn = (Connection) i.next();
+                    RequestResponse requestResponse = (RequestResponse) i.next();
                     if (lsm.isSelectedIndex(n + 1)
                             || (!(i.hasNext())
                             && (lsm.getLeadSelectionIndex() == 0))) {
@@ -560,11 +554,11 @@ class Listener extends AbstractListener {
                         out.write((("==== "
                                 + TCPMonBundle.getMessage("request01", "Request")
                                 + " ====\n")).getBytes());
-                        out.write(conn.getRequestAsString().getBytes());
+                        out.write(requestResponse.getRequestAsString().getBytes());
                         out.write((("==== "
                                 + TCPMonBundle.getMessage("response00", "Response")
                                 + " ====\n")).getBytes());
-                        out.write(conn.getResponseAsString().getBytes());
+                        out.write(requestResponse.getResponseAsString().getBytes());
                         out.write("\n==============\n".getBytes());
                     }
                 }
@@ -583,14 +577,14 @@ class Listener extends AbstractListener {
         ListSelectionModel lsm = connectionTable.getSelectionModel();
         rc = lsm.getLeadSelectionIndex();
         if (rc == 0) {
-            rc = connections.size();
+            rc = requestResponses.size();
         }
-        Connection conn = (Connection) connections.get(rc - 1);
+        RequestResponse requestResponse = (RequestResponse)requestResponses.get(rc - 1);
         if (rc > 0) {
             lsm.clearSelection();
             lsm.setSelectionInterval(0, 0);
         }
-        resend(conn);
+        resend(requestResponse);
     }
 
     public Configuration getConfiguration() {
@@ -621,11 +615,7 @@ class Listener extends AbstractListener {
         stop();
     }
 
-    public AbstractConnection createConnection(Socket inSocket) {
-        return new Connection(this, inSocket);
-    }
-
-    public AbstractConnection createConnection(InputStream in) {
-        return new Connection(this, in);
+    public IRequestResponse createRequestResponse(String time, String fromHost, String targetHost) {
+        return new RequestResponse(this, time, fromHost, targetHost);
     }
 }
