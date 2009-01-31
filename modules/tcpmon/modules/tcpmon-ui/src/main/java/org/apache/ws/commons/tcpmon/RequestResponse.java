@@ -21,9 +21,9 @@ import java.io.Writer;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.apache.ws.commons.tcpmon.core.IRequestResponse;
+import org.apache.ws.commons.tcpmon.core.ui.AbstractRequestResponse;
 
-public class RequestResponse implements IRequestResponse {
+public class RequestResponse extends AbstractRequestResponse {
     private final Listener listener;
     
     /**
@@ -46,14 +46,15 @@ public class RequestResponse implements IRequestResponse {
      */
     JScrollPane outputScroll = null;
     
-    public RequestResponse(Listener listener, String time, String fromHost,
+    public RequestResponse(Listener listener, String fromHost,
             String targetHost) {
+        super(listener.getConfiguration());
         this.listener = listener;
         int count = listener.requestResponses.size();
         listener.tableModel.insertRow(count + 1,
                 new Object[]{
                     TCPMonBundle.getMessage("active00","Active"),
-                    time,
+                    getTime(),
                     fromHost,
                     targetHost,
                     ""});
@@ -90,23 +91,23 @@ public class RequestResponse implements IRequestResponse {
         setValue(TCPMon.OUTHOST_COLUMN, outHost);
     }
     
-    public void setState(String state) {
+    protected void setState(String state) {
         setValue(TCPMon.STATE_COLUMN, state);
     }
     
-    public void setRequest(String request) {
+    protected void setRequest(String request) {
         setValue(TCPMon.REQ_COLUMN, request);
     }
     
-    public void setElapsed(String elapsed) {
-        setValue(TCPMon.ELAPSED_COLUMN, elapsed);
+    public void setElapsed(long elapsed) {
+        setValue(TCPMon.ELAPSED_COLUMN, String.valueOf(elapsed));
     }
     
-    public Writer getRequestWriter() {
+    protected Writer getRequestWriter() {
         return new JTextAreaWriter(inputText);
     }
 
-    public Writer getResponseWriter() {
+    protected Writer getResponseWriter() {
         return new JTextAreaWriter(outputText);
     }
 

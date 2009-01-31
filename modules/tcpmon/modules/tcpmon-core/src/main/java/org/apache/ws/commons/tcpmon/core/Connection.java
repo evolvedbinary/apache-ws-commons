@@ -17,37 +17,23 @@
 package org.apache.ws.commons.tcpmon.core;
 
 import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
-import org.apache.ws.commons.tcpmon.TCPMonBundle;
-import org.apache.ws.commons.tcpmon.core.filter.CharsetDecoderFilter;
 import org.apache.ws.commons.tcpmon.core.filter.Pipeline;
-import org.apache.ws.commons.tcpmon.core.filter.RequestLineExtractor;
 import org.apache.ws.commons.tcpmon.core.filter.StreamException;
 import org.apache.ws.commons.tcpmon.core.filter.Tee;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpHeaderRewriter;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpProxyClientHandler;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpProxyServerHandler;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpRequestFilter;
-import org.apache.ws.commons.tcpmon.core.filter.http.HttpResponseFilter;
-import org.apache.ws.commons.tcpmon.core.filter.mime.DefaultContentFilterFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
-import java.io.Writer;
 import java.net.Socket;
-import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 /**
  * a connection listens to a single current connection
  */
 public class Connection extends Thread {
-    private static final Charset UTF8 = Charset.forName("utf-8");
-    
     private final AbstractListener listener;
     private final Configuration config;
 
@@ -82,9 +68,6 @@ public class Connection extends Thread {
     private InputStream inputStream = null;
     
     private IRequestResponse requestResponse;
-    
-    private Writer inputWriter;
-    private Writer outputWriter;
 
     /**
      * Constructor Connection
@@ -141,13 +124,8 @@ public class Connection extends Thread {
             } else {
                 fromHost = "resend";
             }
-            String dateformat = TCPMonBundle.getMessage("dateformat00", "yyyy-MM-dd HH:mm:ss");
-            DateFormat df = new SimpleDateFormat(dateformat);
             String targetHost = config.getTargetHost();
-            requestResponse = listener.createRequestResponse(
-                    df.format(new Date()), fromHost, targetHost);
-            inputWriter = requestResponse.getRequestWriter();
-            outputWriter = requestResponse.getResponseWriter();
+            requestResponse = listener.createRequestResponse(fromHost, targetHost);
             int targetPort = config.getTargetPort();
             InputStream tmpIn1 = inputStream;
             OutputStream tmpOut1 = null;
@@ -160,11 +138,6 @@ public class Connection extends Thread {
             }
             
             Pipeline requestPipeline = new Pipeline();
-            requestPipeline.addFilter(new RequestLineExtractor(50) {
-                protected void done(String requestLine) {
-                    requestResponse.setRequest(requestLine);
-                }
-            });
             HttpRequestFilter requestFilter = new HttpRequestFilter(false);
             requestPipeline.addFilter(requestFilter);
             if (config.isProxy()) {
@@ -177,22 +150,23 @@ public class Connection extends Thread {
                         }
                     }
                 });
-            } else if (HTTPProxyHost != null) {
-                requestFilter.addHandler(new HttpProxyClientHandler(targetHost, targetPort));
-                outSocket = new Socket(HTTPProxyHost, HTTPProxyPort);
             } else {
                 requestFilter.addHandler(new HttpHeaderRewriter("Host", targetHost + ":" + targetPort));
                 outSocket = new Socket(targetHost, targetPort);
             }
+            // We log the request data at this stage. This means that the user will see the request
+            // as if it had been sent directly from the client to the server (without TCPMon or a proxy
+            // in between).
+            requestPipeline.addFilter(new Tee(requestResponse.getRequestOutputStream()));
+            if (HTTPProxyHost != null) {
+                requestFilter.addHandler(new HttpProxyClientHandler(targetHost, targetPort));
+                outSocket = new Socket(HTTPProxyHost, HTTPProxyPort);
+            }
             requestPipeline.addFilter(config.getSlowLink());
             Tee requestTee = new Tee();
             requestPipeline.addFilter(requestTee);
-            if (config.isXmlFormat()) {
-                HttpRequestFilter filter = new HttpRequestFilter(true);
-                filter.setContentFilterFactory(new DefaultContentFilterFactory());
-                requestPipeline.addFilter(filter);
-            }
-            requestPipeline.addFilter(new CharsetDecoderFilter(inputWriter, UTF8));
+            
+            requestResponse.setState(IRequestResponse.STATE_ACTIVE);
             
             // If we act as a proxy, we first need to read the start of the request before
             // the outSocket is available.
@@ -208,12 +182,7 @@ public class Connection extends Thread {
             if (tmpOut1 != null) {
                 responsePipeline.addFilter(new Tee(tmpOut1));
             }
-            if (config.isXmlFormat()) {
-                HttpResponseFilter filter = new HttpResponseFilter(true);
-                filter.setContentFilterFactory(new DefaultContentFilterFactory());
-                responsePipeline.addFilter(filter);
-            }
-            responsePipeline.addFilter(new CharsetDecoderFilter(outputWriter, UTF8));
+            responsePipeline.addFilter(new Tee(requestResponse.getResponseOutputStream()));
             
             // this is the channel to the endpoint
             rr1 = new SocketRR(this, inSocket, tmpIn1, outSocket, tmpOut2, requestPipeline);
@@ -237,14 +206,14 @@ public class Connection extends Thread {
                 
                 if ((null != rr1) && rr1.isDone()) {
                     if (rr2 != null) {
-                        requestResponse.setState(TCPMonBundle.getMessage("resp00", "Resp"));
+                        requestResponse.setState(IRequestResponse.STATE_RESP);
                     }
                     rr1 = null;
                 }
 
                 if ((null != rr2) && rr2.isDone()) {
                     if (rr1 != null) {
-                        requestResponse.setState(TCPMonBundle.getMessage("req00", "Req"));
+                        requestResponse.setState(IRequestResponse.STATE_REQ);
                     }
                     rr2 = null;
                 }
@@ -256,22 +225,12 @@ public class Connection extends Thread {
 
             active = false;
 
-            requestResponse.setState(TCPMonBundle.getMessage("done00", "Done"));
+            requestResponse.setState(IRequestResponse.STATE_DONE);
 
         } catch (Exception e) {
-            StringWriter st = new StringWriter();
-            PrintWriter wr = new PrintWriter(st);
             if (requestResponse != null) {
-                requestResponse.setState(TCPMonBundle.getMessage("error00", "Error"));
-            }
-            e.printStackTrace(wr);
-            wr.close();
-            if (outputWriter != null) {
-                try {
-                    outputWriter.write(st.toString());
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
+                requestResponse.setState(IRequestResponse.STATE_ERROR);
+                requestResponse.onError(e);
             }
             halt();
         }

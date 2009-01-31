@@ -19,8 +19,10 @@ package org.apache.ws.commons.tcpmon.core;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
+import org.apache.ws.commons.tcpmon.core.ui.AbstractRequestResponse;
+
 public abstract class AbstractListener {
-    protected void resend(IRequestResponse requestResponse) {
+    protected void resend(AbstractRequestResponse requestResponse) {
         try {
             InputStream in = null;
             String text = requestResponse.getRequestAsString();
@@ -66,5 +68,5 @@ public abstract class AbstractListener {
     public abstract Configuration getConfiguration();
     public abstract void onServerSocketStart();
     public abstract void onServerSocketError(Throwable ex);
-    public abstract IRequestResponse createRequestResponse(String time, String fromHost, String targetHost);
+    public abstract IRequestResponse createRequestResponse(String fromHost, String targetHost);
 }

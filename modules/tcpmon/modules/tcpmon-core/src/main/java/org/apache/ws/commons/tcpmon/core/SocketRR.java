@@ -97,8 +97,8 @@ public class SocketRR extends Thread {
         return done;
     }
 
-    public String getElapsed() {
-        return String.valueOf(elapsed);
+    public long getElapsed() {
+        return elapsed;
     }
     
     /**

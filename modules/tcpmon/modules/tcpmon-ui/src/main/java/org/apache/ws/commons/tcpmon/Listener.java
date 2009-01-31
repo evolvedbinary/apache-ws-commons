@@ -615,7 +615,7 @@ class Listener extends AbstractListener {
         stop();
     }
 
-    public IRequestResponse createRequestResponse(String time, String fromHost, String targetHost) {
-        return new RequestResponse(this, time, fromHost, targetHost);
+    public IRequestResponse createRequestResponse(String fromHost, String targetHost) {
+        return new RequestResponse(this, fromHost, targetHost);
     }
 }

@@ -16,18 +16,22 @@
 
 package org.apache.ws.commons.tcpmon.core;
 
-import java.io.Writer;
+import java.io.OutputStream;
 
 /**
  * Listener receiving information about a given request-response exchange.
  */
 public interface IRequestResponse {
+    int STATE_ACTIVE = 0;
+    int STATE_REQ = 1;
+    int STATE_RESP = 2;
+    int STATE_DONE = 3;
+    int STATE_ERROR = 4;
+    
     void setOutHost(String outHost);
-    void setState(String state);
-    void setRequest(String request);
-    void setElapsed(String elapsed);
-    Writer getRequestWriter();
-    Writer getResponseWriter();
-    String getRequestAsString();
-    String getResponseAsString();
+    void setState(int state);
+    void setElapsed(long elapsed);
+    OutputStream getRequestOutputStream();
+    OutputStream getResponseOutputStream();
+    void onError(Throwable ex);
 }

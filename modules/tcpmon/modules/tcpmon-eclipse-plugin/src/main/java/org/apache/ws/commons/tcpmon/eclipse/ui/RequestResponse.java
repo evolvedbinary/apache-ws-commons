@@ -19,12 +19,12 @@ package org.apache.ws.commons.tcpmon.eclipse.ui;
 import java.io.Writer;
 
 import org.apache.ws.commons.tcpmon.TCPMonBundle;
-import org.apache.ws.commons.tcpmon.core.IRequestResponse;
+import org.apache.ws.commons.tcpmon.core.ui.AbstractRequestResponse;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
-public class RequestResponse implements IRequestResponse {
+public class RequestResponse extends AbstractRequestResponse {
     private final Listener listener;
 
     /**
@@ -37,7 +37,8 @@ public class RequestResponse implements IRequestResponse {
      */
     Text outputText = null;
 
-    public RequestResponse(final Listener listener, final String time, final String fromHost, final String targetHost) {
+    public RequestResponse(final Listener listener, final String fromHost, final String targetHost) {
+        super(listener.getConfiguration());
         this.listener = listener;
         final int count = listener.requestResponses.size();
 
@@ -45,7 +46,7 @@ public class RequestResponse implements IRequestResponse {
             public void run() {
                 TableItem item = new TableItem(listener.connectionTable, SWT.BORDER, count + 1);
                 item.setText(new String[]{TCPMonBundle.getMessage("active00", "Active"),
-                        time,
+                        getTime(),
                         fromHost,
                         targetHost,
                         "", ""});
@@ -87,23 +88,23 @@ public class RequestResponse implements IRequestResponse {
         setValue(MainView.OUTHOST_COLUMN, outHost);
     }
     
-    public void setState(String state) {
+    protected void setState(String state) {
         setValue(MainView.STATE_COLUMN, state);
     }
 
-    public void setRequest(String request) {
+    protected void setRequest(String request) {
         setValue(MainView.REQ_COLUMN, request);
     }
     
-    public void setElapsed(String elapsed) {
-        setValue(MainView.ELAPSED_COLUMN, elapsed);
+    public void setElapsed(long elapsed) {
+        setValue(MainView.ELAPSED_COLUMN, String.valueOf(elapsed));
     }
 
-    public Writer getRequestWriter() {
+    protected Writer getRequestWriter() {
         return new TextWidgetWriter(inputText);
     }
 
-    public Writer getResponseWriter() {
+    protected Writer getResponseWriter() {
         return new TextWidgetWriter(outputText);
     }
 

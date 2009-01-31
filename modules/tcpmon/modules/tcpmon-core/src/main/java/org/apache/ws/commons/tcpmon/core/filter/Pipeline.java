@@ -312,6 +312,26 @@ public class Pipeline {
         }
     }
     
+    private class OutputStreamImpl extends OutputStream {
+        public OutputStreamImpl() {}
+        
+        public void write(int b) throws IOException {
+            write(new byte[] { (byte)b });
+        }
+
+        public void write(byte[] b, int off, int len) throws IOException {
+            first.invoke(b, off, len, false, true);
+        }
+
+        public void write(byte[] b) throws IOException {
+            write(b, 0, b.length);
+        }
+
+        public void close() throws IOException {
+            first.invoke(new byte[0], 0, 0, true, false);
+        }
+    }
+    
     private final int bufferSize;
     private final LinkedList buffers = new LinkedList();
     private StreamImpl first;
@@ -356,5 +376,9 @@ public class Pipeline {
             first.invoke(buffer, 0, read, false, false);
         }
         return read;
+    }
+    
+    public OutputStream getOutputStream() {
+        return new OutputStreamImpl();
     }
 }
