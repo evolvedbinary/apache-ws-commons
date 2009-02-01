@@ -64,7 +64,7 @@ public class Pipeline {
         }
 
         public void invoke(byte[] buffer, int offset, int length, boolean eos, boolean preserve) {
-            while (length > 0) {
+            do {
                 if (inLength > 0) {
                     int c = fillBuffer(buffer, offset, length);
                     if (c == 0) {
@@ -79,7 +79,7 @@ public class Pipeline {
                 }
                 this.lastBuffer = eos && length == 0;
                 filter.invoke(this);
-            }
+            } while (length > 0);
             flushSkip(eos);
             flushOutput(eos);
             if (inLength > 0) {
@@ -89,13 +89,18 @@ public class Pipeline {
                 if (this.preserve) {
                     compactBuffer();
                 }
-            } else if (inBuffer != null) {
-                if (!this.preserve) {
-                    releaseBuffer(inBuffer);
+            } else {
+                if (eos && !eosSignalled) {
+                    invokeNext(inBuffer, inOffset, inLength, true, true);
                 }
-                inBuffer = null;
-                inOffset = 0;
-                inLength = 0;
+                if (inBuffer != null) {
+                    if (!this.preserve) {
+                        releaseBuffer(inBuffer);
+                    }
+                    inBuffer = null;
+                    inOffset = 0;
+                    inLength = 0;
+                }
             }
         }
         
