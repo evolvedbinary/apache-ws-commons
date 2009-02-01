@@ -619,7 +619,7 @@ class Listener extends AbstractListener {
         stop();
     }
 
-    public IRequestResponse createRequestResponse(String fromHost, String targetHost) {
-        return new RequestResponse(this, fromHost, targetHost);
+    public IRequestResponse createRequestResponse(String fromHost) {
+        return new RequestResponse(this, fromHost);
     }
 }

@@ -16,15 +16,13 @@
 
 package org.apache.ws.commons.tcpmon.core;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+import java.io.OutputStream;
 
 import org.apache.ws.commons.tcpmon.core.ui.AbstractRequestResponse;
 
 public abstract class AbstractListener {
     protected void resend(AbstractRequestResponse requestResponse) {
         try {
-            InputStream in = null;
             String text = requestResponse.getRequestAsString();
 
             // Fix Content-Length HTTP headers
@@ -58,8 +56,12 @@ public abstract class AbstractListener {
                     System.err.println("\nTEXT: '" + text + "'");
                 }
             }
-            in = new ByteArrayInputStream(text.getBytes());
-            new Connection(this, in).start();
+            RawSender sender = new RawSender(this, requestResponse.getTargetHost(),
+                    requestResponse.getTargetPort());
+            new Thread(sender).start();
+            OutputStream out = sender.getOutputStream();
+            out.write(text.getBytes());
+            out.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -68,5 +70,5 @@ public abstract class AbstractListener {
     public abstract Configuration getConfiguration();
     public abstract void onServerSocketStart();
     public abstract void onServerSocketError(Throwable ex);
-    public abstract IRequestResponse createRequestResponse(String fromHost, String targetHost);
+    public abstract IRequestResponse createRequestResponse(String fromHost);
 }

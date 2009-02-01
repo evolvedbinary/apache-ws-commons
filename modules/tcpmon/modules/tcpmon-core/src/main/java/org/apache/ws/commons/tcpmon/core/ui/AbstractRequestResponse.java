@@ -48,6 +48,8 @@ public abstract class AbstractRequestResponse implements IRequestResponse {
     private static final Charset UTF8 = Charset.forName("utf-8");
     
     private final Configuration config;
+    private String targetHost;
+    private int targetPort;
     
     public AbstractRequestResponse(Configuration config) {
         this.config = config;
@@ -61,6 +63,20 @@ public abstract class AbstractRequestResponse implements IRequestResponse {
     
     public void setState(int state) {
         setState(states[state]);
+    }
+
+    public String getTargetHost() {
+        return targetHost;
+    }
+
+    public int getTargetPort() {
+        return targetPort;
+    }
+
+    public void setTarget(String targetHost, int targetPort) {
+        this.targetHost = targetHost;
+        this.targetPort = targetPort;
+        setOutHost(targetHost);
     }
 
     public OutputStream getRequestOutputStream() {
@@ -103,6 +119,7 @@ public abstract class AbstractRequestResponse implements IRequestResponse {
     }
 
     protected abstract void setState(String state);
+    protected abstract void setOutHost(String outHost);
     protected abstract void setRequest(String request);
     protected abstract Writer getRequestWriter();
     protected abstract Writer getResponseWriter();

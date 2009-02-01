@@ -37,4 +37,10 @@ public class HttpResponseFilter extends HttpFilter {
         }
         return firstLine;
     }
+
+    protected void completed() {
+        for (Iterator it = handlers.iterator(); it.hasNext(); ) {
+            ((HttpResponseHandler)it.next()).responseCompleted();
+        }
+    }
 }

@@ -28,7 +28,7 @@ public interface IRequestResponse {
     int STATE_DONE = 3;
     int STATE_ERROR = 4;
     
-    void setOutHost(String outHost);
+    void setTarget(String targetHost, int targetPort);
     void setState(int state);
     void setElapsed(long elapsed);
     OutputStream getRequestOutputStream();

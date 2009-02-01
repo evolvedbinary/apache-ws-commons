@@ -27,4 +27,7 @@ public class AbstractHttpResponseHandler implements HttpResponseHandler {
     public String handleHeader(String name, String value) {
         return value;
     }
+
+    public void responseCompleted() {
+    }
 }

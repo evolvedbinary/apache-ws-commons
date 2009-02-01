@@ -46,8 +46,7 @@ public class RequestResponse extends AbstractRequestResponse {
      */
     JScrollPane outputScroll = null;
     
-    public RequestResponse(Listener listener, String fromHost,
-            String targetHost) {
+    public RequestResponse(Listener listener, String fromHost) {
         super(listener.getConfiguration());
         this.listener = listener;
         int count = listener.requestResponses.size();
@@ -56,7 +55,7 @@ public class RequestResponse extends AbstractRequestResponse {
                     TCPMonBundle.getMessage("active00","Active"),
                     getTime(),
                     fromHost,
-                    targetHost,
+                    "",
                     ""});
         listener.requestResponses.add(this);
         inputText = new JTextArea(null, null, 20, 80);
@@ -87,7 +86,7 @@ public class RequestResponse extends AbstractRequestResponse {
         }
     }
     
-    public void setOutHost(String outHost) {
+    protected void setOutHost(String outHost) {
         setValue(TCPMon.OUTHOST_COLUMN, outHost);
     }
     

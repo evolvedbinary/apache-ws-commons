@@ -108,7 +108,7 @@ public class Connection extends Thread {
                 fromHost = "resend";
             }
             String targetHost = config.getTargetHost();
-            requestResponse = listener.createRequestResponse(fromHost, targetHost);
+            requestResponse = listener.createRequestResponse(fromHost);
             int targetPort = config.getTargetPort();
             InputStream tmpIn1 = inputStream;
             OutputStream tmpOut1 = null;
@@ -126,6 +126,7 @@ public class Connection extends Thread {
             if (config.isProxy()) {
                 requestFilter.addHandler(new HttpProxyServerHandler() {
                     protected void handleConnection(String host, int port) {
+                        requestResponse.setTarget(host, port);
                         try {
                             outSocket = new Socket(host, port);
                         } catch (IOException ex) {
@@ -134,6 +135,7 @@ public class Connection extends Thread {
                     }
                 });
             } else {
+                requestResponse.setTarget(targetHost, targetPort);
                 requestFilter.addHandler(new HttpHeaderRewriter("Host", targetHost + ":" + targetPort));
                 outSocket = new Socket(targetHost, targetPort);
             }

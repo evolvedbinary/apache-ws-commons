@@ -37,7 +37,7 @@ public class RequestResponse extends AbstractRequestResponse {
      */
     Text outputText = null;
 
-    public RequestResponse(final Listener listener, final String fromHost, final String targetHost) {
+    public RequestResponse(final Listener listener, final String fromHost) {
         super(listener.getConfiguration());
         this.listener = listener;
         final int count = listener.requestResponses.size();
@@ -48,7 +48,7 @@ public class RequestResponse extends AbstractRequestResponse {
                 item.setText(new String[]{TCPMonBundle.getMessage("active00", "Active"),
                         getTime(),
                         fromHost,
-                        targetHost,
+                        "",
                         "", ""});
                 listener.tableEnhancer.setSelectionInterval(0, 0);
             }
@@ -84,7 +84,7 @@ public class RequestResponse extends AbstractRequestResponse {
         }
     }
     
-    public void setOutHost(String outHost) {
+    protected void setOutHost(String outHost) {
         setValue(MainView.OUTHOST_COLUMN, outHost);
     }
     

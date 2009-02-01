@@ -108,6 +108,7 @@ public abstract class HttpFilter implements StreamFilter {
                                     stream.popFilter();
                                 }
                             }
+                            completed();
                         }
                         break;
                     }
@@ -120,6 +121,7 @@ public abstract class HttpFilter implements StreamFilter {
     }
     
     protected abstract String processFirstLine(String firstList);
+    protected abstract void completed();
 
     private String processHeader(String name, String value) {
         if (name.equalsIgnoreCase("Content-Length")) {

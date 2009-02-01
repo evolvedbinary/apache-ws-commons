@@ -23,4 +23,5 @@ import org.apache.ws.commons.tcpmon.core.filter.HeaderHandler;
  */
 public interface HttpRequestHandler extends HeaderHandler {
     String processRequestLine(String requestLine);
+    void requestCompleted();
 }
