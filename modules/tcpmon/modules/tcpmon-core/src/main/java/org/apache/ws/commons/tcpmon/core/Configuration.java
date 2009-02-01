@@ -28,6 +28,21 @@ public class Configuration {
     private int httpProxyPort;
     private SlowLinkSimulator slowLink;
     
+    public void configProxyFromSystemProperties() {
+        String host = System.getProperty("http.proxyHost");
+        if (host != null && host.length() > 0) {
+            httpProxyHost = host;
+            String port = System.getProperty("http.proxyPort");
+            if (port != null && port.length() > 0) {
+                httpProxyPort = Integer.parseInt(port);
+            } else {
+                httpProxyPort = 80;
+            }
+        } else {
+            httpProxyHost = null;
+        }
+    }
+    
     public int getListenPort() {
         return listenPort;
     }

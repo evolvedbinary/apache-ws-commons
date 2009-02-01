@@ -101,23 +101,6 @@ public class Connection extends Thread {
             active = true;
             String HTTPProxyHost = config.getHttpProxyHost();
             int HTTPProxyPort = config.getHttpProxyPort();
-            if (HTTPProxyHost == null) {
-                HTTPProxyHost = System.getProperty("http.proxyHost");
-                if ((HTTPProxyHost != null) && HTTPProxyHost.equals("")) {
-                    HTTPProxyHost = null;
-                }
-                if (HTTPProxyHost != null) {
-                    String tmp = System.getProperty("http.proxyPort");
-                    if ((tmp != null) && tmp.equals("")) {
-                        tmp = null;
-                    }
-                    if (tmp == null) {
-                        HTTPProxyPort = 80;
-                    } else {
-                        HTTPProxyPort = Integer.parseInt(tmp);
-                    }
-                }
-            }
             String fromHost;
             if (inSocket != null) {
                 fromHost = (inSocket.getInetAddress()).getHostName();

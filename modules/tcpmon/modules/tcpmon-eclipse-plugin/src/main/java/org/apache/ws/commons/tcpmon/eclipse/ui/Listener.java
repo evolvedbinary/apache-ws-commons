@@ -617,8 +617,12 @@ class Listener extends AbstractListener {
                 config.setXmlFormat(xmlFormatBox.getSelection());
             }
         });
-        config.setHttpProxyHost(HTTPProxyHost);
-        config.setHttpProxyPort(HTTPProxyPort);
+        if (HTTPProxyHost == null) {
+            config.configProxyFromSystemProperties();
+        } else {
+            config.setHttpProxyHost(HTTPProxyHost);
+            config.setHttpProxyPort(HTTPProxyPort);
+        }
         config.setSlowLink(slowLink);
         return config;
     }
