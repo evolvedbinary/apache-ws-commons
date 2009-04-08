@@ -112,4 +112,44 @@ public class NamespaceContextTest extends XMLTestCase {
         String ns = el.getAttribute("xmlns");
         assertEquals("http://www.w3.org/2001/XMLSchema", ns);
     }
+    public void testNullNamespaceCtx() throws Exception {
+        String schema = "\t\t<xsd:schema targetNamespace=\"http://example.org/getBalance/\"\n" +
+            "attributeFormDefault=\"unqualified\" elementFormDefault=\"unqualified\"" +
+            " xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"" +
+            " xmlns=\"http://www.w3.org/2001/XMLSchema\"" +
+            " xmlns:xsd1=\"http://example.org/getBalance/\">" +
+            "\t\t\t<xsd:include schemaLocation=\"getBalance.xsd\" />\n" +
+            "\n" +
+            "\t\t\t<xsd:element name=\"newCustomer\">\n" +
+            "\t\t\t\t<xsd:complexType>\n" +
+            "\t\t\t\t\t<xsd:sequence>\n" +
+            "\t\t\t\t\t\t<xsd:element name=\"details\" type=\"xsd1:cinfoct\" />\n" +
+            "\t\t\t\t\t\t<xsd:element name=\"id\" type=\"string\" />\n" +
+            "\t\t\t\t\t</xsd:sequence>\n" +
+            "\t\t\t\t</xsd:complexType>\n" +
+            "\t\t\t</xsd:element>\n" +
+            "\n" +
+            "\t\t\t<xsd:element name=\"customerId\">\n" +
+            "\t\t\t\t<xsd:complexType>\n" +
+            "\t\t\t\t\t<xsd:sequence>\n" +
+            "\t\t\t\t\t\t<xsd:element name=\"id\" type=\"string\" />\n" +
+            "\t\t\t\t\t</xsd:sequence>\n" +
+            "\t\t\t\t</xsd:complexType>\n" +
+            "\t\t\t</xsd:element>\n" +
+            "\n" +
+            "\t\t</xsd:schema>";
+        org.xml.sax.InputSource schemaInputSource = new InputSource(new StringReader(schema));
+        XmlSchemaCollection xsc = new XmlSchemaCollection();
+        xsc.setBaseUri(Resources.TEST_RESOURCES);
+
+        //Set the namespaces explicitly
+        XmlSchema schemaDef = xsc.read(schemaInputSource, null);
+        schemaDef.setNamespaceContext(null);
+        Document doc = schemaDef.getSchemaDocument();
+        Element el = doc.getDocumentElement();
+        String ns = el.getAttribute("xmlns");
+        assertEquals("http://www.w3.org/2001/XMLSchema", ns);
+        ns = el.getAttribute("xmlns:tns");
+        assertEquals("http://example.org/getBalance/", ns);
+    }
 }

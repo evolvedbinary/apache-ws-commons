@@ -74,8 +74,8 @@ public class XmlSchemaSerializer {
 
     private Hashtable schema_ns;
 
-    static String xsdPrefix = "xs";
-    public static final String xsdNamespace = "http://www.w3.org/2001/XMLSchema";
+    String xsdPrefix = "xs";
+    String xsdNamespace = "http://www.w3.org/2001/XMLSchema";
     ArrayList docs;
     Element schemaElement;
 
@@ -151,8 +151,8 @@ public class XmlSchemaSerializer {
                 }
                 if (prefix == null) {
                     //find a usable prefix
-                    int count = 1;
-                    prefix = "tns" + count;
+                    int count = 0;
+                    prefix = "tns";
                     String ns = serializedSchema.getAttribute("xmlns:" + prefix);
                     while (ns != null && !"".equals(ns)) {
                         ++count;
@@ -162,10 +162,10 @@ public class XmlSchemaSerializer {
                 } 
                 if ("".equals(prefix)) {
                     serializedSchema.setAttributeNS(XMLNS_NAMESPACE_URI,
-                                                    "xmlns", targetNS);
+                                                    "xmlns", schemaObj.syntacticalTargetNamespace);
                 } else {
                     serializedSchema.setAttributeNS(XMLNS_NAMESPACE_URI,
-                                                    "xmlns:" + prefix, targetNS);
+                                                    "xmlns:" + prefix, schemaObj.syntacticalTargetNamespace);
                 }
                 schema_ns.put(schemaObj.syntacticalTargetNamespace, prefix);
             }
@@ -214,18 +214,6 @@ public class XmlSchemaSerializer {
 
         if (schemaObj.version != null) {
             serializedSchema.setAttribute("version", schemaObj.version);
-        }
-
-        //add the extra namespace decalarations if any are available
-        NamespacePrefixList ctx = schemaObj.getNamespaceContext();
-        String[] prefixes = ctx.getDeclaredPrefixes();
-        for (int i = 0;  i < prefixes.length;  i++) {
-            String prefix = prefixes[i];
-            String uri = ctx.getNamespaceURI(prefix);
-            if (!Constants.DEFAULT_NS_PREFIX.equals(prefix)) {
-                serializedSchema.setAttributeNS(Constants.XMLNS_ATTRIBUTE_NS_URI,
-                        Constants.XMLNS_ATTRIBUTE + ":" + prefix, uri);
-            }
         }
 
         //after serialize the schema add into documentation
@@ -322,32 +310,48 @@ public class XmlSchemaSerializer {
      */
     private Element setupNamespaces(Document schemaDocs, XmlSchema schemaObj) {
         NamespacePrefixList ctx = schemaObj.getNamespaceContext();
-        schemaObj.schema_ns_prefix = xsdPrefix = ctx.getPrefix(xsdNamespace);
+        schemaObj.schema_ns_prefix = xsdPrefix = ctx == null ? null : ctx.getPrefix(xsdNamespace);
         if(xsdPrefix == null) {
-            schemaObj.schema_ns_prefix = xsdPrefix = "";
+            //find a prefix to use
+            xsdPrefix = "";
+            if (ctx != null && ctx.getNamespaceURI(xsdPrefix) != null) {
+                xsdPrefix = "xsd";
+            }
+            int count = 0;
+            while (ctx != null && ctx.getNamespaceURI(xsdPrefix) != null) {
+                xsdPrefix = "xsd" + ++count;
+            }
+            schemaObj.schema_ns_prefix = xsdPrefix;
         }
 
         Element schemaEl = createNewElement(schemaDocs, "schema",
                                             schemaObj.schema_ns_prefix, XmlSchema.SCHEMA_NS);
 
-        String[] prefixes = ctx.getDeclaredPrefixes();
-        for (int i = 0;  i < prefixes.length;  i++) {
-            String prefix = prefixes[i];
-            String uri = ctx.getNamespaceURI(prefix);
-            if (uri != null && prefix != null) {
-                if ("".equals(prefix) || !schema_ns.containsKey(uri)) {
-                    schema_ns.put(uri, prefix);
+        if (ctx != null) {
+            String[] prefixes = ctx.getDeclaredPrefixes();
+            for (int i = 0;  i < prefixes.length;  i++) {
+                String prefix = prefixes[i];
+                String uri = ctx.getNamespaceURI(prefix);
+                if (uri != null && prefix != null) {
+                    if ("".equals(prefix) || !schema_ns.containsKey(uri)) {
+                        schema_ns.put(uri, prefix);
+                    }
+                    prefix = (prefix.length() > 0) ? "xmlns:" + prefix : "xmlns";                
+                    schemaEl.setAttributeNS(XMLNS_NAMESPACE_URI,
+                                            prefix, uri);
                 }
-                prefix = (prefix.length() > 0) ? "xmlns:" + prefix : "xmlns";                
-                schemaEl.setAttributeNS(XMLNS_NAMESPACE_URI,
-                                        prefix, uri);
             }
         }
         //for schema that not set the xmlns attrib member
         if (schema_ns.get(xsdNamespace) == null) {
             schema_ns.put(xsdNamespace, xsdPrefix);
-            schemaEl.setAttributeNS(XMLNS_NAMESPACE_URI,
-                                    "xmlns:" + xsdPrefix, xsdNamespace);
+            if ("".equals(xsdPrefix)) {
+                schemaEl.setAttributeNS(XMLNS_NAMESPACE_URI,
+                                        "xmlns", xsdNamespace);
+            } else {
+                schemaEl.setAttributeNS(XMLNS_NAMESPACE_URI,
+                                        "xmlns:" + xsdPrefix, xsdNamespace);                
+            }
             schemaObj.schema_ns_prefix = xsdPrefix;
         }
         return schemaEl;
