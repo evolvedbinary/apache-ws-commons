@@ -1,0 +1,30 @@
+ ====================================
+This is the release of XMLSchema 1.4.5 of Apache WS-Commons.
+====================================
+
+XMLSchema is a lightweight schema object model that can be used to manipulate 
+and generate XML schema representations. It has few external dependencies
+and can be easily integrated into an existing project.
+
+You are welcome to kick the tires and get XMLSchema on the move.  Any
+contribution in the form of coding, testing, submitting improvements
+to the documentation, and reporting bugs are always welcome.
+
+Bugs fixed since XmlSchema 1.4.4:
+
+WSCOMMONS-460 
+targetNamespace in schema without a prefixed namespace also defined can cause empty namespace to be overwritten.
+
+WSCOMMONS-447 
+Serializer requires a namespace context.
+
+WSCOMMONS-426 
+Serialization gets NPE with no namespace context.
+
+WSCOMMONS-283 
+Package XmlSchema as on OSGi bundle.
+
+Thanks for your interest in XMLSchema!
+
+- The XMLSchema Development Team (commons-dev@ws.apache.org)
+
