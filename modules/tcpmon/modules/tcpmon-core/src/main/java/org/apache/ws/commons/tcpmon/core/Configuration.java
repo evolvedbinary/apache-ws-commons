@@ -18,7 +18,7 @@ package org.apache.ws.commons.tcpmon.core;
 
 import org.apache.ws.commons.tcpmon.core.filter.throttle.ThrottleConfiguration;
 
-public class Configuration {
+public class Configuration implements Cloneable {
     private int listenPort;
     private String targetHost;
     private int targetPort;
@@ -43,6 +43,14 @@ public class Configuration {
         }
     }
     
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException ex) {
+            throw new InternalError();
+        }
+    }
+
     public int getListenPort() {
         return listenPort;
     }

@@ -44,7 +44,6 @@ import org.apache.ws.commons.tcpmon.core.AbstractListener;
 import org.apache.ws.commons.tcpmon.core.Configuration;
 import org.apache.ws.commons.tcpmon.core.IRequestResponse;
 import org.apache.ws.commons.tcpmon.core.SocketWaiter;
-import org.apache.ws.commons.tcpmon.core.filter.throttle.ThrottleConfiguration;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -152,20 +151,7 @@ class Listener extends AbstractListener {
      */
     private JTabbedPane notebook = null;
 
-    /**
-     * Field HTTPProxyHost
-     */
-    private String HTTPProxyHost = null;
-
-    /**
-     * Field HTTPProxyPort
-     */
-    private int HTTPProxyPort = 80;
-
-    /**
-     * Field slowLink
-     */
-    private ThrottleConfiguration throttleConfig;
+    private final Configuration baseConfiguration;
 
     /**
      * Field connections
@@ -190,16 +176,7 @@ class Listener extends AbstractListener {
             name = TCPMonBundle.getMessage("port01", "Port") + " " + config.getListenPort();
         }
 
-        // set the slow link to the passed down link
-        if (throttleConfig != null) {
-            this.throttleConfig = config.getThrottleConfiguration();
-        } else {
-
-            // or make up a no-op one.
-            this.throttleConfig = new ThrottleConfiguration(0, 0);
-        }
-        HTTPProxyHost = config.getHttpProxyHost();
-        HTTPProxyPort = config.getHttpProxyPort();
+        baseConfiguration = config;
         panel = new JPanel(new BorderLayout());
 
         // 1st component is just a row of labels and 1-line entry fields
@@ -590,19 +567,15 @@ class Listener extends AbstractListener {
     }
 
     public Configuration getConfiguration() {
-        Configuration config = new Configuration();
+        Configuration config = (Configuration)baseConfiguration.clone();
         config.setListenPort(Integer.parseInt(portField.getText()));
         config.setTargetHost(hostField.getText());
         config.setTargetPort(Integer.parseInt(tPortField.getText()));
         config.setProxy(isProxyBox.isSelected());
         config.setXmlFormat(xmlFormatBox.isSelected());
-        if (HTTPProxyHost == null) {
+        if (config.getHttpProxyHost() == null) {
             config.configProxyFromSystemProperties();
-        } else {
-            config.setHttpProxyHost(HTTPProxyHost);
-            config.setHttpProxyPort(HTTPProxyPort);
         }
-        config.setThrottleConfiguration(throttleConfig);
         return config;
     }
 

@@ -20,7 +20,6 @@ import org.apache.ws.commons.tcpmon.core.AbstractListener;
 import org.apache.ws.commons.tcpmon.core.Configuration;
 import org.apache.ws.commons.tcpmon.core.IRequestResponse;
 import org.apache.ws.commons.tcpmon.core.SocketWaiter;
-import org.apache.ws.commons.tcpmon.core.filter.throttle.ThrottleConfiguration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -57,27 +56,17 @@ class Listener extends AbstractListener {
     private TabItem portTabItem;
 
     private SocketWaiter sw = null;
-    private ThrottleConfiguration throttleConfig;
 
     public final Vector requestResponses = new Vector();
 
-    private String HTTPProxyHost = null;
-    private int HTTPProxyPort = 80;
+    private final Configuration baseConfiguration;
 
     public Listener(TabFolder tabFolder, String name,
                     Configuration config) {
         if (name == null) {
             name = TCPMonBundle.getMessage("port01", "Port") + " " + config.getListenPort();
         }
-        // set the slow link to the passed down link
-        if (throttleConfig != null) {
-            this.throttleConfig = config.getThrottleConfiguration();
-        } else {
-            // or make up a no-op one.
-            this.throttleConfig = new ThrottleConfiguration(0, 0);
-        }
-        HTTPProxyHost = config.getHttpProxyHost();
-        HTTPProxyPort = config.getHttpProxyPort();
+        baseConfiguration = config;
 
         this.tabFolder = tabFolder;
         createPortTab(config);
@@ -608,7 +597,7 @@ class Listener extends AbstractListener {
     }
 
     public Configuration getConfiguration() {
-        final Configuration config = new Configuration();
+        final Configuration config = (Configuration)baseConfiguration.clone();
         MainView.display.syncExec(new Runnable() {
             public void run() {
                 config.setListenPort(Integer.parseInt(portField.getText()));
@@ -618,13 +607,9 @@ class Listener extends AbstractListener {
                 config.setXmlFormat(xmlFormatBox.getSelection());
             }
         });
-        if (HTTPProxyHost == null) {
+        if (config.getHttpProxyHost() == null) {
             config.configProxyFromSystemProperties();
-        } else {
-            config.setHttpProxyHost(HTTPProxyHost);
-            config.setHttpProxyPort(HTTPProxyPort);
         }
-        config.setThrottleConfiguration(throttleConfig);
         return config;
     }
 

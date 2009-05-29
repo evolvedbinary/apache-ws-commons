@@ -24,6 +24,7 @@ import org.apache.ws.commons.tcpmon.core.filter.http.HttpProxyClientHandler;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpProxyServerHandler;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpRequestFilter;
 import org.apache.ws.commons.tcpmon.core.filter.throttle.Throttle;
+import org.apache.ws.commons.tcpmon.core.filter.throttle.ThrottleConfiguration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -101,6 +102,7 @@ public class Connection extends Thread {
             active = true;
             String HTTPProxyHost = config.getHttpProxyHost();
             int HTTPProxyPort = config.getHttpProxyPort();
+            ThrottleConfiguration throttleConfig = config.getThrottleConfiguration();
             String fromHost;
             if (inSocket != null) {
                 fromHost = (inSocket.getInetAddress()).getHostName();
@@ -147,7 +149,9 @@ public class Connection extends Thread {
                 requestFilter.addHandler(new HttpProxyClientHandler(targetHost, targetPort));
                 outSocket = new Socket(HTTPProxyHost, HTTPProxyPort);
             }
-            requestPipeline.addFilter(new Throttle(config.getThrottleConfiguration()));
+            if (throttleConfig != null) {
+                requestPipeline.addFilter(new Throttle(throttleConfig));
+            }
             Tee requestTee = new Tee();
             requestPipeline.addFilter(requestTee);
             
@@ -163,7 +167,9 @@ public class Connection extends Thread {
             requestTee.setOutputStream(tmpOut2);
             
             Pipeline responsePipeline = new Pipeline();
-            responsePipeline.addFilter(new Throttle(config.getThrottleConfiguration()));
+            if (throttleConfig != null) {
+                responsePipeline.addFilter(new Throttle(throttleConfig));
+            }
             if (tmpOut1 != null) {
                 responsePipeline.addFilter(new Tee(tmpOut1));
             }
