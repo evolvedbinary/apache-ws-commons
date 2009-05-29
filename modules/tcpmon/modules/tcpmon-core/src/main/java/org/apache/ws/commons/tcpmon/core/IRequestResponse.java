@@ -31,7 +31,22 @@ public interface IRequestResponse {
     void setTarget(String targetHost, int targetPort);
     void setState(int state);
     void setElapsed(long elapsed);
+    
+    /**
+     * Get the output stream to which a copy of the request will be written.
+     * 
+     * @return an output stream or <code>null</code> if the implementation doesn't
+     *         want to receive a copy of the request
+     */
     OutputStream getRequestOutputStream();
+    
+    /**
+     * Get the output stream to which a copy of the response will be written
+     * 
+     * @return an output stream or <code>null</code> if the implementation doesn't
+     *         want to receive a copy of the response
+     */
     OutputStream getResponseOutputStream();
+    
     void onError(Throwable ex);
 }

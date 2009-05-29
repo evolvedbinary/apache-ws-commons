@@ -147,7 +147,10 @@ public class Connection extends Thread {
             // We log the request data at this stage. This means that the user will see the request
             // as if it had been sent directly from the client to the server (without TCPMon or a proxy
             // in between).
-            requestPipeline.addFilter(new Tee(requestResponse.getRequestOutputStream()));
+            OutputStream requestOutputStream = requestResponse.getRequestOutputStream();
+            if (requestOutputStream != null) {
+                requestPipeline.addFilter(new Tee(requestOutputStream));
+            }
             if (HTTPProxyHost != null) {
                 requestFilter.addHandler(new HttpProxyClientHandler(targetHost, targetPort));
                 outSocket = socketFactory.createSocket(HTTPProxyHost, HTTPProxyPort);
@@ -176,7 +179,10 @@ public class Connection extends Thread {
             if (tmpOut1 != null) {
                 responsePipeline.addFilter(new Tee(tmpOut1));
             }
-            responsePipeline.addFilter(new Tee(requestResponse.getResponseOutputStream()));
+            OutputStream responseOutputStream = requestResponse.getResponseOutputStream();
+            if (responseOutputStream != null) {
+                responsePipeline.addFilter(new Tee(responseOutputStream));
+            }
             
             // this is the channel to the endpoint
             rr1 = new SocketRR(this, inSocket, tmpIn1, outSocket, tmpOut2, requestPipeline);
