@@ -155,17 +155,17 @@ class Listener extends AbstractListener {
     /**
      * Field HTTPProxyHost
      */
-    public String HTTPProxyHost = null;
+    private String HTTPProxyHost = null;
 
     /**
      * Field HTTPProxyPort
      */
-    public int HTTPProxyPort = 80;
+    private int HTTPProxyPort = 80;
 
     /**
      * Field slowLink
      */
-    public ThrottleConfiguration throttleConfig;
+    private ThrottleConfiguration throttleConfig;
 
     /**
      * Field connections
@@ -183,22 +183,23 @@ class Listener extends AbstractListener {
      * @param isProxy
      * @param slowLink   optional reference to a slow connection
      */
-    public Listener(JTabbedPane _notebook, String name, int listenPort,
-                    String host, int targetPort, boolean isProxy,
-                    ThrottleConfiguration throttleConfig) {
+    public Listener(JTabbedPane _notebook, String name,
+                    Configuration config) {
         notebook = _notebook;
         if (name == null) {
-            name = TCPMonBundle.getMessage("port01", "Port") + " " + listenPort;
+            name = TCPMonBundle.getMessage("port01", "Port") + " " + config.getListenPort();
         }
 
         // set the slow link to the passed down link
         if (throttleConfig != null) {
-            this.throttleConfig = throttleConfig;
+            this.throttleConfig = config.getThrottleConfiguration();
         } else {
 
             // or make up a no-op one.
             this.throttleConfig = new ThrottleConfiguration(0, 0);
         }
+        HTTPProxyHost = config.getHttpProxyHost();
+        HTTPProxyPort = config.getHttpProxyPort();
         panel = new JPanel(new BorderLayout());
 
         // 1st component is just a row of labels and 1-line entry fields
@@ -210,13 +211,13 @@ class Listener extends AbstractListener {
         top.addSeparator();
         top.add(new JLabel(TCPMonBundle.getMessage("listenPort01", "Listen Port:")
                 + " ", SwingConstants.RIGHT));
-        top.add(portField = new JTextField("" + listenPort, 4));
+        top.add(portField = new JTextField("" + config.getListenPort(), 4));
         top.add(new JLabel("  " + TCPMonBundle.getMessage("host00", "Host:") + " ",
                 SwingConstants.RIGHT));
-        top.add(hostField = new JTextField(host, 15));
+        top.add(hostField = new JTextField(config.getTargetHost(), 15));
         top.add(new JLabel("  " + TCPMonBundle.getMessage("port02", "Port:") + " ",
                 SwingConstants.RIGHT));
-        top.add(tPortField = new JTextField("" + targetPort, 4));
+        top.add(tPortField = new JTextField("" + config.getTargetPort(), 4));
         top.add(isProxyBox = new JCheckBox(TCPMonBundle.getMessage("proxy00", "Proxy")));
         isProxyBox.addChangeListener(new BasicButtonListener(isProxyBox) {
             public void stateChanged(ChangeEvent event) {
@@ -226,7 +227,7 @@ class Listener extends AbstractListener {
                 hostField.setEnabled(!state);
             }
         });
-        isProxyBox.setSelected(isProxy);
+        isProxyBox.setSelected(config.isProxy());
         portField.setEditable(false);
         portField.setMaximumSize(portField.getPreferredSize());
         hostField.setEditable(false);

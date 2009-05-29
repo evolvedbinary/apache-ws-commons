@@ -61,29 +61,30 @@ class Listener extends AbstractListener {
 
     public final Vector requestResponses = new Vector();
 
-    public String HTTPProxyHost = null;
-    public int HTTPProxyPort = 80;
+    private String HTTPProxyHost = null;
+    private int HTTPProxyPort = 80;
 
-    public Listener(TabFolder tabFolder, String name, int listenPort,
-                    String host, int targetPort, boolean isProxy,
-                    ThrottleConfiguration throttleConfig) {
+    public Listener(TabFolder tabFolder, String name,
+                    Configuration config) {
         if (name == null) {
-            name = TCPMonBundle.getMessage("port01", "Port") + " " + listenPort;
+            name = TCPMonBundle.getMessage("port01", "Port") + " " + config.getListenPort();
         }
         // set the slow link to the passed down link
         if (throttleConfig != null) {
-            this.throttleConfig = throttleConfig;
+            this.throttleConfig = config.getThrottleConfiguration();
         } else {
             // or make up a no-op one.
             this.throttleConfig = new ThrottleConfiguration(0, 0);
         }
+        HTTPProxyHost = config.getHttpProxyHost();
+        HTTPProxyPort = config.getHttpProxyPort();
 
         this.tabFolder = tabFolder;
-        createPortTab(isProxy, listenPort, host, targetPort);
+        createPortTab(config);
 
     }
 
-    public void createPortTab(boolean isProxy, int listenPort, String host, int targetPort) {
+    public void createPortTab(Configuration config) {
         portTabItem = new TabItem(tabFolder, SWT.NONE);
 
         final Composite composite = new Composite(tabFolder, SWT.NONE);
@@ -106,7 +107,7 @@ class Listener extends AbstractListener {
         listenPortLabel.setText(TCPMonBundle.getMessage("listenPort01", "Listen Port:"));
 
         portField = new Text(composite, SWT.BORDER);
-        portField.setText("" + listenPort);
+        portField.setText("" + config.getListenPort());
         gd = new GridData(SWT.FILL, SWT.CENTER, false, false);
         gd.widthHint = 40;
         portField.setLayoutData(gd);
@@ -114,7 +115,7 @@ class Listener extends AbstractListener {
         (new Label(composite, SWT.NONE)).setText(TCPMonBundle.getMessage("host00", "Host:"));
 
         hostField = new Text(composite, SWT.BORDER);
-        hostField.setText(host);
+        hostField.setText(config.getTargetHost());
         gd = new GridData(SWT.FILL, SWT.CENTER, false, false);
         gd.widthHint = 202;
         hostField.setLayoutData(gd);
@@ -122,7 +123,7 @@ class Listener extends AbstractListener {
         (new Label(composite, SWT.NONE)).setText(TCPMonBundle.getMessage("port02", "Port:"));
 
         tPortField = new Text(composite, SWT.BORDER);
-        tPortField.setText("" + targetPort);
+        tPortField.setText("" + config.getTargetPort());
         gd = new GridData(SWT.FILL, SWT.CENTER, false, false);
         gd.widthHint = 40;
         tPortField.setLayoutData(gd);
@@ -141,7 +142,7 @@ class Listener extends AbstractListener {
                 hostField.setEnabled(!state);
             }
         });
-        isProxyBox.setSelection(isProxy);
+        isProxyBox.setSelection(config.isProxy());
         portField.setEditable(false);
         hostField.setEditable(false);
         tPortField.setEditable(false);

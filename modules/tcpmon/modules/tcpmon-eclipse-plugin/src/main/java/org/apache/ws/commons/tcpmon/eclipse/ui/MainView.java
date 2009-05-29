@@ -17,6 +17,7 @@ package org.apache.ws.commons.tcpmon.eclipse.ui;
 
 
 import org.apache.ws.commons.tcpmon.TCPMonBundle;
+import org.apache.ws.commons.tcpmon.core.Configuration;
 import org.apache.ws.commons.tcpmon.core.filter.throttle.ThrottleConfiguration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -105,41 +106,16 @@ public class MainView extends ViewPart{
         addButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(final SelectionEvent e) {
                 if (add.equals(((Button) e.getSource()).getText())) {
-                    String text;
-                    Listener l = null;
-                    int lPort;
-                    lPort = getValue(0, port.getText());
-                    if (lPort == 0) {
+                    Configuration config = getConfiguration();
+                    if (config == null) {
                         return;
                     }
-                    String tHost = host.getText();
-                    int tPort;
-                    tPort = getValue(0, tport.getText());
-                    ThrottleConfiguration throttleConfig = null;
-                    if (delayBox.getSelection()) {
-                        int bytes = getValue(0, delayBytes.getText());
-                        int time = getValue(0, delayTime.getText());
-                        throttleConfig = new ThrottleConfiguration(bytes, time);
-                    }
                     try {
-                        l = new Listener(tabFolder, null, lPort, tHost, tPort,
-                                proxyButton.getSelection(),
-                                throttleConfig);
+                        new Listener(tabFolder, null, config);
                     } catch (Exception exp) {
                         exp.printStackTrace();
                     }
 
-                    text = hTTPProxyHost.getText();
-                    if ("".equals(text)) {
-                        text = null;
-                    }
-
-                    l.HTTPProxyHost = text;
-                    text = hTTPProxyPort.getText();
-                    int proxyPort = getValue(-1, hTTPProxyPort.getText());
-                    if (proxyPort != -1) {
-                        l.HTTPProxyPort = Integer.parseInt(text);
-                    }
                     port.setText("");
                 }
             }
@@ -147,6 +123,35 @@ public class MainView extends ViewPart{
         configTab.setControl(composite);
     }
 
+    private Configuration getConfiguration() {
+        Configuration config = new Configuration();
+        
+        int lPort = getValue(0, port.getText());
+        if (lPort == 0) {
+            return null;
+        }
+        config.setListenPort(lPort);
+        config.setProxy(proxyButton.getSelection());
+        config.setTargetHost(host.getText());
+        config.setTargetPort(getValue(0, tport.getText()));
+        ThrottleConfiguration throttleConfig = null;
+        if (delayBox.getSelection()) {
+            throttleConfig = new ThrottleConfiguration(getValue(0, delayBytes.getText()), getValue(0, delayTime.getText()));
+        }
+        config.setThrottleConfiguration(throttleConfig);
+        
+        String text = hTTPProxyHost.getText();
+        if (text.length() > 0) {
+            config.setHttpProxyHost(text);
+        }
+        text = hTTPProxyPort.getText();
+        int proxyPort = getValue(-1, hTTPProxyPort.getText());
+        if (proxyPort != -1) {
+            config.setHttpProxyPort(Integer.parseInt(text));
+        }
+        
+        return config;
+    }
 
     private void addActAsOptions(Composite composite) {
         GridData gd = new GridData();

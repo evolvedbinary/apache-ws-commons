@@ -21,6 +21,8 @@ import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import org.apache.ws.commons.tcpmon.core.Configuration;
+
 /**
  * Proxy that sniffs and shows HTTP messages and responses, both SOAP and plain HTTP.
  */
@@ -77,27 +79,29 @@ public class TCPMon extends JFrame {
         new AdminPane(notebook, TCPMonBundle.getMessage("admin00", "Admin"));
         if (listenPort != 0) {
             Listener l = null;
-            if (targetHost == null) {
-                l = new Listener(notebook, null, listenPort, targetHost, targetPort, true, null);
-            } else {
-                l = new Listener(notebook, null, listenPort, targetHost, targetPort, false, null);
-            }
+            Configuration config = new Configuration();
+            config.setListenPort(listenPort);
+            config.setTargetHost(targetHost);
+            config.setTargetPort(targetPort);
+            config.setProxy(targetHost == null);
             notebook.setSelectedIndex(0);
-            l.HTTPProxyHost = System.getProperty("http.proxyHost");
-            if ((l.HTTPProxyHost != null) && l.HTTPProxyHost.equals("")) {
-                l.HTTPProxyHost = null;
+            String HTTPProxyHost = System.getProperty("http.proxyHost");
+            if ((HTTPProxyHost != null) && HTTPProxyHost.equals("")) {
+                HTTPProxyHost = null;
             }
-            if (l.HTTPProxyHost != null) {
+            if (HTTPProxyHost != null) {
+                config.setHttpProxyHost(HTTPProxyHost);
                 String tmp = System.getProperty("http.proxyPort");
                 if ((tmp != null) && tmp.equals("")) {
                     tmp = null;
                 }
                 if (tmp == null) {
-                    l.HTTPProxyPort = 80;
+                    config.setHttpProxyPort(80);
                 } else {
-                    l.HTTPProxyPort = Integer.parseInt(tmp);
+                    config.setHttpProxyPort(Integer.parseInt(tmp));
                 }
             }
+            new Listener(notebook, null, config);
         }
         if (!embedded) {
             this.setDefaultCloseOperation(EXIT_ON_CLOSE);

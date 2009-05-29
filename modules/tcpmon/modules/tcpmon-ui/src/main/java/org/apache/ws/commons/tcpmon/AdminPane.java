@@ -32,6 +32,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 
+import org.apache.ws.commons.tcpmon.core.Configuration;
 import org.apache.ws.commons.tcpmon.core.filter.throttle.ThrottleConfiguration;
 
 import java.awt.BorderLayout;
@@ -372,43 +373,16 @@ public class AdminPane extends JPanel {
         addButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 if (add.equals(event.getActionCommand())) {
-                    String text;
-                    Listener l = null;
-                    int lPort;
-                    lPort = port.getValue(0);
-                    if (lPort == 0) {
+                    Configuration config = getConfiguration();
+                    if (config == null) {
 
                         // no port, button does nothing
                         return;
                     }
-                    String tHost = host.getText();
-                    int tPort = 0;
-                    tPort = tport.getValue(0);
-                    ThrottleConfiguration throttleConfig = null;
-                    if (delayBox.isSelected()) {
-                        int bytes = delayBytes.getValue(0);
-                        int time = delayTime.getValue(0);
-                        throttleConfig = new ThrottleConfiguration(bytes, time);
-                    }
                     try {
-                        l = new Listener(noteb, null, lPort, tHost, tPort,
-                                proxyButton.isSelected(),
-                                throttleConfig);
+                        new Listener(noteb, null, config);
                     } catch (Exception e) {
                         e.printStackTrace();
-                    }
-
-                    // Pick-up the HTTP Proxy settings
-                    // /////////////////////////////////////////////////
-                    text = HTTPProxyHost.getText();
-                    if ("".equals(text)) {
-                        text = null;
-                    }
-                    l.HTTPProxyHost = text;
-                    text = HTTPProxyPort.getText();
-                    int proxyPort = HTTPProxyPort.getValue(-1);
-                    if (proxyPort != -1) {
-                        l.HTTPProxyPort = Integer.parseInt(text);
                     }
 
                     // reset the port
@@ -421,6 +395,39 @@ public class AdminPane extends JPanel {
         new Sender(noteb);
         notebook.repaint();
         notebook.setSelectedIndex(notebook.getTabCount() - 1);
+    }
+    
+    private Configuration getConfiguration() {
+        Configuration config = new Configuration();
+        
+        int lPort = port.getValue(0);
+        if (lPort == 0) {
+            // no port, no configuration
+            return null;
+        }
+        config.setListenPort(lPort);
+        config.setProxy(proxyButton.isSelected());
+        config.setTargetHost(host.getText());
+        config.setTargetPort(tport.getValue(0));
+        ThrottleConfiguration throttleConfig = null;
+        if (delayBox.isSelected()) {
+            throttleConfig = new ThrottleConfiguration(delayBytes.getValue(0), delayTime.getValue(0));
+        }
+        config.setThrottleConfiguration(throttleConfig);
+
+        // Pick-up the HTTP Proxy settings
+        // /////////////////////////////////////////////////
+        String text = HTTPProxyHost.getText();
+        if (text.length() > 0) {
+            config.setHttpProxyHost(text);
+        }
+        text = HTTPProxyPort.getText();
+        int proxyPort = HTTPProxyPort.getValue(-1);
+        if (proxyPort != -1) {
+            config.setHttpProxyPort(Integer.parseInt(text));
+        }
+        
+        return config;
     }
     
     /**
