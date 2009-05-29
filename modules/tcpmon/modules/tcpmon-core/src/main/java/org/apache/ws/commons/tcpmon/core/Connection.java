@@ -65,11 +65,6 @@ public class Connection extends Thread {
      */
     private SocketRR rr2 = null;
 
-    /**
-     * Field inputStream
-     */
-    private InputStream inputStream = null;
-    
     private IRequestResponse requestResponse;
 
     /**
@@ -85,18 +80,6 @@ public class Connection extends Thread {
     }
 
     /**
-     * Constructor Connection
-     *
-     * @param listener
-     * @param in
-     */
-    public Connection(AbstractListener listener, InputStream in) {
-        this.listener = listener;
-        config = listener.getConfiguration();
-        inputStream = in;
-    }
-
-    /**
      * Method run
      */
     public void run() {
@@ -106,24 +89,11 @@ public class Connection extends Thread {
             int HTTPProxyPort = config.getHttpProxyPort();
             ThrottleConfiguration throttleConfig = config.getThrottleConfiguration();
             final SocketFactory socketFactory = config.getSocketFactory();
-            String fromHost;
-            if (inSocket != null) {
-                fromHost = (inSocket.getInetAddress()).getHostName();
-            } else {
-                fromHost = "resend";
-            }
             String targetHost = config.getTargetHost();
-            requestResponse = listener.createRequestResponse(fromHost);
+            requestResponse = listener.createRequestResponse(inSocket.getInetAddress().getHostName());
             int targetPort = config.getTargetPort();
-            InputStream tmpIn1 = inputStream;
-            OutputStream tmpOut1 = null;
-            OutputStream tmpOut2 = null;
-            if (tmpIn1 == null) {
-                tmpIn1 = inSocket.getInputStream();
-            }
-            if (inSocket != null) {
-                tmpOut1 = inSocket.getOutputStream();
-            }
+            InputStream tmpIn1 = inSocket.getInputStream();
+            OutputStream tmpOut1 = inSocket.getOutputStream();
             
             Pipeline requestPipeline = new Pipeline();
             HttpRequestFilter requestFilter = new HttpRequestFilter(false);
@@ -169,7 +139,7 @@ public class Connection extends Thread {
                 requestPipeline.readFrom(tmpIn1);
             }
             
-            tmpOut2 = outSocket.getOutputStream();
+            OutputStream tmpOut2 = outSocket.getOutputStream();
             requestTee.setOutputStream(tmpOut2);
             
             Pipeline responsePipeline = new Pipeline();
