@@ -15,12 +15,12 @@
  */
 package org.apache.ws.commons.tcpmon.eclipse.ui;
 
-import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
 import org.apache.ws.commons.tcpmon.TCPMonBundle;
 import org.apache.ws.commons.tcpmon.core.AbstractListener;
 import org.apache.ws.commons.tcpmon.core.Configuration;
 import org.apache.ws.commons.tcpmon.core.IRequestResponse;
 import org.apache.ws.commons.tcpmon.core.SocketWaiter;
+import org.apache.ws.commons.tcpmon.core.filter.throttle.ThrottleConfiguration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -57,7 +57,7 @@ class Listener extends AbstractListener {
     private TabItem portTabItem;
 
     private SocketWaiter sw = null;
-    private SlowLinkSimulator slowLink;
+    private ThrottleConfiguration throttleConfig;
 
     public final Vector requestResponses = new Vector();
 
@@ -66,16 +66,16 @@ class Listener extends AbstractListener {
 
     public Listener(TabFolder tabFolder, String name, int listenPort,
                     String host, int targetPort, boolean isProxy,
-                    SlowLinkSimulator slowLink) {
+                    ThrottleConfiguration throttleConfig) {
         if (name == null) {
             name = TCPMonBundle.getMessage("port01", "Port") + " " + listenPort;
         }
         // set the slow link to the passed down link
-        if (slowLink != null) {
-            this.slowLink = slowLink;
+        if (throttleConfig != null) {
+            this.throttleConfig = throttleConfig;
         } else {
             // or make up a no-op one.
-            this.slowLink = new SlowLinkSimulator(0, 0);
+            this.throttleConfig = new ThrottleConfiguration(0, 0);
         }
 
         this.tabFolder = tabFolder;
@@ -623,7 +623,7 @@ class Listener extends AbstractListener {
             config.setHttpProxyHost(HTTPProxyHost);
             config.setHttpProxyPort(HTTPProxyPort);
         }
-        config.setSlowLink(slowLink);
+        config.setThrottleConfiguration(throttleConfig);
         return config;
     }
 

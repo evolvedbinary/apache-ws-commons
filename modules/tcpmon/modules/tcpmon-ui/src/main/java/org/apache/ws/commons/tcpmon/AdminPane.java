@@ -31,6 +31,9 @@ import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
+
+import org.apache.ws.commons.tcpmon.core.filter.throttle.ThrottleConfiguration;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -381,16 +384,16 @@ public class AdminPane extends JPanel {
                     String tHost = host.getText();
                     int tPort = 0;
                     tPort = tport.getValue(0);
-                    SlowLinkSimulator slowLink = null;
+                    ThrottleConfiguration throttleConfig = null;
                     if (delayBox.isSelected()) {
                         int bytes = delayBytes.getValue(0);
                         int time = delayTime.getValue(0);
-                        slowLink = new SlowLinkSimulator(bytes, time);
+                        throttleConfig = new ThrottleConfiguration(bytes, time);
                     }
                     try {
                         l = new Listener(noteb, null, lPort, tHost, tPort,
                                 proxyButton.isSelected(),
-                                slowLink);
+                                throttleConfig);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

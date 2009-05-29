@@ -44,6 +44,7 @@ import org.apache.ws.commons.tcpmon.core.AbstractListener;
 import org.apache.ws.commons.tcpmon.core.Configuration;
 import org.apache.ws.commons.tcpmon.core.IRequestResponse;
 import org.apache.ws.commons.tcpmon.core.SocketWaiter;
+import org.apache.ws.commons.tcpmon.core.filter.throttle.ThrottleConfiguration;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -164,7 +165,7 @@ class Listener extends AbstractListener {
     /**
      * Field slowLink
      */
-    public SlowLinkSimulator slowLink;
+    public ThrottleConfiguration throttleConfig;
 
     /**
      * Field connections
@@ -184,19 +185,19 @@ class Listener extends AbstractListener {
      */
     public Listener(JTabbedPane _notebook, String name, int listenPort,
                     String host, int targetPort, boolean isProxy,
-                    SlowLinkSimulator slowLink) {
+                    ThrottleConfiguration throttleConfig) {
         notebook = _notebook;
         if (name == null) {
             name = TCPMonBundle.getMessage("port01", "Port") + " " + listenPort;
         }
 
         // set the slow link to the passed down link
-        if (slowLink != null) {
-            this.slowLink = slowLink;
+        if (throttleConfig != null) {
+            this.throttleConfig = throttleConfig;
         } else {
 
             // or make up a no-op one.
-            this.slowLink = new SlowLinkSimulator(0, 0);
+            this.throttleConfig = new ThrottleConfiguration(0, 0);
         }
         panel = new JPanel(new BorderLayout());
 
@@ -600,7 +601,7 @@ class Listener extends AbstractListener {
             config.setHttpProxyHost(HTTPProxyHost);
             config.setHttpProxyPort(HTTPProxyPort);
         }
-        config.setSlowLink(slowLink);
+        config.setThrottleConfiguration(throttleConfig);
         return config;
     }
 

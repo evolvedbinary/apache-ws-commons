@@ -16,7 +16,6 @@
 
 package org.apache.ws.commons.tcpmon.core;
 
-import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
 import org.apache.ws.commons.tcpmon.core.filter.Pipeline;
 import org.apache.ws.commons.tcpmon.core.filter.StreamException;
 import org.apache.ws.commons.tcpmon.core.filter.Tee;
@@ -24,6 +23,7 @@ import org.apache.ws.commons.tcpmon.core.filter.http.HttpHeaderRewriter;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpProxyClientHandler;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpProxyServerHandler;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpRequestFilter;
+import org.apache.ws.commons.tcpmon.core.filter.throttle.Throttle;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -147,7 +147,7 @@ public class Connection extends Thread {
                 requestFilter.addHandler(new HttpProxyClientHandler(targetHost, targetPort));
                 outSocket = new Socket(HTTPProxyHost, HTTPProxyPort);
             }
-            requestPipeline.addFilter(config.getSlowLink());
+            requestPipeline.addFilter(new Throttle(config.getThrottleConfiguration()));
             Tee requestTee = new Tee();
             requestPipeline.addFilter(requestTee);
             
@@ -163,7 +163,7 @@ public class Connection extends Thread {
             requestTee.setOutputStream(tmpOut2);
             
             Pipeline responsePipeline = new Pipeline();
-            responsePipeline.addFilter(new SlowLinkSimulator(config.getSlowLink()));
+            responsePipeline.addFilter(new Throttle(config.getThrottleConfiguration()));
             if (tmpOut1 != null) {
                 responsePipeline.addFilter(new Tee(tmpOut1));
             }

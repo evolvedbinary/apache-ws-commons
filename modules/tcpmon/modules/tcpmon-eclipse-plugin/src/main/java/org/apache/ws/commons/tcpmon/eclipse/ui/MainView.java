@@ -16,8 +16,8 @@
 package org.apache.ws.commons.tcpmon.eclipse.ui;
 
 
-import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
 import org.apache.ws.commons.tcpmon.TCPMonBundle;
+import org.apache.ws.commons.tcpmon.core.filter.throttle.ThrottleConfiguration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -115,16 +115,16 @@ public class MainView extends ViewPart{
                     String tHost = host.getText();
                     int tPort;
                     tPort = getValue(0, tport.getText());
-                    SlowLinkSimulator slowLink = null;
+                    ThrottleConfiguration throttleConfig = null;
                     if (delayBox.getSelection()) {
                         int bytes = getValue(0, delayBytes.getText());
                         int time = getValue(0, delayTime.getText());
-                        slowLink = new SlowLinkSimulator(bytes, time);
+                        throttleConfig = new ThrottleConfiguration(bytes, time);
                     }
                     try {
                         l = new Listener(tabFolder, null, lPort, tHost, tPort,
                                 proxyButton.getSelection(),
-                                slowLink);
+                                throttleConfig);
                     } catch (Exception exp) {
                         exp.printStackTrace();
                     }

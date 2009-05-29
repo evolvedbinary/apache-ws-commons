@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon;
+package org.apache.ws.commons.tcpmon.core.filter.throttle;
 
 import org.apache.ws.commons.tcpmon.core.filter.Stream;
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
@@ -22,17 +22,8 @@ import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
 /**
  * class to simulate slow connections by slowing down the system
  */
-public class SlowLinkSimulator implements StreamFilter {
-
-	/**
-     * Field delayBytes
-     */
-    private int delayBytes;
-
-    /**
-     * Field delayTime
-     */
-    private int delayTime;
+public class Throttle implements StreamFilter {
+    private final ThrottleConfiguration config;
 
     /**
      * Field currentBytes
@@ -45,25 +36,12 @@ public class SlowLinkSimulator implements StreamFilter {
     private int totalBytes;
 
     /**
-     * construct
-     *
-     * @param delayBytes bytes per delay; set to 0 for no delay
-     * @param delayTime  delay time per delay in milliseconds
+     * Constructor.
+     * 
+     * @param config the configuration for this throttle instance
      */
-    public SlowLinkSimulator(int delayBytes, int delayTime) {
-        this.delayBytes = delayBytes;
-        this.delayTime = delayTime;
-    }
-
-    /**
-     * construct by copying delay bytes and time, but not current
-     * count of bytes
-     *
-     * @param that source of data
-     */
-    public SlowLinkSimulator(SlowLinkSimulator that) {
-        this.delayBytes = that.delayBytes;
-        this.delayTime = that.delayTime;
+    public Throttle(ThrottleConfiguration config) {
+        this.config = config;
     }
 
     /**
@@ -82,6 +60,7 @@ public class SlowLinkSimulator implements StreamFilter {
      * @param bytes
      */
     public void pump(int bytes) {
+        int delayBytes = config.getDelayBytes();
         totalBytes += bytes;
         if (delayBytes == 0) {
 
@@ -93,7 +72,7 @@ public class SlowLinkSimulator implements StreamFilter {
 
             // we have overshot. lets find out how far
             int delaysize = currentBytes / delayBytes;
-            long delay = delaysize * (long) delayTime;
+            long delay = delaysize * (long) config.getDelayTime();
 
             // move byte counter down to the remainder of bytes
             currentBytes = currentBytes % delayBytes;

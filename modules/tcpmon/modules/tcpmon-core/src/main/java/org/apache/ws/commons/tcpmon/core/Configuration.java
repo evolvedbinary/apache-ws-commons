@@ -16,7 +16,7 @@
 
 package org.apache.ws.commons.tcpmon.core;
 
-import org.apache.ws.commons.tcpmon.SlowLinkSimulator;
+import org.apache.ws.commons.tcpmon.core.filter.throttle.ThrottleConfiguration;
 
 public class Configuration {
     private int listenPort;
@@ -26,7 +26,7 @@ public class Configuration {
     private boolean xmlFormat;
     private String httpProxyHost;
     private int httpProxyPort;
-    private SlowLinkSimulator slowLink;
+    private ThrottleConfiguration throttleConfiguration;
     
     public void configProxyFromSystemProperties() {
         String host = System.getProperty("http.proxyHost");
@@ -99,11 +99,11 @@ public class Configuration {
         this.httpProxyPort = httpProxyPort;
     }
 
-    public SlowLinkSimulator getSlowLink() {
-        return slowLink;
+    public ThrottleConfiguration getThrottleConfiguration() {
+        return throttleConfiguration;
     }
 
-    public void setSlowLink(SlowLinkSimulator slowLink) {
-        this.slowLink = slowLink;
+    public void setThrottleConfiguration(ThrottleConfiguration throttleConfiguration) {
+        this.throttleConfiguration = throttleConfiguration;
     }
 }
