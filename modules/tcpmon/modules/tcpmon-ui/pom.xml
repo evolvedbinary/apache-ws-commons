@@ -106,7 +106,7 @@
                             </descriptorRefs>
                             <archive>
                                 <manifest>
-                                    <mainClass>org.apache.ws.commons.tcpmon.TCPMon</mainClass>
+                                    <mainClass>org.apache.ws.commons.tcpmon.swing.TCPMon</mainClass>
                                 </manifest>
                             </archive>
                         </configuration>

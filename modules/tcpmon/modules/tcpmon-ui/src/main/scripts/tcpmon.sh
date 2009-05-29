@@ -1,1 +1,1 @@
-java -cp ./tcpmon-@tcpmon_version@.jar org.apache.ws.commons.tcpmon.TCPMon $*
+java -cp ./tcpmon-@tcpmon_version@.jar org.apache.ws.commons.tcpmon.swing.TCPMon $*

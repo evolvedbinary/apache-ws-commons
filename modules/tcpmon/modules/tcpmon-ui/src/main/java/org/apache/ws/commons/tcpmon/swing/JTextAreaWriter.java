@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon;
+package org.apache.ws.commons.tcpmon.swing;
 
 import java.io.IOException;
 import java.io.Writer;

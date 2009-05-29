@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon;
+package org.apache.ws.commons.tcpmon.swing;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -40,6 +40,7 @@ import javax.swing.plaf.basic.BasicButtonListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
+import org.apache.ws.commons.tcpmon.TCPMonBundle;
 import org.apache.ws.commons.tcpmon.core.AbstractListener;
 import org.apache.ws.commons.tcpmon.core.Configuration;
 import org.apache.ws.commons.tcpmon.core.IRequestResponse;

@@ -17,7 +17,7 @@
  *  under the License.
  */
 
-package org.apache.ws.commons.tcpmon;
+package org.apache.ws.commons.tcpmon.swing;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;

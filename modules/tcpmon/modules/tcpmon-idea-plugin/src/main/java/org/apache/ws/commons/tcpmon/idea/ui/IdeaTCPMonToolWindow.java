@@ -1,7 +1,7 @@
 package org.apache.ws.commons.tcpmon.idea.ui;
 
-import org.apache.ws.commons.tcpmon.AdminPane;
 import org.apache.ws.commons.tcpmon.TCPMonBundle;
+import org.apache.ws.commons.tcpmon.swing.AdminPane;
 
 import javax.swing.*;
 /*

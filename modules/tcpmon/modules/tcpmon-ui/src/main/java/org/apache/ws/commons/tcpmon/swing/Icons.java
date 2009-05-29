@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon;
+package org.apache.ws.commons.tcpmon.swing;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;

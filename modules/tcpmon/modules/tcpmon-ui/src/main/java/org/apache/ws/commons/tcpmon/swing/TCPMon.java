@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon;
+package org.apache.ws.commons.tcpmon.swing;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import org.apache.ws.commons.tcpmon.TCPMonBundle;
 import org.apache.ws.commons.tcpmon.core.Configuration;
 
 /**

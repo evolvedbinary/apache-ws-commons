@@ -1,4 +1,4 @@
-package org.apache.ws.commons.tcpmon;
+package org.apache.ws.commons.tcpmon.swing;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -18,6 +18,9 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+
+import org.apache.ws.commons.tcpmon.TCPMonBundle;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;

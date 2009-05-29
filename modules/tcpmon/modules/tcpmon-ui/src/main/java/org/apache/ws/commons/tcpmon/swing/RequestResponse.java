@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon;
+package org.apache.ws.commons.tcpmon.swing;
 
 import java.io.Writer;
 
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
+import org.apache.ws.commons.tcpmon.TCPMonBundle;
 import org.apache.ws.commons.tcpmon.core.ui.AbstractRequestResponse;
 
 public class RequestResponse extends AbstractRequestResponse {

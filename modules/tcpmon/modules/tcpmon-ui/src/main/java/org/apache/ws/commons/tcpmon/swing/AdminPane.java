@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon;
+package org.apache.ws.commons.tcpmon.swing;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -34,6 +34,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 
+import org.apache.ws.commons.tcpmon.TCPMonBundle;
 import org.apache.ws.commons.tcpmon.core.Configuration;
 import org.apache.ws.commons.tcpmon.core.filter.throttle.ThrottleConfiguration;
 
