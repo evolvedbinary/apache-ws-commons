@@ -387,12 +387,12 @@ class Listener extends AbstractListener {
     }
 
     public void start() {
-        int port = Integer.parseInt(portField.getText());
+        Configuration config = getConfiguration();
+        int port = config.getListenPort();
         portField.setText("" + port);
         portTabItem.setText(TCPMonBundle.getMessage("port01", "Port") + " " + port);
-        int tmp = Integer.parseInt(tPortField.getText());
-        tPortField.setText("" + tmp);
-        sw = new SocketWaiter(this, port);
+        tPortField.setText("" + config.getTargetPort());
+        sw = new SocketWaiter(this, config.getServerSocketFactory(), port);
         stopButton.setText(TCPMonBundle.getMessage("stop00", "Stop"));
         portField.setEditable(false);
         hostField.setEditable(false);

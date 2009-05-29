@@ -31,6 +31,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import javax.net.SocketFactory;
+
 /**
  * a connection listens to a single current connection
  */
@@ -103,6 +105,7 @@ public class Connection extends Thread {
             String HTTPProxyHost = config.getHttpProxyHost();
             int HTTPProxyPort = config.getHttpProxyPort();
             ThrottleConfiguration throttleConfig = config.getThrottleConfiguration();
+            final SocketFactory socketFactory = config.getSocketFactory();
             String fromHost;
             if (inSocket != null) {
                 fromHost = (inSocket.getInetAddress()).getHostName();
@@ -130,7 +133,7 @@ public class Connection extends Thread {
                     protected void handleConnection(String host, int port) {
                         requestResponse.setTarget(host, port);
                         try {
-                            outSocket = new Socket(host, port);
+                            outSocket = socketFactory.createSocket(host, port);
                         } catch (IOException ex) {
                             throw new StreamException(ex);
                         }
@@ -139,7 +142,7 @@ public class Connection extends Thread {
             } else {
                 requestResponse.setTarget(targetHost, targetPort);
                 requestFilter.addHandler(new HttpHeaderRewriter("Host", targetHost + ":" + targetPort));
-                outSocket = new Socket(targetHost, targetPort);
+                outSocket = socketFactory.createSocket(targetHost, targetPort);
             }
             // We log the request data at this stage. This means that the user will see the request
             // as if it had been sent directly from the client to the server (without TCPMon or a proxy
@@ -147,7 +150,7 @@ public class Connection extends Thread {
             requestPipeline.addFilter(new Tee(requestResponse.getRequestOutputStream()));
             if (HTTPProxyHost != null) {
                 requestFilter.addHandler(new HttpProxyClientHandler(targetHost, targetPort));
-                outSocket = new Socket(HTTPProxyHost, HTTPProxyPort);
+                outSocket = socketFactory.createSocket(HTTPProxyHost, HTTPProxyPort);
             }
             if (throttleConfig != null) {
                 requestPipeline.addFilter(new Throttle(throttleConfig));

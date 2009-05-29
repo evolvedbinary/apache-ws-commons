@@ -16,6 +16,8 @@
 
 package org.apache.ws.commons.tcpmon;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -42,6 +44,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.security.GeneralSecurityException;
 
 /**
  * this is the admin page
@@ -112,6 +115,10 @@ public class AdminPane extends JPanel {
      * Field delayBox
      */
     public JCheckBox delayBox;
+    
+//    private final JCheckBox incomingSSLBox;
+    
+    private final JCheckBox outgoingSSLBox;
 
     /**
      * Constructor AdminPage
@@ -356,7 +363,13 @@ public class AdminPane extends JPanel {
                 }
             }
         });
-
+        
+        // SSL options
+        c.anchor = GridBagConstraints.WEST;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+//        opts.add(incomingSSLBox = new JCheckBox("Use SSL for incoming connections"), c); // TODO: i18n
+        opts.add(outgoingSSLBox = new JCheckBox("Use SSL for outgoing connections"), c); // TODO: i18n
+        
         // Spacer
         // ////////////////////////////////////////////////////////////////
         mainPane.add(Box.createRigidArea(new Dimension(1, 10)), c);
@@ -425,6 +438,16 @@ public class AdminPane extends JPanel {
         int proxyPort = HTTPProxyPort.getValue(-1);
         if (proxyPort != -1) {
             config.setHttpProxyPort(Integer.parseInt(text));
+        }
+        
+        if (outgoingSSLBox.isSelected()) {
+            try {
+                SSLContext ctx = SSLContext.getInstance("SSL");
+                ctx.init(null, new TrustManager[] { new NoValidateCertTrustManager() }, null);
+                config.setSocketFactory(ctx.getSocketFactory());
+            } catch (GeneralSecurityException ex) {
+                throw new Error(ex);
+            }
         }
         
         return config;

@@ -16,10 +16,15 @@
 
 package org.apache.ws.commons.tcpmon.core;
 
+import javax.net.ServerSocketFactory;
+import javax.net.SocketFactory;
+
 import org.apache.ws.commons.tcpmon.core.filter.throttle.ThrottleConfiguration;
 
 public class Configuration implements Cloneable {
+    private ServerSocketFactory serverSocketFactory;
     private int listenPort;
+    private SocketFactory socketFactory;
     private String targetHost;
     private int targetPort;
     private boolean proxy;
@@ -51,12 +56,28 @@ public class Configuration implements Cloneable {
         }
     }
 
+    public ServerSocketFactory getServerSocketFactory() {
+        return serverSocketFactory != null ? serverSocketFactory : ServerSocketFactory.getDefault();
+    }
+
+    public void setServerSocketFactory(ServerSocketFactory serverSocketFactory) {
+        this.serverSocketFactory = serverSocketFactory;
+    }
+
     public int getListenPort() {
         return listenPort;
     }
     
     public void setListenPort(int listenPort) {
         this.listenPort = listenPort;
+    }
+
+    public SocketFactory getSocketFactory() {
+        return socketFactory != null ? socketFactory : SocketFactory.getDefault();
+    }
+
+    public void setSocketFactory(SocketFactory socketFactory) {
+        this.socketFactory = socketFactory;
     }
 
     public String getTargetHost() {

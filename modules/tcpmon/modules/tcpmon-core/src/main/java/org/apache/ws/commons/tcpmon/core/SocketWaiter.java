@@ -21,6 +21,8 @@ import java.net.Socket;
 import java.util.Iterator;
 import java.util.Vector;
 
+import javax.net.ServerSocketFactory;
+
 /**
  * wait for incoming connections, spawn a connection thread when
  * stuff comes in.
@@ -37,6 +39,8 @@ public class SocketWaiter extends Thread {
      */
     AbstractListener listener;
 
+    private final ServerSocketFactory serverSocketFactory;
+    
     /**
      * Field port
      */
@@ -55,8 +59,9 @@ public class SocketWaiter extends Thread {
      * @param l
      * @param p
      */
-    public SocketWaiter(AbstractListener l, int p) {
+    public SocketWaiter(AbstractListener l, ServerSocketFactory serverSocketFactory, int p) {
         listener = l;
+        this.serverSocketFactory = serverSocketFactory;
         port = p;
         start();
     }
@@ -67,7 +72,7 @@ public class SocketWaiter extends Thread {
     public void run() {
         try {
             listener.onServerSocketStart();
-            sSocket = new ServerSocket(port);
+            sSocket = serverSocketFactory.createServerSocket(port);
             for (; ;) {
                 Socket inSocket = sSocket.accept();
                 if (pleaseStop) {
