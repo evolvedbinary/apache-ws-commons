@@ -16,9 +16,12 @@
 
 package org.apache.ws.commons.tcpmon.core.filter.throttle;
 
-public class ThrottleConfiguration {
-    private int delayBytes;
-    private int delayTime;
+import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
+import org.apache.ws.commons.tcpmon.core.filter.StreamFilterFactory;
+
+public class ThrottleConfiguration implements StreamFilterFactory {
+    private final int delayBytes;
+    private final int delayTime;
     
     /**
      * construct
@@ -37,5 +40,9 @@ public class ThrottleConfiguration {
 
     public int getDelayTime() {
         return delayTime;
+    }
+
+    public StreamFilter newInstance() {
+        return new Throttle(this);
     }
 }

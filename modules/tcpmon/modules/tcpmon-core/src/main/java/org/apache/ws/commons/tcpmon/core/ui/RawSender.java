@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon.core;
+package org.apache.ws.commons.tcpmon.core.ui;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import org.apache.ws.commons.tcpmon.core.engine.InterceptorConfiguration;
+import org.apache.ws.commons.tcpmon.core.engine.RequestResponseListener;
 import org.apache.ws.commons.tcpmon.core.filter.Pipeline;
 import org.apache.ws.commons.tcpmon.core.filter.Stream;
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
@@ -31,16 +33,16 @@ import org.apache.ws.commons.tcpmon.core.filter.http.HttpRequestFilter;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpResponseFilter;
 
 /**
- * Sends a raw HTTP request and invokes {@link IRequestResponse} as necessary.
+ * Sends a raw HTTP request and invokes {@link RequestResponseListener} as necessary.
  */
 public class RawSender implements Runnable {
-    private final IRequestResponse requestResponse;
+    private final RequestResponseListener requestResponse;
     private final Socket socket;
     private final OutputStream out;
     
     public RawSender(AbstractListener listener, String targetHost, int targetPort) throws IOException {
-        Configuration config = listener.getConfiguration();
-        requestResponse = listener.createRequestResponse("resend");
+        InterceptorConfiguration config = listener.getConfiguration().getInterceptorConfiguration();
+        requestResponse = listener.createRequestResponseListener("resend");
         requestResponse.setTarget(targetHost, targetPort);
         Pipeline pipeline = new Pipeline();
         pipeline.addFilter(new Tee(requestResponse.getRequestOutputStream()));
@@ -52,12 +54,12 @@ public class RawSender implements Runnable {
         } else {
             socket = new Socket(targetHost, targetPort);
         }
-        requestResponse.setState(IRequestResponse.STATE_ACTIVE);
+        requestResponse.setState(RequestResponseListener.STATE_ACTIVE);
         pipeline.addFilter(new StreamFilter() {
             public void invoke(Stream stream) {
                 stream.skipAll();
                 if (stream.isEndOfStream()) {
-                    requestResponse.setState(IRequestResponse.STATE_REQ);
+                    requestResponse.setState(RequestResponseListener.STATE_REQ);
                 }
             }
         });
@@ -90,9 +92,9 @@ public class RawSender implements Runnable {
             while (pipeline.readFrom(in) != -1) {
                 // Just loop
             }
-            requestResponse.setState(IRequestResponse.STATE_DONE);
+            requestResponse.setState(RequestResponseListener.STATE_DONE);
         } catch (IOException ex) {
-            requestResponse.setState(IRequestResponse.STATE_ERROR);
+            requestResponse.setState(RequestResponseListener.STATE_ERROR);
             requestResponse.onError(ex);
         } finally {
             requestResponse.setElapsed(System.currentTimeMillis() - start);

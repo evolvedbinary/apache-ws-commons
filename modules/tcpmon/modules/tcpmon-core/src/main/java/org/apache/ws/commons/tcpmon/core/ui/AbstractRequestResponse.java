@@ -27,8 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.ws.commons.tcpmon.TCPMonBundle;
-import org.apache.ws.commons.tcpmon.core.Configuration;
-import org.apache.ws.commons.tcpmon.core.IRequestResponse;
+import org.apache.ws.commons.tcpmon.core.engine.RequestResponseListener;
 import org.apache.ws.commons.tcpmon.core.filter.CharsetDecoderFilter;
 import org.apache.ws.commons.tcpmon.core.filter.Pipeline;
 import org.apache.ws.commons.tcpmon.core.filter.RequestLineExtractor;
@@ -36,7 +35,7 @@ import org.apache.ws.commons.tcpmon.core.filter.http.HttpRequestFilter;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpResponseFilter;
 import org.apache.ws.commons.tcpmon.core.filter.mime.DefaultContentFilterFactory;
 
-public abstract class AbstractRequestResponse implements IRequestResponse {
+public abstract class AbstractRequestResponse implements RequestResponseListener {
     private static final String[] states = new String[] {
         TCPMonBundle.getMessage("active00","Active"),
         TCPMonBundle.getMessage("req00", "Req"),

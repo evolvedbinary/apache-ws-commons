@@ -35,7 +35,8 @@ import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 
 import org.apache.ws.commons.tcpmon.TCPMonBundle;
-import org.apache.ws.commons.tcpmon.core.Configuration;
+import org.apache.ws.commons.tcpmon.core.engine.InterceptorConfiguration;
+import org.apache.ws.commons.tcpmon.core.engine.InterceptorConfigurationBuilder;
 import org.apache.ws.commons.tcpmon.core.filter.throttle.ThrottleConfiguration;
 
 import java.awt.BorderLayout;
@@ -387,7 +388,7 @@ public class AdminPane extends JPanel {
         addButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 if (add.equals(event.getActionCommand())) {
-                    Configuration config = getConfiguration();
+                    InterceptorConfiguration config = getConfiguration();
                     if (config == null) {
 
                         // no port, button does nothing
@@ -411,47 +412,47 @@ public class AdminPane extends JPanel {
         notebook.setSelectedIndex(notebook.getTabCount() - 1);
     }
     
-    private Configuration getConfiguration() {
-        Configuration config = new Configuration();
+    private InterceptorConfiguration getConfiguration() {
+        InterceptorConfigurationBuilder configBuilder = new InterceptorConfigurationBuilder();
         
         int lPort = port.getValue(0);
         if (lPort == 0) {
             // no port, no configuration
             return null;
         }
-        config.setListenPort(lPort);
-        config.setProxy(proxyButton.isSelected());
-        config.setTargetHost(host.getText());
-        config.setTargetPort(tport.getValue(0));
-        ThrottleConfiguration throttleConfig = null;
+        configBuilder.setListenPort(lPort);
+        configBuilder.setProxy(proxyButton.isSelected());
+        configBuilder.setTargetHost(host.getText());
+        configBuilder.setTargetPort(tport.getValue(0));
         if (delayBox.isSelected()) {
-            throttleConfig = new ThrottleConfiguration(delayBytes.getValue(0), delayTime.getValue(0));
+            ThrottleConfiguration throttleConfig = new ThrottleConfiguration(delayBytes.getValue(0), delayTime.getValue(0));
+            configBuilder.addRequestFilter(throttleConfig);
+            configBuilder.addResponseFilter(throttleConfig);
         }
-        config.setThrottleConfiguration(throttleConfig);
 
         // Pick-up the HTTP Proxy settings
         // /////////////////////////////////////////////////
         String text = HTTPProxyHost.getText();
         if (text.length() > 0) {
-            config.setHttpProxyHost(text);
+            configBuilder.setHttpProxyHost(text);
         }
         text = HTTPProxyPort.getText();
         int proxyPort = HTTPProxyPort.getValue(-1);
         if (proxyPort != -1) {
-            config.setHttpProxyPort(Integer.parseInt(text));
+            configBuilder.setHttpProxyPort(Integer.parseInt(text));
         }
         
         if (outgoingSSLBox.isSelected()) {
             try {
                 SSLContext ctx = SSLContext.getInstance("SSL");
                 ctx.init(null, new TrustManager[] { new NoValidateCertTrustManager() }, null);
-                config.setSocketFactory(ctx.getSocketFactory());
+                configBuilder.setSocketFactory(ctx.getSocketFactory());
             } catch (GeneralSecurityException ex) {
                 throw new Error(ex);
             }
         }
         
-        return config;
+        return configBuilder.build();
     }
     
     /**

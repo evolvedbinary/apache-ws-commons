@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon.core;
+package org.apache.ws.commons.tcpmon.core.engine;
 
 import org.apache.ws.commons.tcpmon.core.filter.Pipeline;
 import org.apache.ws.commons.tcpmon.core.filter.StreamException;
@@ -23,8 +23,6 @@ import org.apache.ws.commons.tcpmon.core.filter.http.HttpHeaderRewriter;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpProxyClientHandler;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpProxyServerHandler;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpRequestFilter;
-import org.apache.ws.commons.tcpmon.core.filter.throttle.Throttle;
-import org.apache.ws.commons.tcpmon.core.filter.throttle.ThrottleConfiguration;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,9 +34,9 @@ import javax.net.SocketFactory;
 /**
  * a connection listens to a single current connection
  */
-public class Connection extends Thread {
-    private final AbstractListener listener;
-    private final Configuration config;
+class Connection extends Thread {
+    private final InterceptorConfiguration config;
+    private final InterceptorListener listener;
 
     /**
      * Field active
@@ -65,7 +63,7 @@ public class Connection extends Thread {
      */
     private SocketRR rr2 = null;
 
-    private IRequestResponse requestResponse;
+    private RequestResponseListener requestResponseListener;
 
     /**
      * Constructor Connection
@@ -73,9 +71,9 @@ public class Connection extends Thread {
      * @param listener
      * @param s
      */
-    public Connection(AbstractListener listener, Socket s) {
+    public Connection(InterceptorConfiguration config, InterceptorListener listener, Socket s) {
+        this.config = config;
         this.listener = listener;
-        config = listener.getConfiguration();
         inSocket = s;
     }
 
@@ -87,10 +85,9 @@ public class Connection extends Thread {
             active = true;
             String HTTPProxyHost = config.getHttpProxyHost();
             int HTTPProxyPort = config.getHttpProxyPort();
-            ThrottleConfiguration throttleConfig = config.getThrottleConfiguration();
             final SocketFactory socketFactory = config.getSocketFactory();
             String targetHost = config.getTargetHost();
-            requestResponse = listener.createRequestResponse(inSocket.getInetAddress().getHostName());
+            requestResponseListener = listener.createRequestResponseListener(inSocket.getInetAddress().getHostName());
             int targetPort = config.getTargetPort();
             InputStream tmpIn1 = inSocket.getInputStream();
             OutputStream tmpOut1 = inSocket.getOutputStream();
@@ -101,7 +98,7 @@ public class Connection extends Thread {
             if (config.isProxy()) {
                 requestFilter.addHandler(new HttpProxyServerHandler() {
                     protected void handleConnection(String host, int port) {
-                        requestResponse.setTarget(host, port);
+                        requestResponseListener.setTarget(host, port);
                         try {
                             outSocket = socketFactory.createSocket(host, port);
                         } catch (IOException ex) {
@@ -110,14 +107,14 @@ public class Connection extends Thread {
                     }
                 });
             } else {
-                requestResponse.setTarget(targetHost, targetPort);
+                requestResponseListener.setTarget(targetHost, targetPort);
                 requestFilter.addHandler(new HttpHeaderRewriter("Host", targetHost + ":" + targetPort));
                 outSocket = socketFactory.createSocket(targetHost, targetPort);
             }
             // We log the request data at this stage. This means that the user will see the request
             // as if it had been sent directly from the client to the server (without TCPMon or a proxy
             // in between).
-            OutputStream requestOutputStream = requestResponse.getRequestOutputStream();
+            OutputStream requestOutputStream = requestResponseListener.getRequestOutputStream();
             if (requestOutputStream != null) {
                 requestPipeline.addFilter(new Tee(requestOutputStream));
             }
@@ -125,13 +122,11 @@ public class Connection extends Thread {
                 requestFilter.addHandler(new HttpProxyClientHandler(targetHost, targetPort));
                 outSocket = socketFactory.createSocket(HTTPProxyHost, HTTPProxyPort);
             }
-            if (throttleConfig != null) {
-                requestPipeline.addFilter(new Throttle(throttleConfig));
-            }
+            config.applyRequestFilters(requestPipeline);
             Tee requestTee = new Tee();
             requestPipeline.addFilter(requestTee);
             
-            requestResponse.setState(IRequestResponse.STATE_ACTIVE);
+            requestResponseListener.setState(RequestResponseListener.STATE_ACTIVE);
             
             // If we act as a proxy, we first need to read the start of the request before
             // the outSocket is available.
@@ -143,13 +138,11 @@ public class Connection extends Thread {
             requestTee.setOutputStream(tmpOut2);
             
             Pipeline responsePipeline = new Pipeline();
-            if (throttleConfig != null) {
-                responsePipeline.addFilter(new Throttle(throttleConfig));
-            }
+            config.applyResponseFilters(responsePipeline);
             if (tmpOut1 != null) {
                 responsePipeline.addFilter(new Tee(tmpOut1));
             }
-            OutputStream responseOutputStream = requestResponse.getResponseOutputStream();
+            OutputStream responseOutputStream = requestResponseListener.getResponseOutputStream();
             if (responseOutputStream != null) {
                 responsePipeline.addFilter(new Tee(responseOutputStream));
             }
@@ -166,7 +159,7 @@ public class Connection extends Thread {
             while ((rr1 != null) || (rr2 != null)) {
 
                 if (rr2 != null) {
-                    requestResponse.setElapsed(rr2.getElapsed());
+                    requestResponseListener.setElapsed(rr2.getElapsed());
                 }
                 
                 // Only loop as long as the connection to the target
@@ -176,14 +169,14 @@ public class Connection extends Thread {
                 
                 if ((null != rr1) && rr1.isDone()) {
                     if (rr2 != null) {
-                        requestResponse.setState(IRequestResponse.STATE_RESP);
+                        requestResponseListener.setState(RequestResponseListener.STATE_RESP);
                     }
                     rr1 = null;
                 }
 
                 if ((null != rr2) && rr2.isDone()) {
                     if (rr1 != null) {
-                        requestResponse.setState(IRequestResponse.STATE_REQ);
+                        requestResponseListener.setState(RequestResponseListener.STATE_REQ);
                     }
                     rr2 = null;
                 }
@@ -195,12 +188,12 @@ public class Connection extends Thread {
 
             active = false;
 
-            requestResponse.setState(IRequestResponse.STATE_DONE);
+            requestResponseListener.setState(RequestResponseListener.STATE_DONE);
 
         } catch (Exception e) {
-            if (requestResponse != null) {
-                requestResponse.setState(IRequestResponse.STATE_ERROR);
-                requestResponse.onError(e);
+            if (requestResponseListener != null) {
+                requestResponseListener.setState(RequestResponseListener.STATE_ERROR);
+                requestResponseListener.onError(e);
             }
             halt();
         }

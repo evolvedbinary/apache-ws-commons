@@ -14,38 +14,27 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon.core;
+package org.apache.ws.commons.tcpmon.core.engine;
 
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.net.ServerSocketFactory;
-
 /**
  * wait for incoming connections, spawn a connection thread when
  * stuff comes in.
  */
-public class SocketWaiter extends Thread {
+public class Interceptor extends Thread {
 
     /**
      * Field sSocket
      */
     ServerSocket sSocket = null;
 
-    /**
-     * Field listener
-     */
-    AbstractListener listener;
-
-    private final ServerSocketFactory serverSocketFactory;
+    private final InterceptorConfiguration config;
+    private final InterceptorListener listener;
     
-    /**
-     * Field port
-     */
-    int port;
-
     /**
      * Field pleaseStop
      */
@@ -59,10 +48,9 @@ public class SocketWaiter extends Thread {
      * @param l
      * @param p
      */
-    public SocketWaiter(AbstractListener l, ServerSocketFactory serverSocketFactory, int p) {
-        listener = l;
-        this.serverSocketFactory = serverSocketFactory;
-        port = p;
+    public Interceptor(InterceptorConfiguration config, InterceptorListener listener) {
+        this.config = config;
+        this.listener = listener;
         start();
     }
 
@@ -72,13 +60,13 @@ public class SocketWaiter extends Thread {
     public void run() {
         try {
             listener.onServerSocketStart();
-            sSocket = serverSocketFactory.createServerSocket(port);
+            sSocket = config.getServerSocketFactory().createServerSocket(config.getListenPort());
             for (; ;) {
                 Socket inSocket = sSocket.accept();
                 if (pleaseStop) {
                     break;
                 }
-                Connection connection = new Connection(listener, inSocket);
+                Connection connection = new Connection(config, listener, inSocket);
                 // TODO: at some point we need to remove closed connections,
                 //       otherwise this will be a memory leak.
                 connections.add(connection);
@@ -98,7 +86,7 @@ public class SocketWaiter extends Thread {
     public void halt() {
         try {
             pleaseStop = true;
-            new Socket("127.0.0.1", port);
+            new Socket("127.0.0.1", config.getListenPort());
             if (sSocket != null) {
                 sSocket.close();
             }

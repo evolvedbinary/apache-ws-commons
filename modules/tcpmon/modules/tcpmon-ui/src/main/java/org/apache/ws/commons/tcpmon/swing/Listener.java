@@ -41,10 +41,12 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 
 import org.apache.ws.commons.tcpmon.TCPMonBundle;
-import org.apache.ws.commons.tcpmon.core.AbstractListener;
-import org.apache.ws.commons.tcpmon.core.Configuration;
-import org.apache.ws.commons.tcpmon.core.IRequestResponse;
-import org.apache.ws.commons.tcpmon.core.SocketWaiter;
+import org.apache.ws.commons.tcpmon.core.engine.Interceptor;
+import org.apache.ws.commons.tcpmon.core.engine.InterceptorConfiguration;
+import org.apache.ws.commons.tcpmon.core.engine.InterceptorConfigurationBuilder;
+import org.apache.ws.commons.tcpmon.core.engine.RequestResponseListener;
+import org.apache.ws.commons.tcpmon.core.ui.AbstractListener;
+import org.apache.ws.commons.tcpmon.core.ui.Configuration;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -132,10 +134,7 @@ class Listener extends AbstractListener {
      */
     private final JSplitPane outPane;
 
-    /**
-     * Field sw
-     */
-    private SocketWaiter sw = null;
+    private Interceptor interceptor = null;
 
     /**
      * Field leftPanel
@@ -152,7 +151,7 @@ class Listener extends AbstractListener {
      */
     private JTabbedPane notebook = null;
 
-    private final Configuration baseConfiguration;
+    private final InterceptorConfiguration baseConfiguration;
 
     /**
      * Field connections
@@ -171,7 +170,7 @@ class Listener extends AbstractListener {
      * @param slowLink   optional reference to a slow connection
      */
     public Listener(JTabbedPane _notebook, String name,
-                    Configuration config) {
+                    InterceptorConfiguration config) {
         notebook = _notebook;
         if (name == null) {
             name = TCPMonBundle.getMessage("port01", "Port") + " " + config.getListenPort();
@@ -427,14 +426,14 @@ class Listener extends AbstractListener {
      * Method start
      */
     public void start() {
-        if (sw == null) {
-            Configuration config = getConfiguration();
+        if (interceptor == null) {
+            InterceptorConfiguration config = getConfiguration().getInterceptorConfiguration();
             int port = config.getListenPort();
             portField.setText("" + port);
             int i = notebook.indexOfComponent(panel);
             notebook.setTitleAt(i, TCPMonBundle.getMessage("port01", "Port") + " " + port);
             tPortField.setText("" + config.getTargetPort());
-            sw = new SocketWaiter(this, config.getServerSocketFactory(), port);
+            interceptor = new Interceptor(config, this);
             startButton.setSelected(true);
             portField.setEditable(false);
             hostField.setEditable(false);
@@ -447,10 +446,10 @@ class Listener extends AbstractListener {
      * Method stop
      */
     public void stop() {
-        if (sw != null) {
+        if (interceptor != null) {
             try {
-                sw.halt();
-                sw = null;
+                interceptor.halt();
+                interceptor = null;
                 startButton.setSelected(false);
                 portField.setEditable(true);
                 hostField.setEditable(true);
@@ -568,15 +567,14 @@ class Listener extends AbstractListener {
     }
 
     public Configuration getConfiguration() {
-        Configuration config = (Configuration)baseConfiguration.clone();
-        config.setListenPort(Integer.parseInt(portField.getText()));
-        config.setTargetHost(hostField.getText());
-        config.setTargetPort(Integer.parseInt(tPortField.getText()));
-        config.setProxy(isProxyBox.isSelected());
+        InterceptorConfigurationBuilder configBuilder = new InterceptorConfigurationBuilder(baseConfiguration);
+        Configuration config = new Configuration();
+        configBuilder.setListenPort(Integer.parseInt(portField.getText()));
+        configBuilder.setTargetHost(hostField.getText());
+        configBuilder.setTargetPort(Integer.parseInt(tPortField.getText()));
+        configBuilder.setProxy(isProxyBox.isSelected());
+        config.setInterceptorConfiguration(configBuilder.build());
         config.setXmlFormat(xmlFormatBox.isSelected());
-        if (config.getHttpProxyHost() == null) {
-            config.configProxyFromSystemProperties();
-        }
         return config;
     }
 
@@ -595,7 +593,7 @@ class Listener extends AbstractListener {
         stop();
     }
 
-    public IRequestResponse createRequestResponse(String fromHost) {
+    public RequestResponseListener createRequestResponseListener(String fromHost) {
         return new RequestResponse(this, fromHost);
     }
 }

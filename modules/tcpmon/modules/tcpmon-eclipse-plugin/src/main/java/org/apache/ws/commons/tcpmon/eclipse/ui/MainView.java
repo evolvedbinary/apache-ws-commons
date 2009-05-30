@@ -17,7 +17,8 @@ package org.apache.ws.commons.tcpmon.eclipse.ui;
 
 
 import org.apache.ws.commons.tcpmon.TCPMonBundle;
-import org.apache.ws.commons.tcpmon.core.Configuration;
+import org.apache.ws.commons.tcpmon.core.engine.InterceptorConfiguration;
+import org.apache.ws.commons.tcpmon.core.engine.InterceptorConfigurationBuilder;
 import org.apache.ws.commons.tcpmon.core.filter.throttle.ThrottleConfiguration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -106,7 +107,7 @@ public class MainView extends ViewPart{
         addButton.addSelectionListener(new SelectionAdapter() {
             public void widgetSelected(final SelectionEvent e) {
                 if (add.equals(((Button) e.getSource()).getText())) {
-                    Configuration config = getConfiguration();
+                    InterceptorConfiguration config = getConfiguration();
                     if (config == null) {
                         return;
                     }
@@ -123,34 +124,36 @@ public class MainView extends ViewPart{
         configTab.setControl(composite);
     }
 
-    private Configuration getConfiguration() {
-        Configuration config = new Configuration();
+    private InterceptorConfiguration getConfiguration() {
+        InterceptorConfigurationBuilder configBuilder = new InterceptorConfigurationBuilder();
         
         int lPort = getValue(0, port.getText());
         if (lPort == 0) {
             return null;
         }
-        config.setListenPort(lPort);
-        config.setProxy(proxyButton.getSelection());
-        config.setTargetHost(host.getText());
-        config.setTargetPort(getValue(0, tport.getText()));
-        ThrottleConfiguration throttleConfig = null;
+        configBuilder.setListenPort(lPort);
+        configBuilder.setProxy(proxyButton.getSelection());
+        configBuilder.setTargetHost(host.getText());
+        configBuilder.setTargetPort(getValue(0, tport.getText()));
         if (delayBox.getSelection()) {
-            throttleConfig = new ThrottleConfiguration(getValue(0, delayBytes.getText()), getValue(0, delayTime.getText()));
+            ThrottleConfiguration throttleConfig = new ThrottleConfiguration(getValue(0, delayBytes.getText()), getValue(0, delayTime.getText()));
+            configBuilder.addRequestFilter(throttleConfig);
+            configBuilder.addResponseFilter(throttleConfig);
         }
-        config.setThrottleConfiguration(throttleConfig);
         
         String text = hTTPProxyHost.getText();
         if (text.length() > 0) {
-            config.setHttpProxyHost(text);
-        }
-        text = hTTPProxyPort.getText();
-        int proxyPort = getValue(-1, hTTPProxyPort.getText());
-        if (proxyPort != -1) {
-            config.setHttpProxyPort(Integer.parseInt(text));
+            configBuilder.setHttpProxyHost(text);
+            text = hTTPProxyPort.getText();
+            int proxyPort = getValue(-1, hTTPProxyPort.getText());
+            if (proxyPort != -1) {
+                configBuilder.setHttpProxyPort(Integer.parseInt(text));
+            }
+        } else {
+            configBuilder.configProxyFromSystemProperties();
         }
         
-        return config;
+        return configBuilder.build();
     }
 
     private void addActAsOptions(Composite composite) {

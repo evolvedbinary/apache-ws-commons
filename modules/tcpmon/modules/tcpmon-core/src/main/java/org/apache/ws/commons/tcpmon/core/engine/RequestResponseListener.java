@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon.core;
+package org.apache.ws.commons.tcpmon.core.engine;
 
 import java.io.OutputStream;
 
 /**
  * Listener receiving information about a given request-response exchange.
  */
-public interface IRequestResponse {
+public interface RequestResponseListener {
     int STATE_ACTIVE = 0;
     int STATE_REQ = 1;
     int STATE_RESP = 2;

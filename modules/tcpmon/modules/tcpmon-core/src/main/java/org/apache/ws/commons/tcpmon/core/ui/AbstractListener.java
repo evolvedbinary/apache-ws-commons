@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon.core;
+package org.apache.ws.commons.tcpmon.core.ui;
 
 import java.io.OutputStream;
 
+import org.apache.ws.commons.tcpmon.core.engine.InterceptorListener;
 import org.apache.ws.commons.tcpmon.core.ui.AbstractRequestResponse;
 
-public abstract class AbstractListener {
+public abstract class AbstractListener implements InterceptorListener {
     protected void resend(AbstractRequestResponse requestResponse) {
         try {
             String text = requestResponse.getRequestAsString();
@@ -68,7 +69,4 @@ public abstract class AbstractListener {
     }
     
     public abstract Configuration getConfiguration();
-    public abstract void onServerSocketStart();
-    public abstract void onServerSocketError(Throwable ex);
-    public abstract IRequestResponse createRequestResponse(String fromHost);
 }

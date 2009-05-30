@@ -16,10 +16,12 @@
 package org.apache.ws.commons.tcpmon.eclipse.ui;
 
 import org.apache.ws.commons.tcpmon.TCPMonBundle;
-import org.apache.ws.commons.tcpmon.core.AbstractListener;
-import org.apache.ws.commons.tcpmon.core.Configuration;
-import org.apache.ws.commons.tcpmon.core.IRequestResponse;
-import org.apache.ws.commons.tcpmon.core.SocketWaiter;
+import org.apache.ws.commons.tcpmon.core.engine.Interceptor;
+import org.apache.ws.commons.tcpmon.core.engine.InterceptorConfiguration;
+import org.apache.ws.commons.tcpmon.core.engine.InterceptorConfigurationBuilder;
+import org.apache.ws.commons.tcpmon.core.engine.RequestResponseListener;
+import org.apache.ws.commons.tcpmon.core.ui.AbstractListener;
+import org.apache.ws.commons.tcpmon.core.ui.Configuration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -55,14 +57,14 @@ class Listener extends AbstractListener {
     private TabFolder tabFolder;
     private TabItem portTabItem;
 
-    private SocketWaiter sw = null;
+    private Interceptor interceptor = null;
 
     public final Vector requestResponses = new Vector();
 
-    private final Configuration baseConfiguration;
+    private final InterceptorConfiguration baseConfiguration;
 
     public Listener(TabFolder tabFolder, String name,
-                    Configuration config) {
+                    InterceptorConfiguration config) {
         if (name == null) {
             name = TCPMonBundle.getMessage("port01", "Port") + " " + config.getListenPort();
         }
@@ -73,7 +75,7 @@ class Listener extends AbstractListener {
 
     }
 
-    public void createPortTab(Configuration config) {
+    public void createPortTab(InterceptorConfiguration config) {
         portTabItem = new TabItem(tabFolder, SWT.NONE);
 
         final Composite composite = new Composite(tabFolder, SWT.NONE);
@@ -387,12 +389,12 @@ class Listener extends AbstractListener {
     }
 
     public void start() {
-        Configuration config = getConfiguration();
+        InterceptorConfiguration config = getConfiguration().getInterceptorConfiguration();
         int port = config.getListenPort();
         portField.setText("" + port);
         portTabItem.setText(TCPMonBundle.getMessage("port01", "Port") + " " + port);
         tPortField.setText("" + config.getTargetPort());
-        sw = new SocketWaiter(this, config.getServerSocketFactory(), port);
+        interceptor = new Interceptor(config, this);
         stopButton.setText(TCPMonBundle.getMessage("stop00", "Stop"));
         portField.setEditable(false);
         hostField.setEditable(false);
@@ -402,7 +404,7 @@ class Listener extends AbstractListener {
 
     public void stop() {
         try {
-            sw.halt();
+            interceptor.halt();
             stopButton.setText(TCPMonBundle.getMessage("start00", "Start"));
             portField.setEditable(true);
             hostField.setEditable(true);
@@ -597,19 +599,18 @@ class Listener extends AbstractListener {
     }
 
     public Configuration getConfiguration() {
-        final Configuration config = (Configuration)baseConfiguration.clone();
+        final InterceptorConfigurationBuilder configBuilder = new InterceptorConfigurationBuilder(baseConfiguration);
+        final Configuration config = new Configuration();
         MainView.display.syncExec(new Runnable() {
             public void run() {
-                config.setListenPort(Integer.parseInt(portField.getText()));
-                config.setTargetHost(hostField.getText());
-                config.setTargetPort(Integer.parseInt(tPortField.getText()));
-                config.setProxy(isProxyBox.getSelection());
+                configBuilder.setListenPort(Integer.parseInt(portField.getText()));
+                configBuilder.setTargetHost(hostField.getText());
+                configBuilder.setTargetPort(Integer.parseInt(tPortField.getText()));
+                configBuilder.setProxy(isProxyBox.getSelection());
                 config.setXmlFormat(xmlFormatBox.getSelection());
             }
         });
-        if (config.getHttpProxyHost() == null) {
-            config.configProxyFromSystemProperties();
-        }
+        config.setInterceptorConfiguration(configBuilder.build());
         return config;
     }
 
@@ -631,7 +632,7 @@ class Listener extends AbstractListener {
         });
     }
 
-    public IRequestResponse createRequestResponse(String fromHost) {
+    public RequestResponseListener createRequestResponseListener(String fromHost) {
         return new RequestResponse(this, fromHost);
     }
 }

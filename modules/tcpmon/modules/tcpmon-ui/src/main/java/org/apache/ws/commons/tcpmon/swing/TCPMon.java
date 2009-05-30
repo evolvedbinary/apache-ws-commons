@@ -22,7 +22,7 @@ import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import org.apache.ws.commons.tcpmon.TCPMonBundle;
-import org.apache.ws.commons.tcpmon.core.Configuration;
+import org.apache.ws.commons.tcpmon.core.engine.InterceptorConfigurationBuilder;
 
 /**
  * Proxy that sniffs and shows HTTP messages and responses, both SOAP and plain HTTP.
@@ -80,29 +80,14 @@ public class TCPMon extends JFrame {
         new AdminPane(notebook, TCPMonBundle.getMessage("admin00", "Admin"));
         if (listenPort != 0) {
             Listener l = null;
-            Configuration config = new Configuration();
-            config.setListenPort(listenPort);
-            config.setTargetHost(targetHost);
-            config.setTargetPort(targetPort);
-            config.setProxy(targetHost == null);
+            InterceptorConfigurationBuilder configBuilder = new InterceptorConfigurationBuilder();
+            configBuilder.setListenPort(listenPort);
+            configBuilder.setTargetHost(targetHost);
+            configBuilder.setTargetPort(targetPort);
+            configBuilder.setProxy(targetHost == null);
+            configBuilder.configProxyFromSystemProperties();
             notebook.setSelectedIndex(0);
-            String HTTPProxyHost = System.getProperty("http.proxyHost");
-            if ((HTTPProxyHost != null) && HTTPProxyHost.equals("")) {
-                HTTPProxyHost = null;
-            }
-            if (HTTPProxyHost != null) {
-                config.setHttpProxyHost(HTTPProxyHost);
-                String tmp = System.getProperty("http.proxyPort");
-                if ((tmp != null) && tmp.equals("")) {
-                    tmp = null;
-                }
-                if (tmp == null) {
-                    config.setHttpProxyPort(80);
-                } else {
-                    config.setHttpProxyPort(Integer.parseInt(tmp));
-                }
-            }
-            new Listener(notebook, null, config);
+            new Listener(notebook, null, configBuilder.build());
         }
         if (!embedded) {
             this.setDefaultCloseOperation(EXIT_ON_CLOSE);

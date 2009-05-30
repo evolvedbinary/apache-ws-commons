@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon.core;
+package org.apache.ws.commons.tcpmon.core.engine;
 
 import org.apache.ws.commons.tcpmon.core.filter.Pipeline;
 
@@ -27,7 +27,7 @@ import java.net.Socket;
  * this class handles the pumping of data from the incoming socket to the
  * outgoing socket
  */
-public class SocketRR extends Thread {
+class SocketRR extends Thread {
     private final Connection connection;
 
     /**
