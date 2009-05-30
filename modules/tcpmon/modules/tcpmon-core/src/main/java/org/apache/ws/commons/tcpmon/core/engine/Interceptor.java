@@ -43,10 +43,10 @@ public class Interceptor extends Thread {
     private final Vector connections = new Vector();
 
     /**
-     * Constructor SocketWaiter
-     *
-     * @param l
-     * @param p
+     * Constructor.
+     * 
+     * @param config the interceptor configuration
+     * @param listener object listening for events from the interceptor; may be <code>null</code>
      */
     public Interceptor(InterceptorConfiguration config, InterceptorListener listener) {
         this.config = config;
@@ -59,7 +59,9 @@ public class Interceptor extends Thread {
      */
     public void run() {
         try {
-            listener.onServerSocketStart();
+            if (listener != null) {
+                listener.onServerSocketStart();
+            }
             sSocket = config.getServerSocketFactory().createServerSocket(config.getListenPort());
             for (; ;) {
                 Socket inSocket = sSocket.accept();
@@ -74,7 +76,7 @@ public class Interceptor extends Thread {
                 inSocket = null;
             }
         } catch (Exception exp) {
-            if (!"socket closed".equals(exp.getMessage())) {
+            if (listener != null && !"socket closed".equals(exp.getMessage())) {
                 listener.onServerSocketError(exp);
             }
         }

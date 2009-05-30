@@ -47,7 +47,11 @@ class Connection extends Thread {
      * Field inSocket
      */
     private Socket inSocket = null;
-
+    
+    private OutputStream tmpOut2;
+    
+    private Tee requestTee;
+    
     /**
      * Field outSocket
      */
@@ -77,6 +81,15 @@ class Connection extends Thread {
         inSocket = s;
     }
 
+    void connectToTarget(String host, int port) throws IOException {
+        if (requestResponseListener != null) {
+            requestResponseListener.setTarget(host, port);
+        }
+        outSocket = config.getSocketFactory().createSocket(host, port);
+        tmpOut2 = outSocket.getOutputStream();
+        requestTee.setOutputStream(tmpOut2);
+    }
+    
     /**
      * Method run
      */
@@ -87,46 +100,50 @@ class Connection extends Thread {
             int HTTPProxyPort = config.getHttpProxyPort();
             final SocketFactory socketFactory = config.getSocketFactory();
             String targetHost = config.getTargetHost();
-            requestResponseListener = listener.createRequestResponseListener(inSocket.getInetAddress().getHostName());
+            if (listener != null) {
+                requestResponseListener = listener.createRequestResponseListener(inSocket.getInetAddress().getHostName());
+            }
             int targetPort = config.getTargetPort();
             InputStream tmpIn1 = inSocket.getInputStream();
             OutputStream tmpOut1 = inSocket.getOutputStream();
             
             Pipeline requestPipeline = new Pipeline();
+            requestTee = new Tee();
             HttpRequestFilter requestFilter = new HttpRequestFilter(false);
             requestPipeline.addFilter(requestFilter);
             if (config.isProxy()) {
                 requestFilter.addHandler(new HttpProxyServerHandler() {
                     protected void handleConnection(String host, int port) {
-                        requestResponseListener.setTarget(host, port);
                         try {
-                            outSocket = socketFactory.createSocket(host, port);
+                            connectToTarget(host, port);
                         } catch (IOException ex) {
                             throw new StreamException(ex);
                         }
                     }
                 });
             } else {
-                requestResponseListener.setTarget(targetHost, targetPort);
                 requestFilter.addHandler(new HttpHeaderRewriter("Host", targetHost + ":" + targetPort));
-                outSocket = socketFactory.createSocket(targetHost, targetPort);
+                connectToTarget(targetHost, targetPort);
             }
             // We log the request data at this stage. This means that the user will see the request
             // as if it had been sent directly from the client to the server (without TCPMon or a proxy
             // in between).
-            OutputStream requestOutputStream = requestResponseListener.getRequestOutputStream();
-            if (requestOutputStream != null) {
-                requestPipeline.addFilter(new Tee(requestOutputStream));
+            if (requestResponseListener != null) {
+                OutputStream requestOutputStream = requestResponseListener.getRequestOutputStream();
+                if (requestOutputStream != null) {
+                    requestPipeline.addFilter(new Tee(requestOutputStream));
+                }
             }
             if (HTTPProxyHost != null) {
                 requestFilter.addHandler(new HttpProxyClientHandler(targetHost, targetPort));
                 outSocket = socketFactory.createSocket(HTTPProxyHost, HTTPProxyPort);
             }
             config.applyRequestFilters(requestPipeline);
-            Tee requestTee = new Tee();
             requestPipeline.addFilter(requestTee);
             
-            requestResponseListener.setState(RequestResponseListener.STATE_ACTIVE);
+            if (requestResponseListener != null) {
+                requestResponseListener.setState(RequestResponseListener.STATE_ACTIVE);
+            }
             
             // If we act as a proxy, we first need to read the start of the request before
             // the outSocket is available.
@@ -134,17 +151,16 @@ class Connection extends Thread {
                 requestPipeline.readFrom(tmpIn1);
             }
             
-            OutputStream tmpOut2 = outSocket.getOutputStream();
-            requestTee.setOutputStream(tmpOut2);
-            
             Pipeline responsePipeline = new Pipeline();
             config.applyResponseFilters(responsePipeline);
             if (tmpOut1 != null) {
                 responsePipeline.addFilter(new Tee(tmpOut1));
             }
-            OutputStream responseOutputStream = requestResponseListener.getResponseOutputStream();
-            if (responseOutputStream != null) {
-                responsePipeline.addFilter(new Tee(responseOutputStream));
+            if (requestResponseListener != null) {
+                OutputStream responseOutputStream = requestResponseListener.getResponseOutputStream();
+                if (responseOutputStream != null) {
+                    responsePipeline.addFilter(new Tee(responseOutputStream));
+                }
             }
             
             // this is the channel to the endpoint
@@ -158,7 +174,7 @@ class Connection extends Thread {
             
             while ((rr1 != null) || (rr2 != null)) {
 
-                if (rr2 != null) {
+                if (rr2 != null && requestResponseListener != null) {
                     requestResponseListener.setElapsed(rr2.getElapsed());
                 }
                 
@@ -168,14 +184,14 @@ class Connection extends Thread {
                 // looping forever since no one closed the 1st one.
                 
                 if ((null != rr1) && rr1.isDone()) {
-                    if (rr2 != null) {
+                    if (rr2 != null && requestResponseListener != null) {
                         requestResponseListener.setState(RequestResponseListener.STATE_RESP);
                     }
                     rr1 = null;
                 }
 
                 if ((null != rr2) && rr2.isDone()) {
-                    if (rr1 != null) {
+                    if (rr1 != null && requestResponseListener != null) {
                         requestResponseListener.setState(RequestResponseListener.STATE_REQ);
                     }
                     rr2 = null;
@@ -188,8 +204,9 @@ class Connection extends Thread {
 
             active = false;
 
-            requestResponseListener.setState(RequestResponseListener.STATE_DONE);
-
+            if (requestResponseListener != null) {
+                requestResponseListener.setState(RequestResponseListener.STATE_DONE);
+            }
         } catch (Exception e) {
             if (requestResponseListener != null) {
                 requestResponseListener.setState(RequestResponseListener.STATE_ERROR);

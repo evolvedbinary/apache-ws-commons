@@ -65,17 +65,17 @@ public class Pipeline {
 
         public void invoke(byte[] buffer, int offset, int length, boolean eos, boolean preserve) {
             do {
-                if (inLength > 0) {
-                    int c = fillBuffer(buffer, offset, length);
-                    if (c == 0) {
-                        throw new StreamException("Pipeline buffer overflow");
-                    }
-                    offset += c;
-                    length -= c;
-                } else {
+                if (inLength == 0) {
                     setBuffer(buffer, offset, length, preserve);
                     offset += length;
                     length = 0;
+                } else if (length > 0) {
+                    int c = fillBuffer(buffer, offset, length);
+                    if (c == 0) {
+                        throw new StreamException("Pipeline buffer overflow caused by filter " + filter.getClass().getName() + " (" + filter + ")");
+                    }
+                    offset += c;
+                    length -= c;
                 }
                 this.lastBuffer = eos && length == 0;
                 filter.invoke(this);

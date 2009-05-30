@@ -56,4 +56,8 @@ public class Tee implements StreamFilter {
             stream.skipAll();
         }
     }
+
+    public String toString() {
+        return "[out=" + out + "]";
+    }
 }

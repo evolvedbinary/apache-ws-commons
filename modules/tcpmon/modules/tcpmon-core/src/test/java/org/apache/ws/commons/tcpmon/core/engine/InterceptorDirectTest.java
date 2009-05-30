@@ -16,16 +16,12 @@
 
 package org.apache.ws.commons.tcpmon.core.engine;
 
-public interface InterceptorListener {
-    void onServerSocketStart();
-    void onServerSocketError(Throwable ex);
-    
-    /**
-     * Create a listener for a new request-response exchange.
-     * 
-     * @param fromHost
-     * @return the listener or <code>null</code> if the implementation is not interested
-     *         in receiving events for a request-response exchange
-     */
-    RequestResponseListener createRequestResponseListener(String fromHost);
+public class InterceptorDirectTest extends InterceptorTestBase {
+    protected InterceptorConfiguration buildInterceptorConfiguration() {
+        InterceptorConfigurationBuilder builder = new InterceptorConfigurationBuilder();
+        builder.setTargetHost("localhost");
+        builder.setTargetPort(SERVER_PORT);
+        builder.setListenPort(INTERCEPTOR_PORT);
+        return builder.build();
+    }
 }
