@@ -19,7 +19,7 @@ package org.apache.ws.commons.tcpmon.core.engine;
 import org.apache.ws.commons.tcpmon.core.filter.Pipeline;
 import org.apache.ws.commons.tcpmon.core.filter.StreamException;
 import org.apache.ws.commons.tcpmon.core.filter.Tee;
-import org.apache.ws.commons.tcpmon.core.filter.http.HttpHeaderRewriter;
+import org.apache.ws.commons.tcpmon.core.filter.http.HostRewriter;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpProxyClientHandler;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpProxyServerHandler;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpRequestFilter;
@@ -113,6 +113,7 @@ class Connection extends Thread {
             requestTee = new Tee();
             HttpRequestFilter requestFilter = new HttpRequestFilter(false);
             requestPipeline.addFilter(requestFilter);
+            HostRewriter hostRewriter;
             if (config.isProxy()) {
                 requestFilter.addHandler(new HttpProxyServerHandler() {
                     protected void handleConnection(String host, int port) {
@@ -123,8 +124,10 @@ class Connection extends Thread {
                         }
                     }
                 });
+                hostRewriter = null;
             } else {
-                requestFilter.addHandler(new HttpHeaderRewriter("Host", targetHost + ":" + targetPort));
+                hostRewriter = new HostRewriter(targetHost, targetPort, config.isSecureSocketFactory());
+                requestFilter.addHandler(hostRewriter);
                 connectToTarget(targetHost, targetPort);
             }
             // We log the request data at this stage. This means that the user will see the request
@@ -162,6 +165,9 @@ class Connection extends Thread {
             ContentFilterFactory responseContentFilterFactory = config.getResponseContentFilterFactory();
             if (responseContentFilterFactory != null) {
                 responseFilter.setContentFilterFactory(responseContentFilterFactory);
+            }
+            if (hostRewriter != null) {
+                responseFilter.addHandler(hostRewriter);
             }
             responsePipeline.addFilter(responseFilter);
             config.applyResponseFilters(responsePipeline);

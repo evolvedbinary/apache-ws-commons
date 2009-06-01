@@ -20,7 +20,7 @@ package org.apache.ws.commons.tcpmon.core.filter.http;
  * Abstract implementation of {@link HttpRequestHandler} and {@link HttpResponseHandler}
  * with default behavior.
  */
-public abstract class AbstractHttpRequestResponseHandler implements HttpRequestHandler {
+public abstract class AbstractHttpRequestResponseHandler implements HttpRequestHandler, HttpResponseHandler {
     public String processRequestLine(String requestLine) {
         return requestLine;
     }

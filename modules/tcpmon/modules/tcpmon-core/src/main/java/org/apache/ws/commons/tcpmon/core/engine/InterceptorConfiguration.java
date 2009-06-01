@@ -18,6 +18,7 @@ package org.apache.ws.commons.tcpmon.core.engine;
 
 import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
+import javax.net.ssl.SSLSocketFactory;
 
 import org.apache.ws.commons.tcpmon.core.filter.Pipeline;
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilterFactory;
@@ -71,6 +72,10 @@ public class InterceptorConfiguration {
     
     public SocketFactory getSocketFactory() {
         return socketFactory;
+    }
+
+    public boolean isSecureSocketFactory() {
+        return socketFactory instanceof SSLSocketFactory;
     }
 
     public String getTargetHost() {
