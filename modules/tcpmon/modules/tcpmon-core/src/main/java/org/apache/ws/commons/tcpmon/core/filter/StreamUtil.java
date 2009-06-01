@@ -65,6 +65,16 @@ public class StreamUtil {
         stream.insert(b, 0, b.length);
     }
     
+    /**
+     * Search the stream for occurrences of given patterns.
+     * If an occurrence is found, the method will skip all content in the stream
+     * before the position where the pattern was found. Otherwise it will skip
+     * as much content as possible.
+     * 
+     * @param stream the stream to search
+     * @param patterns the patterns to search for
+     * @return the index of the pattern that matches, or -1 if no occurrence has been found
+     */
     public static int search(Stream stream, byte[][] patterns) {
         int[] matchLengths = new int[patterns.length];
         for (int i=0; i<stream.available(); i++) {
