@@ -16,12 +16,15 @@
 
 package org.apache.ws.commons.tcpmon.core.engine;
 
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.net.ServerSocketFactory;
 import javax.net.SocketFactory;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilterFactory;
 
@@ -66,6 +69,18 @@ public class InterceptorConfigurationBuilder {
 
     public void setSocketFactory(SocketFactory socketFactory) {
         this.socketFactory = socketFactory;
+    }
+    
+    /**
+     * Configure the interceptor to use SSL for outgoing connections.
+     * 
+     * @param validateCerts whether server certificates should be validated
+     * @throws GeneralSecurityException
+     */
+    public void configureSSLSocketFactory(boolean validateCerts) throws GeneralSecurityException {
+        SSLContext ctx = SSLContext.getInstance("SSL");
+        ctx.init(null, validateCerts ? null : new TrustManager[] { new NoValidateCertTrustManager() }, null);
+        socketFactory = ctx.getSocketFactory();
     }
 
     public void setTargetHost(String targetHost) {

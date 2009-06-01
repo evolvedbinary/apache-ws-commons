@@ -16,8 +16,6 @@
 
 package org.apache.ws.commons.tcpmon.swing;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
 import javax.swing.Box;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -444,9 +442,7 @@ public class AdminPane extends JPanel {
         
         if (outgoingSSLBox.isSelected()) {
             try {
-                SSLContext ctx = SSLContext.getInstance("SSL");
-                ctx.init(null, new TrustManager[] { new NoValidateCertTrustManager() }, null);
-                configBuilder.setSocketFactory(ctx.getSocketFactory());
+                configBuilder.configureSSLSocketFactory(false);
             } catch (GeneralSecurityException ex) {
                 throw new Error(ex);
             }
