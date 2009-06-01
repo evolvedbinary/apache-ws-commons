@@ -19,10 +19,16 @@ package org.apache.ws.commons.tcpmon.core.engine;
 import java.io.OutputStream;
 
 public class Dump implements InterceptorListener, RequestResponseListener {
-    private final OutputStream out;
+    private final OutputStream requestOut;
+    private final OutputStream responseOut;
     
+    public Dump(OutputStream requestOut, OutputStream responseOut) {
+        this.requestOut = requestOut;
+        this.responseOut = responseOut;
+    }
+
     public Dump(OutputStream out) {
-        this.out = out;
+        this(out, out);
     }
 
     public RequestResponseListener createRequestResponseListener(String fromHost) {
@@ -36,11 +42,11 @@ public class Dump implements InterceptorListener, RequestResponseListener {
     }
 
     public OutputStream getRequestOutputStream() {
-        return out;
+        return requestOut;
     }
 
     public OutputStream getResponseOutputStream() {
-        return out;
+        return responseOut;
     }
 
     public void onError(Throwable ex) {

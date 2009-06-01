@@ -102,6 +102,8 @@ public abstract class HttpFilter implements StreamFilter, EntityCompletionListen
     protected abstract void completed();
 
     private void processHeaders(HeaderParser headerParser, Stream stream) {
+        processHeaders(headers);
+        
         boolean hasEntity = false;
         boolean discardHeaders = false;
         StreamFilter transferDecoder = null;
@@ -130,8 +132,6 @@ public abstract class HttpFilter implements StreamFilter, EntityCompletionListen
                 }
             }
         }
-        
-        processHeaders(headers);
         
         if (discardHeaders && contentFilterChain != null) {
             headerParser.discard();

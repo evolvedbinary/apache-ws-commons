@@ -40,6 +40,14 @@ public class HostRewriter extends AbstractHttpRequestResponseHandler {
         targetBaseUri = buffer.toString();
     }
 
+    public String getTargetBaseUri() {
+        return targetBaseUri;
+    }
+
+    public String getOrgBaseUri() {
+        return orgBaseUri;
+    }
+
     private void rewriteUriHeaders(Headers headers, String[] names, String fromBaseUri, String toBaseUri) {
         for (int i=0; i<names.length; i++) {
             String name = names[i];

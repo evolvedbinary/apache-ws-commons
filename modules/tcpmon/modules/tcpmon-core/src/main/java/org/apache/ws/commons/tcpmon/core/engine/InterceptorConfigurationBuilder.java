@@ -45,6 +45,7 @@ public class InterceptorConfigurationBuilder {
     private final List/*<StreamFilterFactory>*/ responseFilters = new ArrayList();
     private ContentFilterFactory requestContentFilterFactory;
     private ContentFilterFactory responseContentFilterFactory;
+    private boolean replaceURIsInContent;
 
     public InterceptorConfigurationBuilder() {
     }
@@ -62,6 +63,7 @@ public class InterceptorConfigurationBuilder {
         responseFilters.addAll(Arrays.asList(config.responseFilters));
         requestContentFilterFactory = config.getRequestContentFilterFactory();
         responseContentFilterFactory = config.getResponseContentFilterFactory();
+        replaceURIsInContent = config.isReplaceURIsInContent();
     }
     
     public void setServerSocketFactory(ServerSocketFactory serverSocketFactory) {
@@ -139,6 +141,10 @@ public class InterceptorConfigurationBuilder {
         this.responseContentFilterFactory = responseContentFilterFactory;
     }
 
+    public void setReplaceURIsInContent(boolean replaceURIsInContent) {
+        this.replaceURIsInContent = replaceURIsInContent;
+    }
+
     public InterceptorConfiguration build() {
         if (serverSocketFactory == null) {
             serverSocketFactory = ServerSocketFactory.getDefault();
@@ -149,11 +155,12 @@ public class InterceptorConfigurationBuilder {
         if (proxy) {
             targetHost = null;
             targetPort = -1;
+            replaceURIsInContent = false;
         }
         return new InterceptorConfiguration(serverSocketFactory, listenPort, socketFactory,
                 targetHost, targetPort, proxy, httpProxyHost, httpProxyPort,
                 (StreamFilterFactory[])requestFilters.toArray(new StreamFilterFactory[requestFilters.size()]),
                 (StreamFilterFactory[])responseFilters.toArray(new StreamFilterFactory[responseFilters.size()]),
-                requestContentFilterFactory, responseContentFilterFactory);
+                requestContentFilterFactory, responseContentFilterFactory, replaceURIsInContent);
     }
 }

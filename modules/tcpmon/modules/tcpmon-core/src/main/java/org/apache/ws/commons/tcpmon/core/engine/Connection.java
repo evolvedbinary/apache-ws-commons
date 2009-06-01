@@ -24,7 +24,7 @@ import org.apache.ws.commons.tcpmon.core.filter.http.HttpProxyClientHandler;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpProxyServerHandler;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpRequestFilter;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpResponseFilter;
-import org.apache.ws.commons.tcpmon.core.filter.mime.ContentFilterFactory;
+import org.apache.ws.commons.tcpmon.core.filter.mime.ChainedContentFilterFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -143,10 +143,14 @@ class Connection extends Thread {
                 requestFilter.addHandler(new HttpProxyClientHandler(targetHost, targetPort));
                 outSocket = socketFactory.createSocket(HTTPProxyHost, HTTPProxyPort);
             }
-            ContentFilterFactory requestContentFilterFactory = config.getRequestContentFilterFactory();
-            if (requestContentFilterFactory != null) {
-                requestFilter.setContentFilterFactory(requestContentFilterFactory);
+            ChainedContentFilterFactory requestContentFilterFactory = new ChainedContentFilterFactory();
+            if (config.getRequestContentFilterFactory() != null) {
+                requestContentFilterFactory.add(config.getRequestContentFilterFactory());
             }
+            if (config.isReplaceURIsInContent()) {
+                requestContentFilterFactory.add(new UriReplaceContentFilterFactory(hostRewriter, UriReplaceContentFilterFactory.REQUEST));
+            }
+            requestFilter.setContentFilterFactory(requestContentFilterFactory);
             config.applyRequestFilters(requestPipeline);
             requestPipeline.addFilter(requestTee);
             
@@ -162,18 +166,20 @@ class Connection extends Thread {
             
             Pipeline responsePipeline = new Pipeline();
             HttpResponseFilter responseFilter = new HttpResponseFilter(false);
-            ContentFilterFactory responseContentFilterFactory = config.getResponseContentFilterFactory();
-            if (responseContentFilterFactory != null) {
-                responseFilter.setContentFilterFactory(responseContentFilterFactory);
+            ChainedContentFilterFactory responseContentFilterFactory = new ChainedContentFilterFactory();
+            if (config.getResponseContentFilterFactory() != null) {
+                responseContentFilterFactory.add(config.getResponseContentFilterFactory());
             }
+            if (config.isReplaceURIsInContent()) {
+                responseContentFilterFactory.add(new UriReplaceContentFilterFactory(hostRewriter, UriReplaceContentFilterFactory.RESPONSE));
+            }
+            responseFilter.setContentFilterFactory(responseContentFilterFactory);
             if (hostRewriter != null) {
                 responseFilter.addHandler(hostRewriter);
             }
             responsePipeline.addFilter(responseFilter);
             config.applyResponseFilters(responsePipeline);
-            if (tmpOut1 != null) {
-                responsePipeline.addFilter(new Tee(tmpOut1));
-            }
+            responsePipeline.addFilter(new Tee(tmpOut1));
             if (requestResponseListener != null) {
                 OutputStream responseOutputStream = requestResponseListener.getResponseOutputStream();
                 if (responseOutputStream != null) {

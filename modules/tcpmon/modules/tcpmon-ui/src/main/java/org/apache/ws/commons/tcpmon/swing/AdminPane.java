@@ -119,6 +119,8 @@ public class AdminPane extends JPanel {
 //    private final JCheckBox incomingSSLBox;
     
     private final JCheckBox outgoingSSLBox;
+    
+    final JCheckBox replaceURIsInContentBox;
 
     /**
      * Constructor AdminPage
@@ -183,6 +185,7 @@ public class AdminPane extends JPanel {
                     tportLabel.setForeground(state
                             ? Color.black
                             : Color.gray);
+                    replaceURIsInContentBox.setEnabled(state);
                 }
             }
         });
@@ -220,6 +223,7 @@ public class AdminPane extends JPanel {
         proxyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent event) {
                 if (proxy.equals(event.getActionCommand())) {
+                    // TODO: duplicate code here!!
                     boolean state = proxyButton.isSelected();
                     tport.setEnabled(!state);
                     host.setEnabled(!state);
@@ -229,6 +233,7 @@ public class AdminPane extends JPanel {
                     tportLabel.setForeground(state
                             ? Color.gray
                             : Color.black);
+                    replaceURIsInContentBox.setEnabled(!state);
                 }
             }
         });
@@ -370,6 +375,11 @@ public class AdminPane extends JPanel {
 //        opts.add(incomingSSLBox = new JCheckBox("Use SSL for incoming connections"), c); // TODO: i18n
         opts.add(outgoingSSLBox = new JCheckBox("Use SSL for outgoing connections"), c); // TODO: i18n
         
+        // Replace URIs options
+        c.anchor = GridBagConstraints.WEST;
+        c.gridwidth = GridBagConstraints.REMAINDER;
+        opts.add(replaceURIsInContentBox = new JCheckBox("Replace URIs in request/response content"), c); // TODO: i18n
+        
         // Spacer
         // ////////////////////////////////////////////////////////////////
         mainPane.add(Box.createRigidArea(new Dimension(1, 10)), c);
@@ -447,6 +457,8 @@ public class AdminPane extends JPanel {
                 throw new Error(ex);
             }
         }
+        
+        configBuilder.setReplaceURIsInContent(replaceURIsInContentBox.isSelected());
         
         return configBuilder.build();
     }

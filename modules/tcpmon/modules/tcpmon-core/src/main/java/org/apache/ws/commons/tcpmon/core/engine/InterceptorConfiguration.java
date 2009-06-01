@@ -42,12 +42,14 @@ public class InterceptorConfiguration {
     final StreamFilterFactory[] responseFilters;
     private final ContentFilterFactory requestContentFilterFactory;
     private final ContentFilterFactory responseContentFilterFactory;
+    private final boolean replaceURIsInContent;
 
     InterceptorConfiguration(ServerSocketFactory serverSocketFactory, int listenPort,
             SocketFactory socketFactory, String targetHost, int targetPort, boolean proxy,
             String httpProxyHost, int httpProxyPort, StreamFilterFactory[] requestFilters,
             StreamFilterFactory[] responseFilters, ContentFilterFactory
-            requestContentFilterFactory, ContentFilterFactory responseContentFilterFactory) {
+            requestContentFilterFactory, ContentFilterFactory responseContentFilterFactory,
+            boolean replaceURIsInContent) {
         this.serverSocketFactory = serverSocketFactory;
         this.listenPort = listenPort;
         this.socketFactory = socketFactory;
@@ -60,6 +62,7 @@ public class InterceptorConfiguration {
         this.responseFilters = responseFilters;
         this.requestContentFilterFactory = requestContentFilterFactory;
         this.responseContentFilterFactory = responseContentFilterFactory;
+        this.replaceURIsInContent = replaceURIsInContent;
     }
 
     public ServerSocketFactory getServerSocketFactory() {
@@ -118,5 +121,9 @@ public class InterceptorConfiguration {
 
     public ContentFilterFactory getResponseContentFilterFactory() {
         return responseContentFilterFactory;
+    }
+
+    public boolean isReplaceURIsInContent() {
+        return replaceURIsInContent;
     }
 }
