@@ -20,9 +20,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.ws.commons.tcpmon.core.filter.EntityProcessor;
 import org.apache.ws.commons.tcpmon.core.filter.HeaderParser;
-import org.apache.ws.commons.tcpmon.core.filter.ReadOnlyStream;
+import org.apache.ws.commons.tcpmon.core.filter.ReadOnlyFilterWrapper;
 import org.apache.ws.commons.tcpmon.core.filter.Stream;
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
 import org.apache.ws.commons.tcpmon.core.filter.StreamUtil;
@@ -31,7 +30,7 @@ import org.apache.ws.commons.tcpmon.core.filter.mime.ContentFilterFactory;
 /**
  * Base class for {@link HttpRequestFilter} and {@link HttpResponseFilter}.
  */
-public abstract class HttpFilter implements StreamFilter {
+public abstract class HttpFilter implements StreamFilter, EntityCompletionListener {
     private static final int STATE_FIRST_LINE = 0;
     private static final int STATE_HEADER = 1;
     private static final int STATE_CONTENT = 2;
@@ -42,7 +41,7 @@ public abstract class HttpFilter implements StreamFilter {
     private int state = STATE_FIRST_LINE;
     private final Headers headers = new Headers();
     private ContentFilterFactory contentFilterFactory;
-    private EntityProcessor transferDecoder;
+    private StreamFilter transferDecoder;
     private StreamFilter[] contentFilterChain;
     
     public HttpFilter(boolean decodeTransferEncoding) {
@@ -96,6 +95,11 @@ public abstract class HttpFilter implements StreamFilter {
                         }
                         headerParser.skip();
                         state = STATE_CONTENT;
+                        if (transferDecoder != null) {
+                            stream.pushFilter(decodeTransferEncoding
+                                    ? transferDecoder
+                                    : new ReadOnlyFilterWrapper(transferDecoder));
+                        }
                         if (contentFilterChain != null) {
                             for (int i=contentFilterChain.length-1; i>=0; i--) {
                                 stream.pushFilter(contentFilterChain[i]);
@@ -105,23 +109,6 @@ public abstract class HttpFilter implements StreamFilter {
                     } else {
                         return;
                     }
-                }
-                case STATE_CONTENT: {
-                    if (transferDecoder != null) {
-                        Stream decoderStream =
-                                decodeTransferEncoding ? stream : new ReadOnlyStream(stream);
-                        if (transferDecoder.process(decoderStream)) {
-                            state = STATE_COMPLETE;
-                            if (contentFilterChain != null) {
-                                for (int i=0; i<contentFilterChain.length; i++) {
-                                    stream.popFilter();
-                                }
-                            }
-                            completed();
-                        }
-                        break;
-                    }
-                    // Fall through
                 }
                 default:
                     stream.skipAll();
@@ -138,10 +125,10 @@ public abstract class HttpFilter implements StreamFilter {
             String name = header.getName();
             String value = header.getValue();
             if (name.equalsIgnoreCase("Content-Length")) {
-                transferDecoder = new IdentityDecoder(Integer.parseInt(value));
+                transferDecoder = new IdentityDecoder(Integer.parseInt(value), this);
             } else if (name.equalsIgnoreCase("Transfer-Encoding")) {
                 if (value.equals("chunked")) {
-                    transferDecoder = new ChunkedDecoder();
+                    transferDecoder = new ChunkedDecoder(this);
                 }
             } else if (name.equalsIgnoreCase("Content-Type")) {
                 if (contentFilterFactory != null) {
@@ -152,5 +139,10 @@ public abstract class HttpFilter implements StreamFilter {
         for (Iterator it = handlers.iterator(); it.hasNext(); ) {
             ((HeaderHandler)it.next()).handleHeaders(headers);
         }
+    }
+
+    public void onComplete() {
+        state = STATE_COMPLETE;
+        completed();
     }
 }

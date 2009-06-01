@@ -16,23 +16,27 @@
 
 package org.apache.ws.commons.tcpmon.core.filter.http;
 
-import org.apache.ws.commons.tcpmon.core.filter.EntityProcessor;
 import org.apache.ws.commons.tcpmon.core.filter.Stream;
+import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
 
 /**
  * Entity processor that processes HTTP identity transfer encoding.
  */
-public class IdentityDecoder implements EntityProcessor {
+public class IdentityDecoder implements StreamFilter {
+    private final EntityCompletionListener listener;
     private int remaining;
 
-    public IdentityDecoder(int contentLength) {
+    public IdentityDecoder(int contentLength, EntityCompletionListener listener) {
         remaining = contentLength;
+        this.listener = listener;
     }
 
-    public boolean process(Stream stream) {
+    public void invoke(Stream stream) {
         int c = Math.min(stream.available(), remaining);
         stream.skip(c);
         remaining -= c;
-        return remaining == 0;
+        if (remaining == 0) {
+            listener.onComplete();
+        }
     }
 }

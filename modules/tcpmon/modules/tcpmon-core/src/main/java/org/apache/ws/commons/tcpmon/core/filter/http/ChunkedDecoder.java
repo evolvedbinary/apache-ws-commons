@@ -16,18 +16,23 @@
 
 package org.apache.ws.commons.tcpmon.core.filter.http;
 
-import org.apache.ws.commons.tcpmon.core.filter.EntityProcessor;
 import org.apache.ws.commons.tcpmon.core.filter.Stream;
 import org.apache.ws.commons.tcpmon.core.filter.StreamException;
+import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
 import org.apache.ws.commons.tcpmon.core.filter.StreamUtil;
 
 /**
  * Entity processor that processes HTTP chunked transfer encoding.
  */
-public class ChunkedDecoder implements EntityProcessor {
+public class ChunkedDecoder implements StreamFilter {
+    private final EntityCompletionListener listener;
     private int remaining = -1; // bytes remaining in the current chunk
 
-    public boolean process(Stream stream) {
+    public ChunkedDecoder(EntityCompletionListener listener) {
+        this.listener = listener;
+    }
+
+    public void invoke(Stream stream) {
         while (stream.available() > 0) {
             if (remaining > 0) {
                 int c = Math.min(stream.available(), remaining);
@@ -35,7 +40,7 @@ public class ChunkedDecoder implements EntityProcessor {
                 remaining -= c;
             } else if (remaining == 0) {
                 if (stream.available() < 2) {
-                    return false;
+                    return;
                 }
                 if (stream.get(0) == '\r' && stream.get(1) == '\n') {
                     stream.discard(2);
@@ -46,15 +51,16 @@ public class ChunkedDecoder implements EntityProcessor {
             } else {
                 int eolIndex = StreamUtil.searchEndOfLine(stream);
                 if (eolIndex == -1) {
-                    return false;
+                    return;
                 }
                 remaining = Integer.parseInt(StreamUtil.getAsciiString(stream, 0, eolIndex), 16);
                 stream.discard(eolIndex+2);
                 if (remaining == 0) {
-                    return true;
+                    listener.onComplete();
+                    return;
                 }
             }
         }
-        return false;
+        return;
     }
 }
