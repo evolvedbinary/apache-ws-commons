@@ -17,6 +17,7 @@
 package org.apache.ws.commons.tcpmon.core.engine;
 
 import org.apache.ws.commons.tcpmon.core.filter.Pipeline;
+import org.apache.ws.commons.tcpmon.core.filter.http.HttpFilter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -62,6 +63,8 @@ class SocketRR extends Thread {
     
     private final Pipeline pipeline;
     
+    private final HttpFilter httpFilter;
+    
     /**
      * Constructor SocketRR
      *
@@ -79,13 +82,15 @@ class SocketRR extends Thread {
      */
     public SocketRR(Connection connection, Socket inputSocket,
                     InputStream inputStream, Socket outputSocket,
-                    OutputStream outputStream, Pipeline pipeline) {
+                    OutputStream outputStream, Pipeline pipeline,
+                    HttpFilter httpFilter) {
         this.connection = connection;
         inSocket = inputSocket;
         in = inputStream;
         outSocket = outputSocket;
         out = outputStream;
         this.pipeline = pipeline;
+        this.httpFilter = httpFilter;
     }
 
     /**
@@ -114,6 +119,11 @@ class SocketRR extends Thread {
                 } catch (IOException ex) {
                     // When reading from the socket, consider an I/O exception (such as connection
                     // reset) as the end of stream and silently discard the exception.
+                    c = -1;
+                }
+                // This is a very naive way to support keep-alive: just close the connection after
+                // the request or response
+                if (httpFilter.isComplete()) {
                     c = -1;
                 }
                 elapsed = System.currentTimeMillis() - start;

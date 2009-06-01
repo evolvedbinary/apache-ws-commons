@@ -16,8 +16,11 @@
 
 package org.apache.ws.commons.tcpmon.core.engine;
 
+import java.io.InputStream;
+
 import junit.framework.TestCase;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -26,6 +29,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.CoreProtocolPNames;
 import org.mortbay.http.HttpContext;
 import org.mortbay.http.SocketListener;
 import org.mortbay.jetty.Server;
@@ -67,6 +71,8 @@ public abstract class InterceptorTestBase extends TestCase {
         } else {
             baseUri = "http://localhost:" + INTERCEPTOR_PORT;
         }
+        // We don't handle 100 continue yet
+        client.getParams().setBooleanParameter(CoreProtocolPNames.USE_EXPECT_CONTINUE, false);
     }
 
     protected void tearDown() throws Exception {
@@ -76,10 +82,20 @@ public abstract class InterceptorTestBase extends TestCase {
 
     protected abstract InterceptorConfiguration buildInterceptorConfiguration();
     
+    private static String getResponseAsString(HttpResponse response) throws Exception {
+        InputStream in = response.getEntity().getContent();
+        try {
+            return IOUtils.toString(in, "UTF-8");
+        } finally {
+            in.close();
+        }
+    }
+    
     public void testGet() throws Exception {
         HttpGet request = new HttpGet(baseUri + "/test");
         HttpResponse response = client.execute(request);
         assertEquals(200, response.getStatusLine().getStatusCode());
+        assertEquals("test", getResponseAsString(response));
     }
     
     public void testPost() throws Exception {
@@ -87,5 +103,16 @@ public abstract class InterceptorTestBase extends TestCase {
         request.setEntity(new StringEntity("test"));
         HttpResponse response = client.execute(request);
         assertEquals(200, response.getStatusLine().getStatusCode());
+        assertEquals("test", getResponseAsString(response));
+    }
+    
+    public void testGetWithKeepAlive() throws Exception {
+        HttpGet request = new HttpGet(baseUri + "/test");
+        HttpResponse response = client.execute(request);
+        assertEquals(200, response.getStatusLine().getStatusCode());
+        assertEquals("test", getResponseAsString(response));
+        response = client.execute(request);
+        assertEquals(200, response.getStatusLine().getStatusCode());
+        assertEquals("test", getResponseAsString(response));
     }
 }

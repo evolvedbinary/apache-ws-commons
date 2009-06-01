@@ -36,7 +36,7 @@ public abstract class HttpFilter implements StreamFilter {
     private static final int STATE_FIRST_LINE = 0;
     private static final int STATE_HEADER = 1;
     private static final int STATE_CONTENT = 2;
-    private static final int STATE_COMPLETE = 2;
+    private static final int STATE_COMPLETE = 3;
 
     private final HeaderProcessor headerProcessor = new HeaderProcessor();
     private final boolean decodeTransferEncoding;
@@ -60,6 +60,10 @@ public abstract class HttpFilter implements StreamFilter {
             throw new UnsupportedOperationException();
         }
         this.contentFilterFactory = contentFilterFactory;
+    }
+    
+    public boolean isComplete() {
+        return state == STATE_COMPLETE;
     }
 
     public void invoke(Stream stream) {

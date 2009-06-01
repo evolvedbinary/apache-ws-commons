@@ -23,6 +23,7 @@ import org.apache.ws.commons.tcpmon.core.filter.http.HttpHeaderRewriter;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpProxyClientHandler;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpProxyServerHandler;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpRequestFilter;
+import org.apache.ws.commons.tcpmon.core.filter.http.HttpResponseFilter;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -152,6 +153,8 @@ class Connection extends Thread {
             }
             
             Pipeline responsePipeline = new Pipeline();
+            HttpResponseFilter responseFilter = new HttpResponseFilter(false);
+            responsePipeline.addFilter(responseFilter);
             config.applyResponseFilters(responsePipeline);
             if (tmpOut1 != null) {
                 responsePipeline.addFilter(new Tee(tmpOut1));
@@ -164,10 +167,10 @@ class Connection extends Thread {
             }
             
             // this is the channel to the endpoint
-            rr1 = new SocketRR(this, inSocket, tmpIn1, outSocket, tmpOut2, requestPipeline);
+            rr1 = new SocketRR(this, inSocket, tmpIn1, outSocket, tmpOut2, requestPipeline, requestFilter);
 
             // this is the channel from the endpoint
-            rr2 = new SocketRR(this, outSocket, outSocket.getInputStream(), inSocket, tmpOut1, responsePipeline);
+            rr2 = new SocketRR(this, outSocket, outSocket.getInputStream(), inSocket, tmpOut1, responsePipeline, responseFilter);
             
             rr1.start();
             rr2.start();
