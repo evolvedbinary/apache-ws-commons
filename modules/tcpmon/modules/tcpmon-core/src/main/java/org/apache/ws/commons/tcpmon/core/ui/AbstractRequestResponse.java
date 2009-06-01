@@ -33,7 +33,6 @@ import org.apache.ws.commons.tcpmon.core.filter.Pipeline;
 import org.apache.ws.commons.tcpmon.core.filter.RequestLineExtractor;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpRequestFilter;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpResponseFilter;
-import org.apache.ws.commons.tcpmon.core.filter.mime.DefaultContentFilterFactory;
 
 public abstract class AbstractRequestResponse implements RequestResponseListener {
     private static final String[] states = new String[] {

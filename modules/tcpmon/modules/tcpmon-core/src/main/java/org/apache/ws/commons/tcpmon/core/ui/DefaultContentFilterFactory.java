@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon.core.filter.mime;
+package org.apache.ws.commons.tcpmon.core.ui;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -24,32 +24,27 @@ import java.util.List;
 import java.util.Set;
 
 import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
 
 import org.apache.ws.commons.tcpmon.core.filter.CharsetRecoderFilter;
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
 import org.apache.ws.commons.tcpmon.core.filter.XmlFormatFilter;
+import org.apache.ws.commons.tcpmon.core.filter.mime.ContentFilterFactory;
+import org.apache.ws.commons.tcpmon.core.filter.mime.MultipartAwareContentFilterFactory;
 
 /**
  * Default {@link ContentFilterFactory} implementation.
  */
-public class DefaultContentFilterFactory implements ContentFilterFactory {
+public class DefaultContentFilterFactory extends MultipartAwareContentFilterFactory {
     private static final Set xmlContentTypes = new HashSet(Arrays.asList(new String[] {
             "text/xml", "application/xml", "application/soap+xml", "application/xop+xml" }));
     private static final Charset UTF8 = Charset.forName("utf-8");
     
-    public StreamFilter[] getContentFilterChain(String contentType) {
-        MimeType ctype;
-        try {
-            ctype = new MimeType(contentType);
-        } catch (MimeTypeParseException ex) {
-            return null;
-        }
-        String baseType = ctype.getBaseType().toLowerCase();
+    protected StreamFilter[] getContentFilterChainForMimePart(MimeType contentType) {
+        String baseType = contentType.getBaseType().toLowerCase();
         boolean isXml = xmlContentTypes.contains(baseType);
         List filters = new ArrayList(2);
-        if (isXml || ctype.getPrimaryType().equalsIgnoreCase("text")) {
-            String charsetName = ctype.getParameter("charset");
+        if (isXml || contentType.getPrimaryType().equalsIgnoreCase("text")) {
+            String charsetName = contentType.getParameter("charset");
             if (charsetName != null) {
                 Charset charset = Charset.forName(charsetName);
                 if (!charset.equals(UTF8)) {
@@ -59,8 +54,6 @@ public class DefaultContentFilterFactory implements ContentFilterFactory {
         }
         if (isXml) {
             filters.add(new XmlFormatFilter(3));
-        } else if (baseType.equals("multipart/related")) {
-            filters.add(new MultipartFilter(this, contentType));
         }
         return filters.isEmpty() ? null : (StreamFilter[])filters.toArray(new StreamFilter[filters.size()]);
     }
