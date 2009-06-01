@@ -21,8 +21,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.ws.commons.tcpmon.core.filter.EntityProcessor;
-import org.apache.ws.commons.tcpmon.core.filter.HeaderHandler;
-import org.apache.ws.commons.tcpmon.core.filter.HeaderProcessor;
+import org.apache.ws.commons.tcpmon.core.filter.HeaderParser;
 import org.apache.ws.commons.tcpmon.core.filter.ReadOnlyStream;
 import org.apache.ws.commons.tcpmon.core.filter.Stream;
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
@@ -38,21 +37,16 @@ public abstract class HttpFilter implements StreamFilter {
     private static final int STATE_CONTENT = 2;
     private static final int STATE_COMPLETE = 3;
 
-    private final HeaderProcessor headerProcessor = new HeaderProcessor();
     private final boolean decodeTransferEncoding;
     protected final List handlers = new LinkedList();
     private int state = STATE_FIRST_LINE;
+    private final Headers headers = new Headers();
     private ContentFilterFactory contentFilterFactory;
     private EntityProcessor transferDecoder;
     private StreamFilter[] contentFilterChain;
     
     public HttpFilter(boolean decodeTransferEncoding) {
         this.decodeTransferEncoding = decodeTransferEncoding;
-        headerProcessor.addHandler(new HeaderHandler() {
-            public String handleHeader(String name, String value) {
-                return processHeader(name, value);
-            }
-        });
     }
     
     public void setContentFilterFactory(ContentFilterFactory contentFilterFactory) {
@@ -89,7 +83,18 @@ public abstract class HttpFilter implements StreamFilter {
                     break;
                 }
                 case STATE_HEADER: {
-                    if (headerProcessor.process(stream)) {
+                    HeaderParser headerParser = new HeaderParser(stream);
+                    while (headerParser.available()) {
+                        headers.add(headerParser.getHeaderName(), headerParser.getHeaderValue());
+                        headerParser.discard();
+                    }
+                    if (headerParser.noMoreHeaders()) {
+                        processHeaders();
+                        for (Iterator it = headers.iterator(); it.hasNext(); ) {
+                            Header header = (Header)it.next();
+                            headerParser.insert(header.getName(), header.getValue());
+                        }
+                        headerParser.skip();
                         state = STATE_CONTENT;
                         if (contentFilterChain != null) {
                             for (int i=contentFilterChain.length-1; i>=0; i--) {
@@ -127,24 +132,25 @@ public abstract class HttpFilter implements StreamFilter {
     protected abstract String processFirstLine(String firstList);
     protected abstract void completed();
 
-    private String processHeader(String name, String value) {
-        if (name.equalsIgnoreCase("Content-Length")) {
-            transferDecoder = new IdentityDecoder(Integer.parseInt(value));
-        } else if (name.equalsIgnoreCase("Transfer-Encoding")) {
-            if (value.equals("chunked")) {
-                transferDecoder = new ChunkedDecoder();
-            }
-        } else if (name.equalsIgnoreCase("Content-Type")) {
-            if (contentFilterFactory != null) {
-                contentFilterChain = contentFilterFactory.getContentFilterChain(value);
+    private void processHeaders() {
+        for (Iterator it = headers.iterator(); it.hasNext(); ) {
+            Header header = (Header)it.next();
+            String name = header.getName();
+            String value = header.getValue();
+            if (name.equalsIgnoreCase("Content-Length")) {
+                transferDecoder = new IdentityDecoder(Integer.parseInt(value));
+            } else if (name.equalsIgnoreCase("Transfer-Encoding")) {
+                if (value.equals("chunked")) {
+                    transferDecoder = new ChunkedDecoder();
+                }
+            } else if (name.equalsIgnoreCase("Content-Type")) {
+                if (contentFilterFactory != null) {
+                    contentFilterChain = contentFilterFactory.getContentFilterChain(value);
+                }
             }
         }
         for (Iterator it = handlers.iterator(); it.hasNext(); ) {
-            value = ((HeaderHandler)it.next()).handleHeader(name, value);
-            if (value == null) {
-                break;
-            }
+            ((HeaderHandler)it.next()).handleHeaders(headers);
         }
-        return value;
     }
 }

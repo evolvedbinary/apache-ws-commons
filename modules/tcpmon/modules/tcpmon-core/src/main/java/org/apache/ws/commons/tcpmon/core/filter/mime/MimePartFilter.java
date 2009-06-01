@@ -16,8 +16,7 @@
 
 package org.apache.ws.commons.tcpmon.core.filter.mime;
 
-import org.apache.ws.commons.tcpmon.core.filter.HeaderHandler;
-import org.apache.ws.commons.tcpmon.core.filter.HeaderProcessor;
+import org.apache.ws.commons.tcpmon.core.filter.HeaderParser;
 import org.apache.ws.commons.tcpmon.core.filter.Stream;
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
 
@@ -25,28 +24,30 @@ import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
  * Filter that processes a MIME part.
  */
 public class MimePartFilter implements StreamFilter {
-    private HeaderProcessor headerProcessor;
-    private StreamFilter[] contentFilterChain;
+    private static final int HEADERS = 0;
+    private static final int CONTENT = 1;
 
-    public MimePartFilter(final ContentFilterFactory contentFilterFactory) {
-        headerProcessor = new HeaderProcessor();
-        headerProcessor.addHandler(new HeaderHandler() {
-            public String handleHeader(String name, String value) {
-                if (name.equalsIgnoreCase("Content-Type")) {
-                    contentFilterChain = contentFilterFactory.getContentFilterChain(value);
-                }
-                return value;
-            }
-        });
+    private final ContentFilterFactory contentFilterFactory;
+    private int state = HEADERS;
+    private StreamFilter[] contentFilterChain;
+    
+    public MimePartFilter(ContentFilterFactory contentFilterFactory) {
+        this.contentFilterFactory = contentFilterFactory;
     }
 
     public void invoke(Stream stream) {
         while (stream.available() > 0) {
-            if (headerProcessor == null) {
-                stream.skipAll();
-            } else {
-                if (headerProcessor.process(stream)) {
-                    headerProcessor = null;
+            if (state == HEADERS) {
+                HeaderParser headers = new HeaderParser(stream);
+                while (headers.available()) {
+                    if (headers.getHeaderName().equalsIgnoreCase("Content-Type")) {
+                        contentFilterChain = contentFilterFactory.getContentFilterChain(headers.getHeaderValue());
+                    }
+                    headers.skip();
+                }
+                if (headers.noMoreHeaders()) {
+                    headers.skip();
+                    state = CONTENT;
                     if (contentFilterChain != null) {
                         for (int i=contentFilterChain.length-1; i>=0; i--) {
                             stream.pushFilter(contentFilterChain[i]);
@@ -56,6 +57,7 @@ public class MimePartFilter implements StreamFilter {
                     return;
                 }
             }
+            stream.skipAll();
         }
     }
 }

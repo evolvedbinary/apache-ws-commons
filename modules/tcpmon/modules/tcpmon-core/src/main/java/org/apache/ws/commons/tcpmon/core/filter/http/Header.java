@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon.core.filter;
+package org.apache.ws.commons.tcpmon.core.filter.http;
 
-/**
- * Handle headers extracted by {@link HeaderProcessor}.
- */
-public interface HeaderHandler {
-    /**
-     * Handle a header.
-     * 
-     * @param name the name of the header
-     * @param value the value of the header
-     * @return the new value of the header or <code>null</code> if
-     *         the {@link HeaderProcessor} should remove the header
-     */
-    String handleHeader(String name, String value);
+public class Header {
+    private final String name;
+    private final String value;
+    
+    public Header(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getValue() {
+        return value;
+    }
 }

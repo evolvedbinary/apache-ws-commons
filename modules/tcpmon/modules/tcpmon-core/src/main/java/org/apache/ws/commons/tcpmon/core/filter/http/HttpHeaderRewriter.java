@@ -28,7 +28,7 @@ public class HttpHeaderRewriter extends AbstractHttpRequestHandler {
         this.newValue = newValue;
     }
 
-    public String handleHeader(String name, String value) {
-        return headerName.equals(name) ? newValue : value;
+    public void handleHeaders(Headers headers) {
+        headers.set(headerName, newValue);
     }
 }

@@ -16,7 +16,6 @@
 
 package org.apache.ws.commons.tcpmon.core.filter.http;
 
-import org.apache.ws.commons.tcpmon.core.filter.HeaderHandler;
 
 /**
  * Interface implemented by handlers invoked by {@link HttpResponseFilter}.
