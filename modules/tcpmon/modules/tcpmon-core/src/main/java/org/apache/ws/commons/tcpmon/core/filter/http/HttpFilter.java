@@ -41,17 +41,12 @@ public abstract class HttpFilter implements StreamFilter, EntityCompletionListen
     private int state = STATE_FIRST_LINE;
     private final Headers headers = new Headers();
     private ContentFilterFactory contentFilterFactory;
-    private StreamFilter transferDecoder;
-    private StreamFilter[] contentFilterChain;
     
     public HttpFilter(boolean decodeTransferEncoding) {
         this.decodeTransferEncoding = decodeTransferEncoding;
     }
     
     public void setContentFilterFactory(ContentFilterFactory contentFilterFactory) {
-        if (!decodeTransferEncoding) {
-            throw new UnsupportedOperationException();
-        }
         this.contentFilterFactory = contentFilterFactory;
     }
     
@@ -88,27 +83,12 @@ public abstract class HttpFilter implements StreamFilter, EntityCompletionListen
                         headerParser.discard();
                     }
                     if (headerParser.noMoreHeaders()) {
-                        processHeaders();
-                        for (Iterator it = headers.iterator(); it.hasNext(); ) {
-                            Header header = (Header)it.next();
-                            headerParser.insert(header.getName(), header.getValue());
-                        }
-                        headerParser.skip();
+                        processHeaders(headerParser, stream);
                         state = STATE_CONTENT;
-                        if (transferDecoder != null) {
-                            stream.pushFilter(decodeTransferEncoding
-                                    ? transferDecoder
-                                    : new ReadOnlyFilterWrapper(transferDecoder));
-                        }
-                        if (contentFilterChain != null) {
-                            for (int i=contentFilterChain.length-1; i>=0; i--) {
-                                stream.pushFilter(contentFilterChain[i]);
-                            }
-                        }
-                        break;
                     } else {
                         return;
                     }
+                    break;
                 }
                 default:
                     stream.skipAll();
@@ -119,16 +99,24 @@ public abstract class HttpFilter implements StreamFilter, EntityCompletionListen
     protected abstract String processFirstLine(String firstList);
     protected abstract void completed();
 
-    private void processHeaders() {
+    private void processHeaders(HeaderParser headerParser, Stream stream) {
+        boolean discardHeaders = false;
+        StreamFilter transferDecoder = null;
+        StreamFilter transferEncoder = null;
+        StreamFilter[] contentFilterChain = null;
         for (Iterator it = headers.iterator(); it.hasNext(); ) {
             Header header = (Header)it.next();
             String name = header.getName();
             String value = header.getValue();
             if (name.equalsIgnoreCase("Content-Length")) {
                 transferDecoder = new IdentityDecoder(Integer.parseInt(value), this);
+                transferEncoder = new IdentityEncoder(headers);
+                discardHeaders = true;
             } else if (name.equalsIgnoreCase("Transfer-Encoding")) {
                 if (value.equals("chunked")) {
                     transferDecoder = new ChunkedDecoder(this);
+                    transferEncoder = new ChunkedEncoder();
+                    discardHeaders = false;
                 }
             } else if (name.equalsIgnoreCase("Content-Type")) {
                 if (contentFilterFactory != null) {
@@ -136,8 +124,33 @@ public abstract class HttpFilter implements StreamFilter, EntityCompletionListen
                 }
             }
         }
+        
         for (Iterator it = handlers.iterator(); it.hasNext(); ) {
             ((HeaderHandler)it.next()).handleHeaders(headers);
+        }
+        
+        if (discardHeaders && contentFilterChain != null) {
+            headerParser.discard();
+        } else {
+            for (Iterator it = headers.iterator(); it.hasNext(); ) {
+                Header header = (Header)it.next();
+                headerParser.insert(header.getName(), header.getValue());
+            }
+            headerParser.skip();
+        }
+        
+        if (contentFilterChain != null) {
+            if (transferEncoder != null && !decodeTransferEncoding) {
+                stream.pushFilter(transferEncoder);
+            }
+            for (int i=contentFilterChain.length-1; i>=0; i--) {
+                stream.pushFilter(contentFilterChain[i]);
+            }
+        }
+        if (transferDecoder != null) {
+            stream.pushFilter(decodeTransferEncoding || contentFilterChain != null
+                    ? transferDecoder
+                    : new ReadOnlyFilterWrapper(transferDecoder));
         }
     }
 

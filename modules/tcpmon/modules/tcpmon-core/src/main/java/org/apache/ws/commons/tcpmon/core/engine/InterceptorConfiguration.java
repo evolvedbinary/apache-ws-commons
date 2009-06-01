@@ -21,6 +21,7 @@ import javax.net.SocketFactory;
 
 import org.apache.ws.commons.tcpmon.core.filter.Pipeline;
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilterFactory;
+import org.apache.ws.commons.tcpmon.core.filter.mime.ContentFilterFactory;
 
 /**
  * Holds the configuration for an {@link Interceptor} instance.
@@ -38,11 +39,14 @@ public class InterceptorConfiguration {
     private final int httpProxyPort;
     final StreamFilterFactory[] requestFilters;
     final StreamFilterFactory[] responseFilters;
+    private final ContentFilterFactory requestContentFilterFactory;
+    private final ContentFilterFactory responseContentFilterFactory;
 
     InterceptorConfiguration(ServerSocketFactory serverSocketFactory, int listenPort,
             SocketFactory socketFactory, String targetHost, int targetPort, boolean proxy,
             String httpProxyHost, int httpProxyPort, StreamFilterFactory[] requestFilters,
-            StreamFilterFactory[] responseFilters) {
+            StreamFilterFactory[] responseFilters, ContentFilterFactory
+            requestContentFilterFactory, ContentFilterFactory responseContentFilterFactory) {
         this.serverSocketFactory = serverSocketFactory;
         this.listenPort = listenPort;
         this.socketFactory = socketFactory;
@@ -53,6 +57,8 @@ public class InterceptorConfiguration {
         this.httpProxyPort = httpProxyPort;
         this.requestFilters = requestFilters;
         this.responseFilters = responseFilters;
+        this.requestContentFilterFactory = requestContentFilterFactory;
+        this.responseContentFilterFactory = responseContentFilterFactory;
     }
 
     public ServerSocketFactory getServerSocketFactory() {
@@ -99,5 +105,13 @@ public class InterceptorConfiguration {
     
     public void applyResponseFilters(Pipeline pipeline) {
         applyFilters(pipeline, responseFilters);
+    }
+
+    public ContentFilterFactory getRequestContentFilterFactory() {
+        return requestContentFilterFactory;
+    }
+
+    public ContentFilterFactory getResponseContentFilterFactory() {
+        return responseContentFilterFactory;
     }
 }

@@ -124,6 +124,7 @@ class SocketRR extends Thread {
                 // This is a very naive way to support keep-alive: just close the connection after
                 // the request or response
                 if (httpFilter.isComplete()) {
+                    pipeline.close();
                     c = -1;
                 }
                 elapsed = System.currentTimeMillis() - start;

@@ -24,6 +24,7 @@ import org.apache.ws.commons.tcpmon.core.filter.http.HttpProxyClientHandler;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpProxyServerHandler;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpRequestFilter;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpResponseFilter;
+import org.apache.ws.commons.tcpmon.core.filter.mime.ContentFilterFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -139,6 +140,10 @@ class Connection extends Thread {
                 requestFilter.addHandler(new HttpProxyClientHandler(targetHost, targetPort));
                 outSocket = socketFactory.createSocket(HTTPProxyHost, HTTPProxyPort);
             }
+            ContentFilterFactory requestContentFilterFactory = config.getRequestContentFilterFactory();
+            if (requestContentFilterFactory != null) {
+                requestFilter.setContentFilterFactory(requestContentFilterFactory);
+            }
             config.applyRequestFilters(requestPipeline);
             requestPipeline.addFilter(requestTee);
             
@@ -154,6 +159,10 @@ class Connection extends Thread {
             
             Pipeline responsePipeline = new Pipeline();
             HttpResponseFilter responseFilter = new HttpResponseFilter(false);
+            ContentFilterFactory responseContentFilterFactory = config.getResponseContentFilterFactory();
+            if (responseContentFilterFactory != null) {
+                responseFilter.setContentFilterFactory(responseContentFilterFactory);
+            }
             responsePipeline.addFilter(responseFilter);
             config.applyResponseFilters(responsePipeline);
             if (tmpOut1 != null) {

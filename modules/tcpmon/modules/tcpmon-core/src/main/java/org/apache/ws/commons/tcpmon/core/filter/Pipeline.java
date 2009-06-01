@@ -383,6 +383,10 @@ public class Pipeline {
         return read;
     }
     
+    public void close() {
+        first.invoke(allocateBuffer(), 0, 0, true, false);
+    }
+    
     public OutputStream getOutputStream() {
         return new OutputStreamImpl();
     }

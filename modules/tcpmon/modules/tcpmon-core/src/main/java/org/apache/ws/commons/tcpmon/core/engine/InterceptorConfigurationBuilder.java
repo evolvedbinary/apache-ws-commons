@@ -27,6 +27,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilterFactory;
+import org.apache.ws.commons.tcpmon.core.filter.mime.ContentFilterFactory;
 
 /**
  * Creates {@link InterceptorConfiguration} instances.
@@ -42,6 +43,8 @@ public class InterceptorConfigurationBuilder {
     private int httpProxyPort;
     private final List/*<StreamFilterFactory>*/ requestFilters = new ArrayList();
     private final List/*<StreamFilterFactory>*/ responseFilters = new ArrayList();
+    private ContentFilterFactory requestContentFilterFactory;
+    private ContentFilterFactory responseContentFilterFactory;
 
     public InterceptorConfigurationBuilder() {
     }
@@ -57,6 +60,8 @@ public class InterceptorConfigurationBuilder {
         httpProxyPort = config.getHttpProxyPort();
         requestFilters.addAll(Arrays.asList(config.requestFilters));
         responseFilters.addAll(Arrays.asList(config.responseFilters));
+        requestContentFilterFactory = config.getRequestContentFilterFactory();
+        responseContentFilterFactory = config.getResponseContentFilterFactory();
     }
     
     public void setServerSocketFactory(ServerSocketFactory serverSocketFactory) {
@@ -126,6 +131,14 @@ public class InterceptorConfigurationBuilder {
         responseFilters.add(filter);
     }
     
+    public void setRequestContentFilterFactory(ContentFilterFactory requestContentFilterFactory) {
+        this.requestContentFilterFactory = requestContentFilterFactory;
+    }
+
+    public void setResponseContentFilterFactory(ContentFilterFactory responseContentFilterFactory) {
+        this.responseContentFilterFactory = responseContentFilterFactory;
+    }
+
     public InterceptorConfiguration build() {
         if (serverSocketFactory == null) {
             serverSocketFactory = ServerSocketFactory.getDefault();
@@ -140,6 +153,7 @@ public class InterceptorConfigurationBuilder {
         return new InterceptorConfiguration(serverSocketFactory, listenPort, socketFactory,
                 targetHost, targetPort, proxy, httpProxyHost, httpProxyPort,
                 (StreamFilterFactory[])requestFilters.toArray(new StreamFilterFactory[requestFilters.size()]),
-                (StreamFilterFactory[])responseFilters.toArray(new StreamFilterFactory[responseFilters.size()]));
+                (StreamFilterFactory[])responseFilters.toArray(new StreamFilterFactory[responseFilters.size()]),
+                requestContentFilterFactory, responseContentFilterFactory);
     }
 }
