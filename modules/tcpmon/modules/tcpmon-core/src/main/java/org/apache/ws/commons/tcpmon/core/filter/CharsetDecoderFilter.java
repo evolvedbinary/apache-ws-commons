@@ -48,6 +48,9 @@ public class CharsetDecoderFilter implements StreamFilter {
             stream.skip(stream.read(inBuffer));
             inBuffer.flip();
             coderResult = decoder.decode(inBuffer, outBuffer, stream.isEndOfStream());
+            if (coderResult.isError()) {
+                throw new StreamException("Character set encoding error");
+            }
             outBuffer.flip();
             try {
                 writer.write(outBuffer.array(), outBuffer.position(), outBuffer.remaining());
