@@ -16,11 +16,11 @@
 
 package org.apache.ws.commons.tcpmon.core.filter.http;
 
-
 /**
  * Interface implemented by handlers invoked by {@link HttpRequestFilter}.
  */
-public interface HttpRequestHandler extends HeaderHandler {
+public interface HttpRequestHandler {
     String processRequestLine(String requestLine);
+    void processRequestHeaders(Headers headers);
     void requestCompleted();
 }

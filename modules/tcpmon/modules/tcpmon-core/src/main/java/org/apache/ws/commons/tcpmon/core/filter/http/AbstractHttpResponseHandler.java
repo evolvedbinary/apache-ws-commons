@@ -19,12 +19,12 @@ package org.apache.ws.commons.tcpmon.core.filter.http;
 /**
  * Abstract implementation of {@link HttpResponseHandler} with default behavior.
  */
-public class AbstractHttpResponseHandler implements HttpResponseHandler {
+public abstract class AbstractHttpResponseHandler implements HttpResponseHandler {
     public String processResponseLine(String responseLine) {
         return responseLine;
     }
 
-    public void handleHeaders(Headers headers) {
+    public void processResponseHeaders(Headers headers) {
     }
 
     public void responseCompleted() {

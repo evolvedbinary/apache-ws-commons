@@ -17,8 +17,6 @@
 package org.apache.ws.commons.tcpmon.core.filter.http;
 
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 
 import org.apache.ws.commons.tcpmon.core.filter.HeaderParser;
 import org.apache.ws.commons.tcpmon.core.filter.ReadOnlyFilterWrapper;
@@ -37,7 +35,6 @@ public abstract class HttpFilter implements StreamFilter, EntityCompletionListen
     private static final int STATE_COMPLETE = 3;
 
     private final boolean decodeTransferEncoding;
-    protected final List handlers = new LinkedList();
     private int state = STATE_FIRST_LINE;
     private final Headers headers = new Headers();
     private ContentFilterFactory contentFilterFactory;
@@ -97,6 +94,7 @@ public abstract class HttpFilter implements StreamFilter, EntityCompletionListen
     }
     
     protected abstract String processFirstLine(String firstList);
+    protected abstract void processHeaders(Headers headers);
     protected abstract void completed();
 
     private void processHeaders(HeaderParser headerParser, Stream stream) {
@@ -125,9 +123,7 @@ public abstract class HttpFilter implements StreamFilter, EntityCompletionListen
             }
         }
         
-        for (Iterator it = handlers.iterator(); it.hasNext(); ) {
-            ((HeaderHandler)it.next()).handleHeaders(headers);
-        }
+        processHeaders(headers);
         
         if (discardHeaders && contentFilterChain != null) {
             headerParser.discard();

@@ -24,7 +24,7 @@ public abstract class AbstractHttpRequestHandler implements HttpRequestHandler {
         return requestLine;
     }
 
-    public void handleHeaders(Headers headers) {
+    public void processRequestHeaders(Headers headers) {
     }
 
     public void requestCompleted() {

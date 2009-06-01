@@ -17,12 +17,16 @@
 package org.apache.ws.commons.tcpmon.core.filter.http;
 
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Filter that parses HTTP responses and invokes a set of {@link HTTPResponseHandler}
  * implementations.
  */
 public class HttpResponseFilter extends HttpFilter {
+    private final List/*<HttpResponseHandler>*/ handlers = new LinkedList();
+    
     public HttpResponseFilter(boolean decodeTransferEncoding) {
         super(decodeTransferEncoding);
     }
@@ -36,6 +40,12 @@ public class HttpResponseFilter extends HttpFilter {
             firstLine = ((HttpResponseHandler)it.next()).processResponseLine(firstLine);
         }
         return firstLine;
+    }
+
+    protected void processHeaders(Headers headers) {
+        for (Iterator it = handlers.iterator(); it.hasNext(); ) {
+            ((HttpResponseHandler)it.next()).processResponseHeaders(headers);
+        }
     }
 
     protected void completed() {
