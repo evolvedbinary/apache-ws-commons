@@ -59,6 +59,12 @@
             <version>1.4</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.geronimo.specs</groupId>
+            <artifactId>geronimo-javamail_1.4_spec</artifactId>
+            <version>1.6</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
