@@ -21,8 +21,10 @@ import java.util.Iterator;
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
+import org.apache.ws.commons.tcpmon.core.filter.EntityProcessor;
 import org.apache.ws.commons.tcpmon.core.filter.HeaderParser;
-import org.apache.ws.commons.tcpmon.core.filter.ReadOnlyFilterWrapper;
+import org.apache.ws.commons.tcpmon.core.filter.ReadOnlyEntityProcessorWrapper;
+import org.apache.ws.commons.tcpmon.core.filter.ReadOnlyStream;
 import org.apache.ws.commons.tcpmon.core.filter.Stream;
 import org.apache.ws.commons.tcpmon.core.filter.StreamException;
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
@@ -32,7 +34,7 @@ import org.apache.ws.commons.tcpmon.core.filter.mime.ContentFilterFactory;
 /**
  * Base class for {@link HttpRequestFilter} and {@link HttpResponseFilter}.
  */
-public abstract class HttpFilter implements StreamFilter, EntityCompletionListener {
+public abstract class HttpFilter implements StreamFilter {
     private static final int STATE_FIRST_LINE = 0;
     private static final int STATE_HEADER = 1;
     private static final int STATE_CONTENT = 2;
@@ -42,6 +44,8 @@ public abstract class HttpFilter implements StreamFilter, EntityCompletionListen
     private int state = STATE_FIRST_LINE;
     private final Headers headers = new Headers();
     private ContentFilterFactory contentFilterFactory;
+    private EntityProcessor transferDecoder;
+    private StreamFilter[] contentFilterChain;
     
     public HttpFilter(boolean decodeTransferEncoding) {
         this.decodeTransferEncoding = decodeTransferEncoding;
@@ -85,13 +89,29 @@ public abstract class HttpFilter implements StreamFilter, EntityCompletionListen
                     }
                     if (headerParser.noMoreHeaders()) {
                         processHeaders(headerParser, stream);
-                        state = STATE_CONTENT;
                     } else {
                         return;
                     }
                     break;
                 }
-                case STATE_CONTENT:
+                case STATE_CONTENT: {
+                    if (transferDecoder != null) {
+                        Stream decoderStream =
+                                decodeTransferEncoding ? stream : new ReadOnlyStream(stream);
+                        if (transferDecoder.process(decoderStream)) {
+                            state = STATE_COMPLETE;
+                            if (contentFilterChain != null) {
+                                for (int i=0; i<contentFilterChain.length; i++) {
+                                    stream.popFilter();
+                                }
+                            }
+                            onComplete();
+                        }
+                        break;
+                    }
+                    // Fall through
+                }
+                default:
                     stream.skipAll();
                     break;
                 case STATE_COMPLETE:
@@ -109,22 +129,20 @@ public abstract class HttpFilter implements StreamFilter, EntityCompletionListen
         
         boolean hasEntity = false;
         boolean discardHeaders = false;
-        StreamFilter transferDecoder = null;
         StreamFilter transferEncoder = null;
-        StreamFilter[] contentFilterChain = null;
         for (Iterator it = headers.iterator(); it.hasNext(); ) {
             Header header = (Header)it.next();
             String name = header.getName();
             String value = header.getValue();
             if (name.equalsIgnoreCase("Content-Length")) {
                 hasEntity = true;
-                transferDecoder = new IdentityDecoder(Integer.parseInt(value), this);
+                transferDecoder = new IdentityDecoder(Integer.parseInt(value));
                 transferEncoder = new IdentityEncoder(headers);
                 discardHeaders = true;
             } else if (name.equalsIgnoreCase("Transfer-Encoding")) {
                 hasEntity = true;
                 if (value.equals("chunked")) {
-                    transferDecoder = new ChunkedDecoder(this);
+                    transferDecoder = new ChunkedDecoder();
                     transferEncoder = new ChunkedEncoder();
                     discardHeaders = false;
                 }
@@ -158,19 +176,21 @@ public abstract class HttpFilter implements StreamFilter, EntityCompletionListen
                 for (int i=contentFilterChain.length-1; i>=0; i--) {
                     stream.pushFilter(contentFilterChain[i]);
                 }
+            } else {
+                if (transferDecoder != null && !decodeTransferEncoding) {
+                    transferDecoder = new ReadOnlyEntityProcessorWrapper(transferDecoder);
+                }
             }
-            if (transferDecoder != null) {
-                stream.pushFilter(decodeTransferEncoding || contentFilterChain != null
-                        ? transferDecoder
-                        : new ReadOnlyFilterWrapper(transferDecoder));
-            }
+            state = STATE_CONTENT;
         } else {
             onComplete();
         }
     }
-
-    public void onComplete() {
+    
+    private void onComplete() {
         state = STATE_COMPLETE;
+        transferDecoder = null;
+        contentFilterChain = null;
         completed();
     }
 }

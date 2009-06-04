@@ -28,6 +28,9 @@ public class ChunkedEncoder implements StreamFilter {
             StreamUtil.insertAsciiString(stream, "\r\n");
             StreamUtil.insertAsciiString(stream, Integer.toString(av, 16));
             StreamUtil.insertAsciiString(stream, "\r\n");
+            if (av == 0) {
+                StreamUtil.insertAsciiString(stream, "\r\n");
+            }
         }
     }
 }

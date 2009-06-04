@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-package org.apache.ws.commons.tcpmon.core.filter.http;
+package org.apache.ws.commons.tcpmon.core.filter;
 
-public interface EntityCompletionListener {
-    void onComplete();
+/**
+ * Wrapper that makes an {@link EntityProcessor} read-only.
+ */
+public class ReadOnlyEntityProcessorWrapper implements EntityProcessor {
+    private final EntityProcessor parent;
+
+    public ReadOnlyEntityProcessorWrapper(EntityProcessor parent) {
+        this.parent = parent;
+    }
+
+    public boolean process(Stream stream) {
+        return parent.process(new ReadOnlyStream(stream));
+    }
 }
