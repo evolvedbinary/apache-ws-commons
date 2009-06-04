@@ -20,6 +20,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
+import javax.activation.MimeType;
 import javax.mail.Session;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
@@ -49,7 +50,7 @@ public class MultipartFilterTest extends TestCase {
         mp.writeTo(baos);
         
         ContentFilterFactory cff = new ContentFilterFactory() {
-            public StreamFilter[] getContentFilterChain(String contentType) {
+            public StreamFilter[] getContentFilterChain(MimeType contentType) {
                 try {
                     return new StreamFilter[] { new ReplaceFilter("test", "TEST", "ascii") };
                 } catch (UnsupportedEncodingException ex) {
@@ -58,7 +59,7 @@ public class MultipartFilterTest extends TestCase {
             }
         };
         
-        byte[] filtered = TestUtil.filter(new MultipartFilter(cff, contentType), baos.toByteArray());
+        byte[] filtered = TestUtil.filter(new MultipartFilter(cff, new MimeType(contentType)), baos.toByteArray());
         MimeMultipart mp2 = new MimeMultipart(new ByteArrayDataSource(filtered, contentType));
         assertEquals(2, mp2.getCount());
         assertEquals("TEST", mp2.getBodyPart(0).getContent());

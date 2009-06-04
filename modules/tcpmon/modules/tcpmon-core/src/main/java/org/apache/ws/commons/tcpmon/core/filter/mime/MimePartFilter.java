@@ -16,6 +16,9 @@
 
 package org.apache.ws.commons.tcpmon.core.filter.mime;
 
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
+
 import org.apache.ws.commons.tcpmon.core.filter.HeaderParser;
 import org.apache.ws.commons.tcpmon.core.filter.Stream;
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
@@ -41,7 +44,11 @@ public class MimePartFilter implements StreamFilter {
                 HeaderParser headers = new HeaderParser(stream);
                 while (headers.available()) {
                     if (headers.getHeaderName().equalsIgnoreCase("Content-Type")) {
-                        contentFilterChain = contentFilterFactory.getContentFilterChain(headers.getHeaderValue());
+                        try {
+                            contentFilterChain = contentFilterFactory.getContentFilterChain(new MimeType(headers.getHeaderValue()));
+                        } catch (MimeTypeParseException ex) {
+                            // If the content type is unparseable, just continue
+                        }
                     }
                     headers.skip();
                 }

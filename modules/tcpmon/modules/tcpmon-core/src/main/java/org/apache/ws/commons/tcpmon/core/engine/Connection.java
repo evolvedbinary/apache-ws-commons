@@ -25,6 +25,7 @@ import org.apache.ws.commons.tcpmon.core.filter.http.HttpProxyServerHandler;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpRequestFilter;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpResponseFilter;
 import org.apache.ws.commons.tcpmon.core.filter.mime.ChainedContentFilterFactory;
+import org.apache.ws.commons.tcpmon.core.filter.mime.MultipartContentFilterFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -148,7 +149,8 @@ class Connection extends Thread {
                 requestContentFilterFactory.add(config.getRequestContentFilterFactory());
             }
             if (config.isReplaceURIsInContent()) {
-                requestContentFilterFactory.add(new UriReplaceContentFilterFactory(hostRewriter, UriReplaceContentFilterFactory.REQUEST));
+                requestContentFilterFactory.add(new MultipartContentFilterFactory(
+                        new UriReplaceContentFilterFactory(hostRewriter, UriReplaceContentFilterFactory.REQUEST)));
             }
             requestFilter.setContentFilterFactory(requestContentFilterFactory);
             config.applyRequestFilters(requestPipeline);
@@ -171,7 +173,8 @@ class Connection extends Thread {
                 responseContentFilterFactory.add(config.getResponseContentFilterFactory());
             }
             if (config.isReplaceURIsInContent()) {
-                responseContentFilterFactory.add(new UriReplaceContentFilterFactory(hostRewriter, UriReplaceContentFilterFactory.RESPONSE));
+                responseContentFilterFactory.add(new MultipartContentFilterFactory(
+                        new UriReplaceContentFilterFactory(hostRewriter, UriReplaceContentFilterFactory.RESPONSE)));
             }
             responseFilter.setContentFilterFactory(responseContentFilterFactory);
             if (hostRewriter != null) {

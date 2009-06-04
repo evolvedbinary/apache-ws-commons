@@ -19,7 +19,6 @@ package org.apache.ws.commons.tcpmon.core.filter.mime;
 import java.io.UnsupportedEncodingException;
 
 import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
 
 import org.apache.ws.commons.tcpmon.core.filter.Stream;
 import org.apache.ws.commons.tcpmon.core.filter.StreamException;
@@ -41,15 +40,9 @@ public class MultipartFilter implements StreamFilter {
     private final byte[] endBoundaryDelimiter;
     private int state = STATE_START;
 
-    public MultipartFilter(ContentFilterFactory contentFilterFactory, String contentType) {
+    public MultipartFilter(ContentFilterFactory contentFilterFactory, MimeType contentType) {
         this.contentFilterFactory = contentFilterFactory;
-        MimeType mimeType;
-        try {
-            mimeType = new MimeType(contentType);
-        } catch (MimeTypeParseException ex) {
-            throw new StreamException(ex);
-        }
-        String boundary = mimeType.getParameter("boundary");
+        String boundary = contentType.getParameter("boundary");
         try {
             startBoundaryDelimiter = ("--" + boundary + "\r\n").getBytes("ascii");
             boundaryDelimiter = ("\r\n--" + boundary + "\r\n").getBytes("ascii");

@@ -18,6 +18,9 @@ package org.apache.ws.commons.tcpmon.core.filter.http;
 
 import java.util.Iterator;
 
+import javax.activation.MimeType;
+import javax.activation.MimeTypeParseException;
+
 import org.apache.ws.commons.tcpmon.core.filter.HeaderParser;
 import org.apache.ws.commons.tcpmon.core.filter.ReadOnlyFilterWrapper;
 import org.apache.ws.commons.tcpmon.core.filter.Stream;
@@ -128,7 +131,11 @@ public abstract class HttpFilter implements StreamFilter, EntityCompletionListen
             } else if (name.equalsIgnoreCase("Content-Type")) {
                 hasEntity = true;
                 if (contentFilterFactory != null) {
-                    contentFilterChain = contentFilterFactory.getContentFilterChain(value);
+                    try {
+                        contentFilterChain = contentFilterFactory.getContentFilterChain(new MimeType(value));
+                    } catch (MimeTypeParseException ex) {
+                        // If the content type is unparseable, just continue
+                    }
                 }
             }
         }

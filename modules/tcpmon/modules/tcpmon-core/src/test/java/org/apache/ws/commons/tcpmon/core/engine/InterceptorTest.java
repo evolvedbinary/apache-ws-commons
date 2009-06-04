@@ -18,6 +18,8 @@ package org.apache.ws.commons.tcpmon.core.engine;
 
 import java.io.UnsupportedEncodingException;
 
+import javax.activation.MimeType;
+
 import junit.framework.TestCase;
 
 import org.apache.http.HttpResponse;
@@ -39,7 +41,7 @@ public class InterceptorTest extends TestCase {
         configBuilder.setTargetPort(5555);
         configBuilder.setListenPort(8000);
         configBuilder.setRequestContentFilterFactory(new ContentFilterFactory() {
-            public StreamFilter[] getContentFilterChain(String contentType) {
+            public StreamFilter[] getContentFilterChain(MimeType contentType) {
                 try {
                     return new StreamFilter[] { new ReplaceFilter("pattern", "replacement", "ascii") };
                 } catch (UnsupportedEncodingException ex) {

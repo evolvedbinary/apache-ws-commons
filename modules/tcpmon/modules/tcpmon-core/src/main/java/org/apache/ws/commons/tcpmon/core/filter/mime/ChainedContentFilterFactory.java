@@ -21,6 +21,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.activation.MimeType;
+
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
 
 public class ChainedContentFilterFactory implements ContentFilterFactory {
@@ -30,7 +32,7 @@ public class ChainedContentFilterFactory implements ContentFilterFactory {
         factories.add(factory);
     }
 
-    public StreamFilter[] getContentFilterChain(String contentType) {
+    public StreamFilter[] getContentFilterChain(MimeType contentType) {
         if (factories.isEmpty()) {
             return null;
         } else if (factories.size() == 1) {

@@ -16,6 +16,8 @@
 
 package org.apache.ws.commons.tcpmon.core.filter.mime;
 
+import javax.activation.MimeType;
+
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
 
 /**
@@ -30,5 +32,5 @@ public interface ContentFilterFactory {
      *         <code>null</code> (or an empty array) if no
      *         filter should be applied
      */
-    StreamFilter[] getContentFilterChain(String contentType);
+    StreamFilter[] getContentFilterChain(MimeType contentType);
 }

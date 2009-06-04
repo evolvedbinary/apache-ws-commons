@@ -33,6 +33,8 @@ import org.apache.ws.commons.tcpmon.core.filter.Pipeline;
 import org.apache.ws.commons.tcpmon.core.filter.RequestLineExtractor;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpRequestFilter;
 import org.apache.ws.commons.tcpmon.core.filter.http.HttpResponseFilter;
+import org.apache.ws.commons.tcpmon.core.filter.mime.ContentFilterFactory;
+import org.apache.ws.commons.tcpmon.core.filter.mime.MultipartContentFilterFactory;
 
 public abstract class AbstractRequestResponse implements RequestResponseListener {
     private static final String[] states = new String[] {
@@ -44,6 +46,9 @@ public abstract class AbstractRequestResponse implements RequestResponseListener
     };
     
     private static final Charset UTF8 = Charset.forName("utf-8");
+    
+    private static final ContentFilterFactory contentFilterFactory =
+            new MultipartContentFilterFactory(new DefaultContentFilterFactory());
     
     private final Configuration config;
     private String targetHost;
@@ -86,7 +91,7 @@ public abstract class AbstractRequestResponse implements RequestResponseListener
         });
         if (config.isXmlFormat()) {
             HttpRequestFilter filter = new HttpRequestFilter(true);
-            filter.setContentFilterFactory(new DefaultContentFilterFactory());
+            filter.setContentFilterFactory(contentFilterFactory);
             pipeline.addFilter(filter);
         }
         pipeline.addFilter(new CharsetDecoderFilter(getRequestWriter(), UTF8));
@@ -97,7 +102,7 @@ public abstract class AbstractRequestResponse implements RequestResponseListener
         Pipeline pipeline = new Pipeline();
         if (config.isXmlFormat()) {
             HttpResponseFilter filter = new HttpResponseFilter(true);
-            filter.setContentFilterFactory(new DefaultContentFilterFactory());
+            filter.setContentFilterFactory(contentFilterFactory);
             pipeline.addFilter(filter);
         }
         pipeline.addFilter(new CharsetDecoderFilter(getResponseWriter(), UTF8));

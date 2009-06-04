@@ -29,17 +29,16 @@ import org.apache.ws.commons.tcpmon.core.filter.CharsetRecoderFilter;
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
 import org.apache.ws.commons.tcpmon.core.filter.XmlFormatFilter;
 import org.apache.ws.commons.tcpmon.core.filter.mime.ContentFilterFactory;
-import org.apache.ws.commons.tcpmon.core.filter.mime.MultipartAwareContentFilterFactory;
 
 /**
  * Default {@link ContentFilterFactory} implementation.
  */
-public class DefaultContentFilterFactory extends MultipartAwareContentFilterFactory {
+public class DefaultContentFilterFactory implements ContentFilterFactory {
     private static final Set xmlContentTypes = new HashSet(Arrays.asList(new String[] {
             "text/xml", "application/xml", "application/soap+xml", "application/xop+xml" }));
     private static final Charset UTF8 = Charset.forName("utf-8");
     
-    protected StreamFilter[] getContentFilterChainForMimePart(MimeType contentType) {
+    public StreamFilter[] getContentFilterChain(MimeType contentType) {
         String baseType = contentType.getBaseType().toLowerCase();
         boolean isXml = xmlContentTypes.contains(baseType);
         List filters = new ArrayList(2);

@@ -17,27 +17,25 @@
 package org.apache.ws.commons.tcpmon.core.filter.mime;
 
 import javax.activation.MimeType;
-import javax.activation.MimeTypeParseException;
 
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
 
 /**
- * Partial {@link ContentFilterFactory} implementation that handles <tt>multipart/related</tt>.
+ * {@link ContentFilterFactory} implementation that handles <tt>multipart/related</tt>.
+ * It delegates to a different content filter factory for individual MIME parts.
  */
-public abstract class MultipartAwareContentFilterFactory implements ContentFilterFactory {
-    public StreamFilter[] getContentFilterChain(String contentType) {
-        MimeType ctype;
-        try {
-            ctype = new MimeType(contentType);
-        } catch (MimeTypeParseException ex) {
-            return null;
-        }
-        if (ctype.getBaseType().equalsIgnoreCase("multipart/related")) {
+public class MultipartContentFilterFactory implements ContentFilterFactory {
+    private final ContentFilterFactory parent;
+    
+    public MultipartContentFilterFactory(ContentFilterFactory parent) {
+        this.parent = parent;
+    }
+
+    public StreamFilter[] getContentFilterChain(MimeType contentType) {
+        if (contentType.getBaseType().equalsIgnoreCase("multipart/related")) {
             return new StreamFilter[] { new MultipartFilter(this, contentType) };
         } else {
-            return getContentFilterChainForMimePart(ctype);
+            return parent.getContentFilterChain(contentType);
         }
     }
-    
-    protected abstract StreamFilter[] getContentFilterChainForMimePart(MimeType contentType);
 }

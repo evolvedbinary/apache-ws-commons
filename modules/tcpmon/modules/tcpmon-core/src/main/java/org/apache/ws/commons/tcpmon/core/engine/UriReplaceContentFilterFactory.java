@@ -23,9 +23,9 @@ import javax.activation.MimeType;
 import org.apache.ws.commons.tcpmon.core.filter.ReplaceFilter;
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
 import org.apache.ws.commons.tcpmon.core.filter.http.HostRewriter;
-import org.apache.ws.commons.tcpmon.core.filter.mime.MultipartAwareContentFilterFactory;
+import org.apache.ws.commons.tcpmon.core.filter.mime.ContentFilterFactory;
 
-public class UriReplaceContentFilterFactory extends MultipartAwareContentFilterFactory {
+public class UriReplaceContentFilterFactory implements ContentFilterFactory {
     public static final int REQUEST = 0;
     public static final int RESPONSE = 1;
     
@@ -37,7 +37,7 @@ public class UriReplaceContentFilterFactory extends MultipartAwareContentFilterF
         this.direction = direction;
     }
 
-    protected StreamFilter[] getContentFilterChainForMimePart(MimeType contentType) {
+    public StreamFilter[] getContentFilterChain(MimeType contentType) {
         if (contentType.getPrimaryType().equalsIgnoreCase("text")
                 || contentType.getSubType().toLowerCase().indexOf("xml") != -1) {
             String orgBaseUri = hostRewriter.getOrgBaseUri();
