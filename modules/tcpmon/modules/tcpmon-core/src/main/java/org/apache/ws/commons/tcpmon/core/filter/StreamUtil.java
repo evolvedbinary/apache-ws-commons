@@ -16,6 +16,8 @@
 
 package org.apache.ws.commons.tcpmon.core.filter;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -100,5 +102,15 @@ public class StreamUtil {
         }
         stream.skip(stream.available()-maxMatchLength);
         return -1;
+    }
+
+    /**
+     * Reads unsigned short in little endian byte order.
+     * 
+     * @param stream
+     * @return
+     */
+    public static int readUShort(Stream stream) {
+        return stream.get(1) << 8 | stream.get(0);
     }
 }

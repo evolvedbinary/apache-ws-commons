@@ -207,7 +207,7 @@ public class Pipeline {
                     throw new ArrayIndexOutOfBoundsException();
                 }
             } else {
-                return inBuffer[inOffset+lookahead];
+                return (int)inBuffer[inOffset+lookahead] & 0xFF;
             }
         }
         
