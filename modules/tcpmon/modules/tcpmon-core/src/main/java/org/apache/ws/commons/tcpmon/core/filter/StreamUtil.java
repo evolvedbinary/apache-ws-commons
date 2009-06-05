@@ -16,8 +16,6 @@
 
 package org.apache.ws.commons.tcpmon.core.filter;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
 /**
@@ -112,5 +110,27 @@ public class StreamUtil {
      */
     public static int readUShort(Stream stream) {
         return stream.get(1) << 8 | stream.get(0);
+    }
+    
+    /**
+     * Insert an integer in little endian byte order.
+     * 
+     * @param stream
+     * @param i
+     */
+    public static void insertInt(Stream stream, int i) {
+        insertShort(stream, i & 0xffff);
+        insertShort(stream, (i >> 16) & 0xffff);
+    }
+
+    /**
+     * Insert a short integer in little endian byte order.
+     * 
+     * @param stream
+     * @param s
+     */
+    public static void insertShort(Stream stream, int s) {
+        stream.insert((byte)(s & 0xff));
+        stream.insert((byte)((s >> 8) & 0xff));
     }
 }

@@ -30,6 +30,8 @@ import org.apache.ws.commons.tcpmon.core.filter.StreamException;
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
 import org.apache.ws.commons.tcpmon.core.filter.StreamUtil;
 import org.apache.ws.commons.tcpmon.core.filter.mime.ContentFilterFactory;
+import org.apache.ws.commons.tcpmon.core.filter.zip.GZIPDecoder;
+import org.apache.ws.commons.tcpmon.core.filter.zip.GZIPEncoder;
 
 /**
  * Base class for {@link HttpRequestFilter} and {@link HttpResponseFilter}.
@@ -40,15 +42,15 @@ public abstract class HttpFilter implements StreamFilter {
     private static final int STATE_CONTENT = 2;
     private static final int STATE_COMPLETE = 3;
 
-    private final boolean decodeTransferEncoding;
+    private final boolean decode;
     private int state = STATE_FIRST_LINE;
     private final Headers headers = new Headers();
     private ContentFilterFactory contentFilterFactory;
     private EntityProcessor transferDecoder;
     private StreamFilter[] contentFilterChain;
     
-    public HttpFilter(boolean decodeTransferEncoding) {
-        this.decodeTransferEncoding = decodeTransferEncoding;
+    public HttpFilter(boolean decode) {
+        this.decode = decode;
     }
     
     public void setContentFilterFactory(ContentFilterFactory contentFilterFactory) {
@@ -97,7 +99,7 @@ public abstract class HttpFilter implements StreamFilter {
                 case STATE_CONTENT: {
                     if (transferDecoder != null) {
                         Stream decoderStream =
-                                decodeTransferEncoding ? stream : new ReadOnlyStream(stream);
+                                decode ? stream : new ReadOnlyStream(stream);
                         if (transferDecoder.process(decoderStream)) {
                             state = STATE_COMPLETE;
                             if (contentFilterChain != null) {
@@ -130,6 +132,8 @@ public abstract class HttpFilter implements StreamFilter {
         boolean hasEntity = false;
         boolean discardHeaders = false;
         StreamFilter transferEncoder = null;
+        StreamFilter contentDecoder = null;
+        StreamFilter contentEncoder = null;
         for (Iterator it = headers.iterator(); it.hasNext(); ) {
             Header header = (Header)it.next();
             String name = header.getName();
@@ -155,6 +159,11 @@ public abstract class HttpFilter implements StreamFilter {
                         // If the content type is unparseable, just continue
                     }
                 }
+            } else if (name.equalsIgnoreCase("Content-Encoding")) {
+                if (value.equals("gzip")) {
+                    contentDecoder = new GZIPDecoder();
+                    contentEncoder = new GZIPEncoder();
+                }
             }
         }
         
@@ -170,15 +179,29 @@ public abstract class HttpFilter implements StreamFilter {
         
         if (hasEntity) {
             if (contentFilterChain != null) {
-                if (transferEncoder != null && !decodeTransferEncoding) {
-                    stream.pushFilter(transferEncoder);
+                if (!decode) {
+                    if (transferEncoder != null) {
+                        stream.pushFilter(transferEncoder);
+                    }
+                    if (contentEncoder != null) {
+                        stream.pushFilter(contentEncoder);
+                    }
                 }
                 for (int i=contentFilterChain.length-1; i>=0; i--) {
                     stream.pushFilter(contentFilterChain[i]);
                 }
+                if (contentDecoder != null) {
+                    stream.pushFilter(contentDecoder);
+                }
             } else {
-                if (transferDecoder != null && !decodeTransferEncoding) {
-                    transferDecoder = new ReadOnlyEntityProcessorWrapper(transferDecoder);
+                if (decode) {
+                    if (contentDecoder != null) {
+                        stream.pushFilter(contentDecoder);
+                    }
+                } else {
+                    if (transferDecoder != null) {
+                        transferDecoder = new ReadOnlyEntityProcessorWrapper(transferDecoder);
+                    }
                 }
             }
             state = STATE_CONTENT;
