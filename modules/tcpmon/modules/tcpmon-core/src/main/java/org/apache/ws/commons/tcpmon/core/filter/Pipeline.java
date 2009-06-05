@@ -317,8 +317,7 @@ public class Pipeline {
         }
 
         public void error(String description) {
-            // TODO: for the moment, just to a System.out.println; we should report errors in the UI
-            System.out.println("Non fatal error in filter " + filter.getClass().getName() + ": " + description);
+            errorListener.error(filter, description);
         }
     }
     
@@ -344,6 +343,7 @@ public class Pipeline {
     
     private final int bufferSize;
     private final LinkedList buffers = new LinkedList();
+    private ErrorListener errorListener = ErrorListener.DEFAULT;
     private StreamImpl first;
     private StreamImpl last;
     
@@ -366,6 +366,10 @@ public class Pipeline {
         buffers.add(buffer);
     }
     
+    public void setErrorListener(ErrorListener errorListener) {
+        this.errorListener = errorListener == null ? ErrorListener.DEFAULT : errorListener;
+    }
+
     public void addFilter(StreamFilter filter) {
         StreamImpl node = new StreamImpl(filter);
         if (first == null) {

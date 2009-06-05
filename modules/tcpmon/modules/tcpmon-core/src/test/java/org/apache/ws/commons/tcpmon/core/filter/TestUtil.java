@@ -24,8 +24,11 @@ import java.io.UnsupportedEncodingException;
 public class TestUtil {
     private TestUtil() {}
     
-    public static byte[] filter(StreamFilter filter, byte[] in) {
+    public static byte[] filter(StreamFilter filter, byte[] in, ErrorListener errorListener) {
         Pipeline pipeline = new Pipeline();
+        if (errorListener != null) {
+            pipeline.setErrorListener(errorListener);
+        }
         pipeline.addFilter(filter);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         pipeline.addFilter(new Tee(baos));
@@ -38,6 +41,10 @@ public class TestUtil {
             throw new Error("Unexpected IOException when reading from ByteArrayInputStream", ex);
         }
         return baos.toByteArray();
+    }
+    
+    public static byte[] filter(StreamFilter filter, byte[] in) {
+        return filter(filter, in, null);
     }
     
     public static String filter(StreamFilter filter, String in, String charsetName) throws UnsupportedEncodingException {

@@ -16,15 +16,14 @@
 
 package org.apache.ws.commons.tcpmon.core.filter;
 
-import java.io.StringWriter;
+public class TestErrorListener implements ErrorListener {
+    private int count;
+    
+    public void error(StreamFilter filter, String description) {
+        count++;
+    }
 
-import junit.framework.TestCase;
-
-public class CharsetDecoderFilterTest extends TestCase {
-    public void testMalformed() {
-        TestErrorListener listener = new TestErrorListener();
-        TestUtil.filter(new CharsetDecoderFilter(new StringWriter(), "UTF-8"),
-                        new byte[] { (byte)255, 0 }, listener);
-        assertEquals(1, listener.getCount());
+    public int getCount() {
+        return count;
     }
 }
