@@ -178,4 +178,6 @@ public interface Stream {
     void pushFilter(StreamFilter filter);
     
     void popFilter();
+    
+    void error(String description);
 }

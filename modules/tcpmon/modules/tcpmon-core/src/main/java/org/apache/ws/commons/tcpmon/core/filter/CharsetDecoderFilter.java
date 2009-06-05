@@ -32,6 +32,8 @@ public class CharsetDecoderFilter implements StreamFilter {
     private final CharsetDecoder decoder;
     private final ByteBuffer inBuffer = ByteBuffer.allocate(64);
     private final CharBuffer outBuffer = CharBuffer.allocate(64);
+    private int errorCount;
+    private boolean reportErrors = true;
 
     public CharsetDecoderFilter(Writer writer, Charset charset) {
         this.writer = writer;
@@ -49,7 +51,26 @@ public class CharsetDecoderFilter implements StreamFilter {
             inBuffer.flip();
             coderResult = decoder.decode(inBuffer, outBuffer, stream.isEndOfStream());
             if (coderResult.isError()) {
-                throw new StreamException("Character set encoding error");
+                errorCount++;
+                if (reportErrors) {
+                    if (errorCount > 5) {
+                        stream.error("Too many input errors; stop reporting.");
+                        reportErrors = false;
+                    } else {
+                        StringBuffer buffer = new StringBuffer();
+                        buffer.append("Malformed input for charset ");
+                        buffer.append(decoder.charset().name());
+                        buffer.append(':');
+                        for (int i=0; i<coderResult.length(); i++) {
+                            buffer.append(' ');
+                            buffer.append(Integer.toHexString(inBuffer.get() & 0xFF));
+                        }
+                        stream.error(buffer.toString());
+                    }
+                }
+                if (!reportErrors) {
+                    inBuffer.position(inBuffer.position() + coderResult.length());
+                }
             }
             outBuffer.flip();
             try {

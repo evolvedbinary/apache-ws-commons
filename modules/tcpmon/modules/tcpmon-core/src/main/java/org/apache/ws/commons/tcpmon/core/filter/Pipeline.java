@@ -315,6 +315,11 @@ public class Pipeline {
             flushOutput(false);
             nested = nested.next == next ? null : nested.next;
         }
+
+        public void error(String description) {
+            // TODO: for the moment, just to a System.out.println; we should report errors in the UI
+            System.out.println("Non fatal error in filter " + filter.getClass().getName() + ": " + description);
+        }
     }
     
     private class OutputStreamImpl extends OutputStream {

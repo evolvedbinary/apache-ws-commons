@@ -96,4 +96,8 @@ public class ReadOnlyStream implements Stream {
     public void popFilter() {
         parent.popFilter();
     }
+
+    public void error(String description) {
+        parent.error(description);
+    }
 }
