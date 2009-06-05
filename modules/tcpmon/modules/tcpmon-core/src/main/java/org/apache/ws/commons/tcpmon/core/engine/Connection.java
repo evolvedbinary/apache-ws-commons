@@ -88,7 +88,13 @@ class Connection extends Thread {
         if (requestResponseListener != null) {
             requestResponseListener.setTarget(host, port);
         }
-        outSocket = config.getSocketFactory().createSocket(host, port);
+        SocketFactory sf = config.getSocketFactory();
+        String httpProxyHost = config.getHttpProxyHost();
+        if (httpProxyHost != null) {
+            outSocket = sf.createSocket(httpProxyHost, config.getHttpProxyPort());
+        } else {
+            outSocket = sf.createSocket(host, port);
+        }
         tmpOut2 = outSocket.getOutputStream();
         requestTee.setOutputStream(tmpOut2);
     }
@@ -99,9 +105,6 @@ class Connection extends Thread {
     public void run() {
         try {
             active = true;
-            String HTTPProxyHost = config.getHttpProxyHost();
-            int HTTPProxyPort = config.getHttpProxyPort();
-            final SocketFactory socketFactory = config.getSocketFactory();
             String targetHost = config.getTargetHost();
             if (listener != null) {
                 requestResponseListener = listener.createRequestResponseListener(inSocket.getInetAddress().getHostName());
@@ -140,9 +143,8 @@ class Connection extends Thread {
                     requestPipeline.addFilter(new Tee(requestOutputStream));
                 }
             }
-            if (HTTPProxyHost != null) {
+            if (config.getHttpProxyHost() != null) {
                 requestFilter.addHandler(new HttpProxyClientHandler(targetHost, targetPort));
-                outSocket = socketFactory.createSocket(HTTPProxyHost, HTTPProxyPort);
             }
             ChainedContentFilterFactory requestContentFilterFactory = new ChainedContentFilterFactory();
             if (config.getRequestContentFilterFactory() != null) {
