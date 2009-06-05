@@ -16,8 +16,6 @@
 
 package org.apache.ws.commons.tcpmon.core.filter.http;
 
-import java.util.Iterator;
-
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
@@ -134,8 +132,7 @@ public abstract class HttpFilter implements StreamFilter {
         StreamFilter transferEncoder = null;
         StreamFilter contentDecoder = null;
         StreamFilter contentEncoder = null;
-        for (Iterator it = headers.iterator(); it.hasNext(); ) {
-            Header header = (Header)it.next();
+        for (Header header : headers) {
             String name = header.getName();
             String value = header.getValue();
             if (name.equalsIgnoreCase("Content-Length")) {
@@ -170,8 +167,7 @@ public abstract class HttpFilter implements StreamFilter {
         if (discardHeaders && contentFilterChain != null) {
             headerParser.discard();
         } else {
-            for (Iterator it = headers.iterator(); it.hasNext(); ) {
-                Header header = (Header)it.next();
+            for (Header header : headers) {
                 headerParser.insert(header.getName(), header.getValue());
             }
             headerParser.skip();

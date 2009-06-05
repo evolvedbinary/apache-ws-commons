@@ -47,7 +47,7 @@ public class StreamUtil {
      * Convert a part of a stream to a string, using the ASCII charset encoding.
      */
     public static String getAsciiString(Stream stream, int begin, int end) {
-        StringBuffer buffer = new StringBuffer(end-begin);
+        StringBuilder buffer = new StringBuilder(end-begin);
         for (int i=begin; i<end; i++) {
             buffer.append((char)stream.get(i));
         }

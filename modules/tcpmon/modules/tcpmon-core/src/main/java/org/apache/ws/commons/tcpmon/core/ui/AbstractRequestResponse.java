@@ -85,6 +85,7 @@ public abstract class AbstractRequestResponse implements RequestResponseListener
     public OutputStream getRequestOutputStream() {
         Pipeline pipeline = new Pipeline();
         pipeline.addFilter(new RequestLineExtractor(50) {
+            @Override
             protected void done(String requestLine) {
                 setRequest(requestLine);
             }

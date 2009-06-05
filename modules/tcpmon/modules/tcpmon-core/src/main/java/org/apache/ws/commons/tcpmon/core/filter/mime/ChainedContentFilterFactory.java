@@ -18,7 +18,6 @@ package org.apache.ws.commons.tcpmon.core.filter.mime;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.activation.MimeType;
@@ -26,7 +25,7 @@ import javax.activation.MimeType;
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
 
 public class ChainedContentFilterFactory implements ContentFilterFactory {
-    private final List/*<ContentFilterFactory>*/ factories = new ArrayList(5);
+    private final List<ContentFilterFactory> factories = new ArrayList<ContentFilterFactory>(5);
     
     public void add(ContentFilterFactory factory) {
         factories.add(factory);
@@ -36,16 +35,16 @@ public class ChainedContentFilterFactory implements ContentFilterFactory {
         if (factories.isEmpty()) {
             return null;
         } else if (factories.size() == 1) {
-            return ((ContentFilterFactory)factories.get(0)).getContentFilterChain(contentType);
+            return factories.get(0).getContentFilterChain(contentType);
         } else {
-            List filters = new ArrayList(5);
-            for (Iterator it = factories.iterator(); it.hasNext(); ) {
-                StreamFilter[] f = ((ContentFilterFactory)it.next()).getContentFilterChain(contentType);
+            List<StreamFilter> filters = new ArrayList<StreamFilter>(5);
+            for (ContentFilterFactory factory : factories) {
+                StreamFilter[] f = factory.getContentFilterChain(contentType);
                 if (f != null) {
                     filters.addAll(Arrays.asList(f));
                 }
             }
-            return filters.isEmpty() ? null : (StreamFilter[])filters.toArray(new StreamFilter[filters.size()]);
+            return filters.isEmpty() ? null : filters.toArray(new StreamFilter[filters.size()]);
         }
     }
 }

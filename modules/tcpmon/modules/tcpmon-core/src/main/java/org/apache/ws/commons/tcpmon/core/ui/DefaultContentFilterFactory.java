@@ -34,14 +34,14 @@ import org.apache.ws.commons.tcpmon.core.filter.mime.ContentFilterFactory;
  * Default {@link ContentFilterFactory} implementation.
  */
 public class DefaultContentFilterFactory implements ContentFilterFactory {
-    private static final Set xmlContentTypes = new HashSet(Arrays.asList(new String[] {
+    private static final Set<String> xmlContentTypes = new HashSet<String>(Arrays.asList(new String[] {
             "text/xml", "application/xml", "application/soap+xml", "application/xop+xml" }));
     private static final Charset UTF8 = Charset.forName("utf-8");
     
     public StreamFilter[] getContentFilterChain(MimeType contentType) {
         String baseType = contentType.getBaseType().toLowerCase();
         boolean isXml = xmlContentTypes.contains(baseType);
-        List filters = new ArrayList(2);
+        List<StreamFilter> filters = new ArrayList<StreamFilter>(2);
         if (isXml || contentType.getPrimaryType().equalsIgnoreCase("text")) {
             String charsetName = contentType.getParameter("charset");
             if (charsetName != null) {
@@ -54,6 +54,6 @@ public class DefaultContentFilterFactory implements ContentFilterFactory {
         if (isXml) {
             filters.add(new XmlFormatFilter(3));
         }
-        return filters.isEmpty() ? null : (StreamFilter[])filters.toArray(new StreamFilter[filters.size()]);
+        return filters.isEmpty() ? null : filters.toArray(new StreamFilter[filters.size()]);
     }
 }

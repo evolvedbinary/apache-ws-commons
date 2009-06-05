@@ -21,16 +21,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
-public class Headers {
-    private final List/*<Header>*/ headers = new LinkedList();
+public class Headers implements Iterable<Header> {
+    private final List<Header> headers = new LinkedList<Header>();
     
     public void add(String name, String value) {
         headers.add(new Header(name, value));
     }
     
     public Header getFirst(String name) {
-        for (Iterator it = headers.iterator(); it.hasNext(); ) {
-            Header header = (Header)it.next();
+        for (Header header : headers) {
             if (header.getName().equalsIgnoreCase(name)) {
                 return header;
             }
@@ -41,8 +40,8 @@ public class Headers {
     public void set(String name, String value) {
         boolean replaced = false;
         Header newHeader = new Header(name, value);
-        for (ListIterator it = headers.listIterator(); it.hasNext(); ) {
-            Header header = (Header)it.next();
+        for (ListIterator<Header> it = headers.listIterator(); it.hasNext(); ) {
+            Header header = it.next();
             if (header.getName().equalsIgnoreCase(name)) {
                 if (replaced) {
                     it.remove();
@@ -57,7 +56,7 @@ public class Headers {
         }
     }
     
-    public Iterator iterator() {
+    public Iterator<Header> iterator() {
         return headers.iterator();
     }
 }

@@ -16,7 +16,6 @@
 
 package org.apache.ws.commons.tcpmon.core.filter.http;
 
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,7 +24,7 @@ import java.util.List;
  * implementations.
  */
 public class HttpResponseFilter extends HttpFilter {
-    private final List/*<HttpResponseHandler>*/ handlers = new LinkedList();
+    private final List<HttpResponseHandler> handlers = new LinkedList<HttpResponseHandler>();
     
     public HttpResponseFilter(boolean decodeTransferEncoding) {
         super(decodeTransferEncoding);
@@ -35,22 +34,25 @@ public class HttpResponseFilter extends HttpFilter {
         handlers.add(handler);
     }
 
+    @Override
     protected String processFirstLine(String firstLine) {
-        for (Iterator it = handlers.iterator(); it.hasNext(); ) {
-            firstLine = ((HttpResponseHandler)it.next()).processResponseLine(firstLine);
+        for (HttpResponseHandler handler : handlers) {
+            firstLine = handler.processResponseLine(firstLine);
         }
         return firstLine;
     }
 
+    @Override
     protected void processHeaders(Headers headers) {
-        for (Iterator it = handlers.iterator(); it.hasNext(); ) {
-            ((HttpResponseHandler)it.next()).processResponseHeaders(headers);
+        for (HttpResponseHandler handler : handlers) {
+            handler.processResponseHeaders(headers);
         }
     }
 
+    @Override
     protected void completed() {
-        for (Iterator it = handlers.iterator(); it.hasNext(); ) {
-            ((HttpResponseHandler)it.next()).responseCompleted();
+        for (HttpResponseHandler handler : handlers) {
+            handler.responseCompleted();
         }
     }
 }

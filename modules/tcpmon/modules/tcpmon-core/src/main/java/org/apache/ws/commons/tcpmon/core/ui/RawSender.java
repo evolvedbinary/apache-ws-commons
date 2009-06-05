@@ -78,6 +78,7 @@ public class RawSender implements Runnable {
         HttpResponseFilter filter = new HttpResponseFilter(false);
         pipeline.addFilter(filter);
         filter.addHandler(new AbstractHttpResponseHandler() {
+            @Override
             public void responseCompleted() {
                 try {
                     socket.shutdownInput();

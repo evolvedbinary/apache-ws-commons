@@ -57,7 +57,7 @@ public class CharsetDecoderFilter implements StreamFilter {
                         stream.error("Too many input errors; stop reporting.");
                         reportErrors = false;
                     } else {
-                        StringBuffer buffer = new StringBuffer();
+                        StringBuilder buffer = new StringBuilder();
                         buffer.append("Malformed input for charset ");
                         buffer.append(decoder.charset().name());
                         buffer.append(':');

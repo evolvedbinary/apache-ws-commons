@@ -324,25 +324,29 @@ public class Pipeline {
     private class OutputStreamImpl extends OutputStream {
         public OutputStreamImpl() {}
         
+        @Override
         public void write(int b) throws IOException {
             write(new byte[] { (byte)b });
         }
 
+        @Override
         public void write(byte[] b, int off, int len) throws IOException {
             first.invoke(b, off, len, false, true);
         }
 
+        @Override
         public void write(byte[] b) throws IOException {
             write(b, 0, b.length);
         }
 
+        @Override
         public void close() throws IOException {
             first.invoke(new byte[0], 0, 0, true, false);
         }
     }
     
     private final int bufferSize;
-    private final LinkedList buffers = new LinkedList();
+    private final LinkedList<byte[]> buffers = new LinkedList<byte[]>();
     private ErrorListener errorListener = ErrorListener.DEFAULT;
     private StreamImpl first;
     private StreamImpl last;
@@ -356,7 +360,7 @@ public class Pipeline {
     }
     
     byte[] allocateBuffer() {
-        return buffers.isEmpty() ? new byte[bufferSize] : (byte[])buffers.removeFirst();
+        return buffers.isEmpty() ? new byte[bufferSize] : buffers.removeFirst();
     }
     
     void releaseBuffer(byte[] buffer) {

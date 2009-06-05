@@ -17,6 +17,7 @@
 package org.apache.ws.commons.tcpmon.core.engine;
 
 public class InterceptorProxyTest extends InterceptorTestBase {
+    @Override
     protected InterceptorConfiguration buildInterceptorConfiguration() {
         InterceptorConfigurationBuilder builder = new InterceptorConfigurationBuilder();
         builder.setProxy(true);

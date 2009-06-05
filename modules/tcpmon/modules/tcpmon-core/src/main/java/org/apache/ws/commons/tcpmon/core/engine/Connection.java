@@ -102,6 +102,7 @@ class Connection extends Thread {
     /**
      * Method run
      */
+    @Override
     public void run() {
         try {
             active = true;
@@ -120,6 +121,7 @@ class Connection extends Thread {
             HostRewriter hostRewriter;
             if (config.isProxy()) {
                 requestFilter.addHandler(new HttpProxyServerHandler() {
+                    @Override
                     protected void handleConnection(String host, int port) {
                         try {
                             connectToTarget(host, port);

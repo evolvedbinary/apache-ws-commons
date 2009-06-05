@@ -28,6 +28,7 @@ public class HttpProxyClientHandler extends AbstractHttpRequestHandler {
         this.targetPort = targetPort;
     }
     
+    @Override
     public String processRequestLine(String requestLine) {
         String[] parts = requestLine.split(" ");
         return parts[0] + " http://" + targetHost + ":" + targetPort + parts[1] + " " + parts[2];

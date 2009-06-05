@@ -25,6 +25,7 @@ import org.apache.ws.commons.tcpmon.core.filter.StreamException;
  * Handler that rewrites an HTTP proxy request to a plain HTTP request.
  */
 public abstract class HttpProxyServerHandler extends AbstractHttpRequestHandler {
+    @Override
     public String processRequestLine(String requestLine) {
         String[] parts = requestLine.split(" ");
         URL url;

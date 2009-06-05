@@ -57,6 +57,7 @@ public class Tee implements StreamFilter {
         }
     }
 
+    @Override
     public String toString() {
         return "[out=" + out + "]";
     }

@@ -41,8 +41,8 @@ public class InterceptorConfigurationBuilder {
     private boolean proxy;
     private String httpProxyHost;
     private int httpProxyPort;
-    private final List/*<StreamFilterFactory>*/ requestFilters = new ArrayList();
-    private final List/*<StreamFilterFactory>*/ responseFilters = new ArrayList();
+    private final List<StreamFilterFactory> requestFilters = new ArrayList<StreamFilterFactory>();
+    private final List<StreamFilterFactory> responseFilters = new ArrayList<StreamFilterFactory>();
     private ContentFilterFactory requestContentFilterFactory;
     private ContentFilterFactory responseContentFilterFactory;
     private boolean replaceURIsInContent;
@@ -159,8 +159,8 @@ public class InterceptorConfigurationBuilder {
         }
         return new InterceptorConfiguration(serverSocketFactory, listenPort, socketFactory,
                 targetHost, targetPort, proxy, httpProxyHost, httpProxyPort,
-                (StreamFilterFactory[])requestFilters.toArray(new StreamFilterFactory[requestFilters.size()]),
-                (StreamFilterFactory[])responseFilters.toArray(new StreamFilterFactory[responseFilters.size()]),
+                requestFilters.toArray(new StreamFilterFactory[requestFilters.size()]),
+                responseFilters.toArray(new StreamFilterFactory[responseFilters.size()]),
                 requestContentFilterFactory, responseContentFilterFactory, replaceURIsInContent);
     }
 }

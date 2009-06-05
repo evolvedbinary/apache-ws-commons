@@ -18,7 +18,6 @@ package org.apache.ws.commons.tcpmon.core.engine;
 
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.Iterator;
 import java.util.Vector;
 
 /**
@@ -40,7 +39,7 @@ public class Interceptor extends Thread {
      */
     boolean pleaseStop = false;
 
-    private final Vector connections = new Vector();
+    private final Vector<Connection> connections = new Vector<Connection>();
 
     /**
      * Constructor.
@@ -57,6 +56,7 @@ public class Interceptor extends Thread {
     /**
      * Method run
      */
+    @Override
     public void run() {
         try {
             if (listener != null) {
@@ -92,8 +92,8 @@ public class Interceptor extends Thread {
             if (sSocket != null) {
                 sSocket.close();
             }
-            for (Iterator it = connections.iterator(); it.hasNext(); ) {
-                ((Connection)it.next()).halt();
+            for (Connection connection : connections) {
+                connection.halt();
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -28,7 +28,7 @@ public class HostRewriter extends AbstractHttpRequestResponseHandler {
     public HostRewriter(String targetHost, int targetPort, boolean isSecure) {
         this.targetHost = targetHost;
         this.targetPort = targetPort;
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         buffer.append(isSecure ? "https" : "http");
         buffer.append("://");
         buffer.append(targetHost);
@@ -61,6 +61,7 @@ public class HostRewriter extends AbstractHttpRequestResponseHandler {
         }
     }
     
+    @Override
     public void processRequestHeaders(Headers headers) {
         Header header = headers.getFirst("Host");
         if (header != null) {
@@ -70,6 +71,7 @@ public class HostRewriter extends AbstractHttpRequestResponseHandler {
         }
     }
 
+    @Override
     public void processResponseHeaders(Headers headers) {
         if (orgBaseUri != null) {
             rewriteUriHeaders(headers, rewritableResponseHeaders, targetBaseUri, orgBaseUri);

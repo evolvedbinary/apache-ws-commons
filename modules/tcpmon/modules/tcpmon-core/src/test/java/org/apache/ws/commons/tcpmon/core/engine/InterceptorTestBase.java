@@ -35,6 +35,7 @@ public abstract class InterceptorTestBase extends TestCase {
     private HttpClient client;
     private String baseUri;
     
+    @Override
     protected void setUp() throws Exception {
         // Set up server
         
@@ -54,6 +55,7 @@ public abstract class InterceptorTestBase extends TestCase {
         baseUri = TestUtil.getBaseUri(config, server);
     }
 
+    @Override
     protected void tearDown() throws Exception {
         interceptor.halt();
         server.stop();
