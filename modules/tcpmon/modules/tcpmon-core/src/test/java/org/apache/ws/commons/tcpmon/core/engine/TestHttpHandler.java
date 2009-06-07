@@ -17,10 +17,12 @@
 package org.apache.ws.commons.tcpmon.core.engine;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.io.IOUtils;
 import org.mortbay.http.HttpException;
@@ -59,6 +61,10 @@ public class TestHttpHandler extends AbstractHttpHandler {
     }
     
     public void echo(HttpRequest request, HttpResponse response) throws IOException {
-        IOUtils.copy(request.getInputStream(), response.getOutputStream());
+        InputStream in = request.getInputStream();
+        if ("gzip".equals(request.getField("Content-Encoding"))) {
+            in = new GZIPInputStream(in);
+        }
+        IOUtils.copy(in, response.getOutputStream());
     }
 }
