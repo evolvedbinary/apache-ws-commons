@@ -33,6 +33,10 @@ public class IdentityEncoder implements StreamFilter {
         this.headers = headers;
     }
 
+    public boolean isReadOnly() {
+        return false;
+    }
+
     public void invoke(Stream stream) {
         try {
             stream.readAll(buffer);

@@ -21,6 +21,16 @@ package org.apache.ws.commons.tcpmon.core.filter;
  */
 public interface StreamFilter {
     /**
+     * Determine whether this filter is read-only. A read-only filter will not
+     * modify any data in the stream and exclusively use the skip operation to
+     * advance in the stream. The information provided by this method may be
+     * used to optimize processing of the stream.
+     * 
+     * @return <code>true</code> if this filter is read-only
+     */
+    boolean isReadOnly();
+    
+    /**
      * Invoke the filter. This method is called by {@link Pipeline}
      * when data is available for processing. The implementation can
      * modify the stream by discarding bytes from the stream and

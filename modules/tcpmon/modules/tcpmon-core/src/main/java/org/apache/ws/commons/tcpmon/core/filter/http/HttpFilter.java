@@ -59,6 +59,10 @@ public abstract class HttpFilter implements StreamFilter {
         return state == STATE_COMPLETE;
     }
 
+    public boolean isReadOnly() {
+        return false;
+    }
+
     public void invoke(Stream stream) {
         while (stream.available() > 0) {
             switch (state) {

@@ -52,6 +52,10 @@ public class MultipartFilter implements StreamFilter {
         }
     }
 
+    public boolean isReadOnly() {
+        return false;
+    }
+
     public void invoke(Stream stream) {
         if (state == STATE_START) {
             if (stream.available() < startBoundaryDelimiter.length) {

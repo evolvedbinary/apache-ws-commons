@@ -24,6 +24,10 @@ public class PipelineTest extends TestCase {
     private static class TestFilter implements StreamFilter {
         private boolean eos;
         
+        public boolean isReadOnly() {
+            return true;
+        }
+        
         public void invoke(Stream stream) {
             stream.skipAll();
             eos = stream.isEndOfStream();

@@ -49,6 +49,10 @@ public class GZIPDecoder implements StreamFilter {
         inflater = new Inflater(true);
     }
 
+    public boolean isReadOnly() {
+        return false;
+    }
+
     public void invoke(Stream stream) {
         switch (state) {
             case STATE_HEADER: {

@@ -39,6 +39,10 @@ public class XmlFormatFilter implements StreamFilter {
         this.tabWidth = tabWidth;
     }
 
+    public boolean isReadOnly() {
+        return false;
+    }
+
     private static boolean isSpace(int b) {
         return b == ' ' || b == '\r' || b == '\n' || b == '\t';
     }

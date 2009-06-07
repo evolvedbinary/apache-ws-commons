@@ -38,6 +38,10 @@ public class ReplaceFilter implements StreamFilter {
         this(pattern.getBytes(charsetName), replacement.getBytes(charsetName));
     }
 
+    public boolean isReadOnly() {
+        return false;
+    }
+
     public void invoke(Stream stream) {
         int p;
         while ((p = StreamUtil.search(stream, patterns)) != -1) {

@@ -21,6 +21,10 @@ import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
 import org.apache.ws.commons.tcpmon.core.filter.StreamUtil;
 
 public class ChunkedEncoder implements StreamFilter {
+    public boolean isReadOnly() {
+        return false;
+    }
+
     public void invoke(Stream stream) {
         int av = stream.available();
         if (av > 0 || stream.isEndOfStream()) {

@@ -42,6 +42,10 @@ public class CharsetRecoderFilter implements StreamFilter {
         this(Charset.forName(fromCharset), Charset.forName(toCharset));
     }
     
+    public boolean isReadOnly() {
+        return false;
+    }
+
     public void invoke(Stream stream) {
         CoderResult inResult;
         do {

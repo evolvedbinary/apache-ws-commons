@@ -36,6 +36,10 @@ public class GZIPEncoder implements StreamFilter {
         this.deflater = new Deflater(Deflater.DEFAULT_COMPRESSION, true);
     }
 
+    public boolean isReadOnly() {
+        return false;
+    }
+
     public void invoke(Stream stream) {
         if (isStart) {
             stream.insert(header, 0, 10);

@@ -26,6 +26,10 @@ public class ReadOnlyFilterWrapper implements StreamFilter {
         this.parent = parent;
     }
 
+    public boolean isReadOnly() {
+        return true;
+    }
+
     public void invoke(Stream stream) {
         parent.invoke(new ReadOnlyStream(stream));
     }

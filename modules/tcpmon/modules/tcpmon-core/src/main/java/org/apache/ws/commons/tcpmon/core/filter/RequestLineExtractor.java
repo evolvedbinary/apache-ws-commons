@@ -31,6 +31,10 @@ public abstract class RequestLineExtractor implements StreamFilter {
         this.buffer = new byte[maxLength];
     }
     
+    public boolean isReadOnly() {
+        return true;
+    }
+
     public void invoke(Stream stream) {
         if (done) {
             stream.skipAll();

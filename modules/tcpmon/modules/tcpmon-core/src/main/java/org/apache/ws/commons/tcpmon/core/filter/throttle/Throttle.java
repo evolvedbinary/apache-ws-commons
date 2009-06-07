@@ -86,6 +86,10 @@ public class Throttle implements StreamFilter {
         }
     }
 
+    public boolean isReadOnly() {
+        return true;
+    }
+
     public void invoke(Stream stream) {
         pump(stream.available());
         stream.skipAll();

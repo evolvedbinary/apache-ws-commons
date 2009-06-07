@@ -56,6 +56,10 @@ public class RawSender implements Runnable {
         }
         requestResponse.setState(RequestResponseListener.STATE_ACTIVE);
         pipeline.addFilter(new StreamFilter() {
+            public boolean isReadOnly() {
+                return true;
+            }
+            
             public void invoke(Stream stream) {
                 stream.skipAll();
                 if (stream.isEndOfStream()) {

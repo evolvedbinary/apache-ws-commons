@@ -46,6 +46,10 @@ public class Tee implements StreamFilter {
         this.out = out;
     }
 
+    public boolean isReadOnly() {
+        return true;
+    }
+
     public void invoke(Stream stream) {
         if (out != null) {
             try {

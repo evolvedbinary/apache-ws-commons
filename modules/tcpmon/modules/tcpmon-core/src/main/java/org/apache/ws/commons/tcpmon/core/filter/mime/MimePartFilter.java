@@ -38,6 +38,10 @@ public class MimePartFilter implements StreamFilter {
         this.contentFilterFactory = contentFilterFactory;
     }
 
+    public boolean isReadOnly() {
+        return false;
+    }
+
     public void invoke(Stream stream) {
         while (stream.available() > 0) {
             if (state == HEADERS) {
