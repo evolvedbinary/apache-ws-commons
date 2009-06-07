@@ -28,12 +28,13 @@ public class ChunkedEncoder implements StreamFilter {
     public void invoke(Stream stream) {
         int av = stream.available();
         if (av > 0 || stream.isEndOfStream()) {
-            stream.skipAll();
             StreamUtil.insertAsciiString(stream, "\r\n");
             StreamUtil.insertAsciiString(stream, Integer.toString(av, 16));
             StreamUtil.insertAsciiString(stream, "\r\n");
             if (av == 0) {
                 StreamUtil.insertAsciiString(stream, "\r\n");
+            } else {
+                stream.skipAll();
             }
         }
     }

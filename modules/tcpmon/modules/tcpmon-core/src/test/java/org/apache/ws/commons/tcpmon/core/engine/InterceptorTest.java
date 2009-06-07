@@ -25,14 +25,13 @@ import junit.framework.TestCase;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.apache.ws.commons.tcpmon.core.filter.ReplaceFilter;
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
 import org.apache.ws.commons.tcpmon.core.filter.mime.ContentFilterFactory;
 import org.mortbay.jetty.Server;
 
 public class InterceptorTest extends TestCase {
-    public void testWithContentFilter() throws Exception {
+    private void testWithContentFilter(boolean chunked) throws Exception {
         Server server = TestUtil.createServer(5555);
         server.start();
         
@@ -56,12 +55,20 @@ public class InterceptorTest extends TestCase {
         
         HttpClient client = TestUtil.createClient(config);
         HttpPost request = new HttpPost(TestUtil.getBaseUri(config, server) + "/echo");
-        request.setEntity(new StringEntity("test-pattern-test"));
+        request.setEntity(TestUtil.createStringEntity("test-pattern-test", "utf-8", chunked));
         HttpResponse response = client.execute(request);
         assertEquals("test-replacement-test", TestUtil.getResponseAsString(response));
         
         interceptor.halt();
         
         server.stop();
+    }
+
+    public void testWithContentFilterNotChunked() throws Exception {
+        testWithContentFilter(false);
+    }
+
+    public void testWithContentFilterChunked() throws Exception {
+        testWithContentFilter(true);
     }
 }

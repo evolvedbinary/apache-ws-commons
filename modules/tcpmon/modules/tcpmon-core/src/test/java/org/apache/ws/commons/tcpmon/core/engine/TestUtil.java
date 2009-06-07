@@ -16,15 +16,22 @@
 
 package org.apache.ws.commons.tcpmon.core.engine;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.conn.params.ConnRoutePNames;
+import org.apache.http.entity.AbstractHttpEntity;
+import org.apache.http.entity.InputStreamEntity;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.CoreProtocolPNames;
+import org.apache.http.protocol.HTTP;
 import org.mortbay.http.HttpContext;
 import org.mortbay.http.SocketListener;
 import org.mortbay.jetty.Server;
@@ -70,6 +77,16 @@ public class TestUtil {
             return IOUtils.toString(in, "UTF-8");
         } finally {
             in.close();
+        }
+    }
+    
+    public static HttpEntity createStringEntity(String s, String charset, boolean chunked) throws UnsupportedEncodingException {
+        if (chunked) {
+            AbstractHttpEntity entity = new InputStreamEntity(new ByteArrayInputStream(s.getBytes(charset)), -1);
+            entity.setContentType(HTTP.PLAIN_TEXT_TYPE + HTTP.CHARSET_PARAM + charset);
+            return entity;
+        } else {
+            return new StringEntity(s, charset);
         }
     }
 }

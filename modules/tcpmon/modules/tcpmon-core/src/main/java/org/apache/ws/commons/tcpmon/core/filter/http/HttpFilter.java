@@ -100,9 +100,7 @@ public abstract class HttpFilter implements StreamFilter {
                 }
                 case STATE_CONTENT: {
                     if (transferDecoder != null) {
-                        Stream decoderStream =
-                                decode ? stream : new ReadOnlyStream(stream);
-                        if (transferDecoder.process(decoderStream)) {
+                        if (transferDecoder.process(stream)) {
                             state = STATE_COMPLETE;
                             if (contentFilterChain != null) {
                                 for (int i=0; i<contentFilterChain.length; i++) {
