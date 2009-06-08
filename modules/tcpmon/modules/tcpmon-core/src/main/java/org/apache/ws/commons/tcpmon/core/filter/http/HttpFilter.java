@@ -16,20 +16,20 @@
 
 package org.apache.ws.commons.tcpmon.core.filter.http;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.activation.MimeType;
 import javax.activation.MimeTypeParseException;
 
 import org.apache.ws.commons.tcpmon.core.filter.EntityProcessor;
 import org.apache.ws.commons.tcpmon.core.filter.HeaderParser;
 import org.apache.ws.commons.tcpmon.core.filter.ReadOnlyEntityProcessorWrapper;
-import org.apache.ws.commons.tcpmon.core.filter.ReadOnlyStream;
 import org.apache.ws.commons.tcpmon.core.filter.Stream;
 import org.apache.ws.commons.tcpmon.core.filter.StreamException;
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
 import org.apache.ws.commons.tcpmon.core.filter.StreamUtil;
 import org.apache.ws.commons.tcpmon.core.filter.mime.ContentFilterFactory;
-import org.apache.ws.commons.tcpmon.core.filter.zip.GZIPDecoder;
-import org.apache.ws.commons.tcpmon.core.filter.zip.GZIPEncoder;
 
 /**
  * Base class for {@link HttpRequestFilter} and {@link HttpResponseFilter}.
@@ -40,6 +40,16 @@ public abstract class HttpFilter implements StreamFilter {
     private static final int STATE_CONTENT = 2;
     private static final int STATE_COMPLETE = 3;
 
+    private static final Map<String,TransferEncoding> transferEncodings;
+    private static final Map<String,ContentEncoding> contentEncodings;
+    
+    static {
+        transferEncodings = new HashMap<String,TransferEncoding>();
+        transferEncodings.put("chunked", new ChunkedEncoding());
+        contentEncodings = new HashMap<String,ContentEncoding>();
+        contentEncodings.put("gzip", new GZIPEncoding());
+    }
+    
     private final boolean decode;
     private int state = STATE_FIRST_LINE;
     private final Headers headers = new Headers();
@@ -92,7 +102,8 @@ public abstract class HttpFilter implements StreamFilter {
                         headerParser.discard();
                     }
                     if (headerParser.noMoreHeaders()) {
-                        processHeaders(headerParser, stream);
+                        headerParser.discard();
+                        processHeaders(stream);
                     } else {
                         return;
                     }
@@ -126,29 +137,21 @@ public abstract class HttpFilter implements StreamFilter {
     protected abstract void processHeaders(Headers headers);
     protected abstract void completed();
 
-    private void processHeaders(HeaderParser headerParser, Stream stream) {
+    private void processHeaders(Stream stream) {
         processHeaders(headers);
         
         boolean hasEntity = false;
-        boolean discardHeaders = false;
-        StreamFilter transferEncoder = null;
-        StreamFilter contentDecoder = null;
-        StreamFilter contentEncoder = null;
+        TransferEncoding transferEncoding = null;
+        ContentEncoding contentEncoding = null;
         for (Header header : headers) {
             String name = header.getName();
             String value = header.getValue();
             if (name.equalsIgnoreCase("Content-Length")) {
                 hasEntity = true;
-                transferDecoder = new IdentityDecoder(Integer.parseInt(value));
-                transferEncoder = new IdentityEncoder(headers);
-                discardHeaders = true;
+                transferEncoding = new IdentityEncoding();
             } else if (name.equalsIgnoreCase("Transfer-Encoding")) {
                 hasEntity = true;
-                if (value.equals("chunked")) {
-                    transferDecoder = new ChunkedDecoder();
-                    transferEncoder = new ChunkedEncoder();
-                    discardHeaders = false;
-                }
+                transferEncoding = transferEncodings.get(value);
             } else if (name.equalsIgnoreCase("Content-Type")) {
                 hasEntity = true;
                 if (contentFilterFactory != null) {
@@ -159,42 +162,38 @@ public abstract class HttpFilter implements StreamFilter {
                     }
                 }
             } else if (name.equalsIgnoreCase("Content-Encoding")) {
-                if (value.equals("gzip")) {
-                    contentDecoder = new GZIPDecoder();
-                    contentEncoder = new GZIPEncoder();
-                }
+                contentEncoding = contentEncodings.get(value);
             }
         }
         
-        if (discardHeaders && contentFilterChain != null) {
-            headerParser.discard();
-        } else {
-            for (Header header : headers) {
-                headerParser.insert(header.getName(), header.getValue());
-            }
-            headerParser.skip();
+        if (transferEncoding == null || contentFilterChain == null) {
+            headers.writeTo(stream);
+        }
+        
+        if (transferEncoding != null) {
+            transferDecoder = transferEncoding.createDecoder(headers);
         }
         
         if (hasEntity) {
             if (contentFilterChain != null) {
                 if (!decode) {
-                    if (transferEncoder != null) {
-                        stream.pushFilter(transferEncoder);
+                    if (transferEncoding != null) {
+                        stream.pushFilter(transferEncoding.createEncoder(headers));
                     }
-                    if (contentEncoder != null) {
-                        stream.pushFilter(contentEncoder);
+                    if (contentEncoding != null) {
+                        stream.pushFilter(contentEncoding.createEncoder());
                     }
                 }
                 for (int i=contentFilterChain.length-1; i>=0; i--) {
                     stream.pushFilter(contentFilterChain[i]);
                 }
-                if (contentDecoder != null) {
-                    stream.pushFilter(contentDecoder);
+                if (contentEncoding != null) {
+                    stream.pushFilter(contentEncoding.createDecoder());
                 }
             } else {
                 if (decode) {
-                    if (contentDecoder != null) {
-                        stream.pushFilter(contentDecoder);
+                    if (contentEncoding != null) {
+                        stream.pushFilter(contentEncoding.createDecoder());
                     }
                 } else {
                     if (transferDecoder != null) {

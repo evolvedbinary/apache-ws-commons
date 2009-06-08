@@ -19,11 +19,9 @@ package org.apache.ws.commons.tcpmon.core.filter.http;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-import org.apache.ws.commons.tcpmon.core.filter.HeaderParser;
 import org.apache.ws.commons.tcpmon.core.filter.Stream;
 import org.apache.ws.commons.tcpmon.core.filter.StreamException;
 import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
-import org.apache.ws.commons.tcpmon.core.filter.StreamUtil;
 
 public class IdentityEncoder implements StreamFilter {
     private final Headers headers;
@@ -47,11 +45,7 @@ public class IdentityEncoder implements StreamFilter {
         if (stream.isEndOfStream()) {
             byte[] data = buffer.toByteArray();
             headers.set("Content-Length", String.valueOf(data.length));
-            HeaderParser p = new HeaderParser(stream);
-            for (Header header : headers) {
-                p.insert(header.getName(), header.getValue());
-            }
-            StreamUtil.insertAsciiString(stream, "\r\n");
+            headers.writeTo(stream);
             stream.insert(data, 0, data.length);
         }
     }

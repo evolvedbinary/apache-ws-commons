@@ -21,11 +21,21 @@ import org.apache.ws.commons.tcpmon.core.filter.StreamFilter;
 import org.apache.ws.commons.tcpmon.core.filter.StreamUtil;
 
 public class ChunkedEncoder implements StreamFilter {
+    private Headers headers;
+    
+    public ChunkedEncoder(Headers headers) {
+        this.headers = headers;
+    }
+
     public boolean isReadOnly() {
         return false;
     }
 
     public void invoke(Stream stream) {
+        if (headers != null) {
+            headers.writeTo(stream);
+            headers = null;
+        }
         int av = stream.available();
         if (av > 0 || stream.isEndOfStream()) {
             StreamUtil.insertAsciiString(stream, "\r\n");

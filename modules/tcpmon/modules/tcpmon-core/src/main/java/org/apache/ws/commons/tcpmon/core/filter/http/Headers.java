@@ -21,6 +21,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 
+import org.apache.ws.commons.tcpmon.core.filter.HeaderParser;
+import org.apache.ws.commons.tcpmon.core.filter.Stream;
+import org.apache.ws.commons.tcpmon.core.filter.StreamUtil;
+
 public class Headers implements Iterable<Header> {
     private final List<Header> headers = new LinkedList<Header>();
     
@@ -58,5 +62,18 @@ public class Headers implements Iterable<Header> {
     
     public Iterator<Header> iterator() {
         return headers.iterator();
+    }
+    
+    /**
+     * Write the headers to a given stream.
+     * 
+     * @param stream the stream to write to
+     */
+    public void writeTo(Stream stream) {
+        HeaderParser p = new HeaderParser(stream);
+        for (Header header : headers) {
+            p.insert(header.getName(), header.getValue());
+        }
+        StreamUtil.insertAsciiString(stream, "\r\n");
     }
 }
