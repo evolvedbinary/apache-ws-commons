@@ -48,9 +48,38 @@
             </tr>
             <tr class="b">
               <td align="center" valign="middle">
+                                                         1.4.6
+                                                       </td>
+              <td align="center">Release</td>
+
+              <td>Source Distribution
+                    <a href="[preferred]/ws/commons/XmlSchema/1_4_6/XmlSchema-1.4.6-src.zip" title="[preferred]/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.6-src.zip">zip</a>
+
+                                                                 <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_6/XmlSchema-1.4.6-src.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_6/XmlSchema-1.4.6-src.zip.asc">PGP</a>
+                                                                  <br/>
+                                                                  Binary Distribution
+                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4_6/XmlSchema-1.4.6-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_4_6/XmlSchema-1.4.6-bin.zip">zip</a>
+
+                                                                 <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_6/XmlSchema-1.4.6-bin.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/XmlSchema/1_4_6/XmlSchema-1.4.6-bin.zip.asc">
+                                                                                    PGP</a>
+                                                                  <br/>
+                                                                  Documents Distribution
+                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4_6/XmlSchema-1.4.6-docs.zip" title="[preferred]/ws/commons/XmlSchema/1_4_6/XmlSchema-1.4.6-docs.zip">zip</a>
+
+                                                                 <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_6/XmlSchema-1.4.6-docs.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/XmlSchema/1_4_6/XmlSchema-1.4.6-docs.zip.asc">
+                                                                                    PGP</a>
+                                                                  <br/>
+                                                                  </td>
+              <td>2010 - 04 - 28</td>
+              <td>1.4.6 Release (Mirrored)</td>
+            </tr>
+
+            <tr class="b">
+              <td align="center" valign="middle">
                                                          1.4.5
                                                        </td>
               <td align="center">Release</td>
+
               <td>Source Distribution
                     <a href="[preferred]/ws/commons/XmlSchema/1_4_5/XmlSchema-1.4.5-src.zip" title="[preferred]/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.5-src.zip">zip</a>
                     <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_5/XmlSchema-1.4.5-src.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_5/XmlSchema-1.4.5-src.zip.md5">MD5</a>
