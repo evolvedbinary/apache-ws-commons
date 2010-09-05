@@ -28,10 +28,13 @@ import javax.xml.namespace.QName;
  */
 public class XmlSchemaAttributeGroupRef extends XmlSchemaAnnotated {
 
+    XmlSchema schema;
+
     /**
      * Creates new XmlSchemaAttributeGroupRef
      */
-    public XmlSchemaAttributeGroupRef() {
+    public XmlSchemaAttributeGroupRef(XmlSchema schema) {
+      this.schema = schema;
     }
 
     QName refName;
@@ -42,6 +45,10 @@ public class XmlSchemaAttributeGroupRef extends XmlSchemaAnnotated {
 
     public void setRefName(QName refName) {
         this.refName = refName;
+    }
+
+    public XmlSchemaAttributeGroup resolve() {
+        return (XmlSchemaAttributeGroup)schema.getAttributeGroups().getItem(refName);
     }
 
 }

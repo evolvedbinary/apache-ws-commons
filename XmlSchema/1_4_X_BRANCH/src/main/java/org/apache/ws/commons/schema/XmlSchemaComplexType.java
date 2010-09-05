@@ -177,5 +177,11 @@ public class XmlSchemaComplexType extends XmlSchemaType {
 		return ext.getBaseTypeName();
 	}
 
+    public XmlSchemaAttribute getAttribute(QName name) {
+        XmlSchemaAttribute attr = XmlSchemaAttribute.getAttribute(attributes, name);
+        if (attr != null) return attr;
+        if (contentModel != null) return contentModel.getContent().getAttribute(name);
+        return null;
+    }
 
 }

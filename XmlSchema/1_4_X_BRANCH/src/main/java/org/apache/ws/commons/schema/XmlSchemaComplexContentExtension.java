@@ -33,7 +33,8 @@ public class XmlSchemaComplexContentExtension extends XmlSchemaContent {
     /**
      * Creates new XmlSchemaComplexContentExtension
      */
-    public XmlSchemaComplexContentExtension() {
+    public XmlSchemaComplexContentExtension(XmlSchema schema) {
+        super(schema);
         attributes = new XmlSchemaObjectCollection();
 
     }
@@ -96,4 +97,18 @@ public class XmlSchemaComplexContentExtension extends XmlSchemaContent {
         xml += "</" + prefix + "extension>\n";
         return xml;
     }
+
+    public XmlSchemaComplexType resolveBaseComplexType() {
+        return (XmlSchemaComplexType)resolveBaseType();
+    }
+
+    XmlSchemaAttribute getAttribute(QName name) {
+        XmlSchemaAttribute attr = super.getAttribute(name);
+        if (attr == null) {
+            XmlSchemaComplexType baseType = resolveBaseComplexType();
+            if (baseType != null) attr = baseType.getAttribute(name);
+        }
+        return attr;
+    }
+
 }

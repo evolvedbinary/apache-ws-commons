@@ -33,7 +33,8 @@ public class XmlSchemaSimpleContentRestriction extends XmlSchemaContent {
     /**
      * Creates new XmlSchemaSimpleContentRestriction
      */
-    public XmlSchemaSimpleContentRestriction() {
+    public XmlSchemaSimpleContentRestriction(XmlSchema schema) {
+        super(schema);
         facets = new XmlSchemaObjectCollection();
         attributes = new XmlSchemaObjectCollection();
     }
@@ -83,6 +84,15 @@ public class XmlSchemaSimpleContentRestriction extends XmlSchemaContent {
 
     public XmlSchemaObjectCollection getFacets() {
         return this.facets;
+    }
+
+    public XmlSchemaType resolveBaseType() {
+        if (baseType != null) return baseType;
+        return resolveBaseType();
+    }
+
+    public XmlSchemaSimpleType resolveBaseSimpleType() {
+        return (XmlSchemaSimpleType)resolveBaseType();
     }
 
 }

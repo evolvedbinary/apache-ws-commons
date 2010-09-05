@@ -19,6 +19,8 @@
 
 package org.apache.ws.commons.schema;
 
+import javax.xml.namespace.QName;
+
 /**
  * An abstract class for schema content.
  *
@@ -26,10 +28,26 @@ package org.apache.ws.commons.schema;
 
 public abstract class XmlSchemaContent extends XmlSchemaAnnotated {
 
+    XmlSchema schema;
+
     /**
      * Creates new XmlSchemaContent
      */
-    protected XmlSchemaContent() {
+    protected XmlSchemaContent(XmlSchema schema) {
+        this.schema = schema;
+    }
+
+    public abstract XmlSchemaObjectCollection getAttributes();
+
+    public abstract QName getBaseTypeName();
+
+    public XmlSchemaType resolveBaseType() {
+        QName baseTypeName = getBaseTypeName();
+        return (baseTypeName != null) ? schema.getTypeByName(baseTypeName) : null;
+    }
+
+    XmlSchemaAttribute getAttribute(QName name) {
+      return XmlSchemaAttribute.getAttribute(getAttributes(), name);
     }
 
 }
