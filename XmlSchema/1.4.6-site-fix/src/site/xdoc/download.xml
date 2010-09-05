@@ -17,7 +17,9 @@
   ~ specific language governing permissions and limitations
   ~ under the License.
   -->
-<document>
+<document xmlns="http://maven.apache.org/XDOC/2.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/XDOC/2.0 http://maven.apache.org/xsd/xdoc-2.0.xsd">
   <properties>
     <title>:: Apache XmlSchema Releases ::</title>
   </properties>
@@ -30,7 +32,7 @@
       <h2>Releases</h2>
       <div align="left">
         <p>The latest official version available for download is
-           XmlSchema 1.4.5. All the releases are available for download as source or binary. For more information,
+           XmlSchema 1.4.6. All the releases are available for download as source or binary. For more information,
            please see
            <a href="http://www.apache.org/dev/release.html">Apache Release FAQ</a>
         </p>
@@ -48,53 +50,90 @@
             </tr>
             <tr class="b">
               <td align="center" valign="middle">
+                                                         1.4.6
+                                                       </td>
+              <td align="center">Release</td>
+              <td>Source Distribution
+                    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_6%2FXmlSchema-1.4.6-src.zip" class="externalLink">ZIP</a>
+
+                    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_6%2FXmlSchema-1.4.6-src.zip.md5" 
+                       class="externalLink" 
+                        >MD5</a>
+
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_6%2FXmlSchema-1.4.6-src.zip.asc" 
+		       class="externalLink"
+		       >PGP</a>
+		    <br/>
+		    Binary Distribution
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_6%2FXmlSchema-1.4.6-bin.zip" class="externalLink"
+		       >ZIP</a>
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_6%2FXmlSchema-1.4.6-bin.zip.md5" 
+		       class="externalLink">MD5</a>
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_6%2FXmlSchema-1.4.6-bin.zip.asc" 
+		       class="externalLink">PGP</a>
+		    <br/>
+		    Documents Distribution
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_6%2FXmlSchema-1.4.6-docs.zip" 
+		       class="externalLink">zip</a>
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_6%2XmlSchema-1.4.6-docs.zip.md5" 
+		       class="externalLink" >MD5</a>
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_6%2XmlSchema-1.4.6-docs.zip.asc" class="externalLink">
+		    PGP</a>
+		    <br/>
+	      </td>
+              <td>2010 - 04 - 26</td>
+              <td>1.4.6 Release (Mirrored)</td>
+            </tr>
+            <tr class="b">
+              <td align="center" valign="middle">
                                                          1.4.5
                                                        </td>
               <td align="center">Release</td>
               <td>Source Distribution
-                    <a href="[preferred]/ws/commons/XmlSchema/1_4_5/XmlSchema-1.4.5-src.zip" title="[preferred]/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.5-src.zip">zip</a>
-                    <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_5/XmlSchema-1.4.5-src.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_5/XmlSchema-1.4.5-src.zip.md5">MD5</a>
-                                                                 <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_5/XmlSchema-1.4.5-src.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_5/XmlSchema-1.4.5-src.zip.asc">PGP</a>
-                                                                  <br/>
-                                                                  Binary Distribution
-                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4_5/XmlSchema-1.4.5-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_4_5/XmlSchema-1.4.5-bin.zip">zip</a>
-                                                                 <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_5/XmlSchema-1.4.5-bin.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_5/XmlSchema-1.4.5-bin.zip.md5">MD5</a>
-                                                                 <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_5/XmlSchema-1.4.5-bin.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/XmlSchema/1_4_5/XmlSchema-1.4.5-bin.zip.asc">
-                                                                                    PGP</a>
-                                                                  <br/>
-                                                                  Documents Distribution
-                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4_5/XmlSchema-1.4.5-docs.zip" title="[preferred]/ws/commons/XmlSchema/1_4_5/XmlSchema-1.4.5-docs.zip">zip</a>
-                                                                 <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_5/XmlSchema-1.4.5-docs.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_5/XmlSchema-1.4.5-docs.zip.md5">MD5</a>
-                                                                 <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_5/XmlSchema-1.4.5-docs.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/XmlSchema/1_4_5/XmlSchema-1.4.5-docs.zip.asc">
-                                                                                    PGP</a>
-                                                                  <br/>
-                                                                  </td>
+                    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_5%2FXmlSchema-1.4.5-src.zip" class="externalLink">zip</a>
+                    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_5%2FXmlSchema-1.4.5-src.zip.md5" class="externalLink">MD5</a>
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_5%2FXmlSchema-1.4.5-src.zip.asc" class="externalLink">PGP</a>
+		    <br/>
+		    Binary Distribution
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_5%2FXmlSchema-1.4.5-bin.zip" class="externalLink">zip</a>
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_5%2FXmlSchema-1.4.5-bin.zip.md5" class="externalLink">MD5</a>
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_5%/XmlSchema-1.4.5-bin.zip.asc" class="externalLink">PGP</a>
+		    <br/>
+		    Documents Distribution
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_5%2FXmlSchema-1.4.5-docs.zip" 
+		       class="externalLink">zip</a>
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_5%2FXmlSchema-1.4.5-docs.zip.md5" class="externalLink"
+		       >MD5</a>
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_5%2FXmlSchema-1.4.5-docs.zip.asc" class="externalLink" 
+		       >PGP</a>
+		    <br/>
+	      </td>
               <td>2009 - 04 - 18</td>
               <td>1.4.5 Release (Mirrored)</td>
             </tr>
             <tr class="b">
               <td align="center" valign="middle">
-                                                         1.4.4
-                                                       </td>
+		1.4.4
+	      </td>
               <td align="center">Release</td>
               <td>Source Distribution
-                    <a href="[preferred]/ws/commons/XmlSchema/1_4_4/XmlSchema-1.4.4-src.zip" title="[preferred]/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.4-src.zip">zip</a>
-                    <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_4/XmlSchema-1.4.4-src.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_4/XmlSchema-1.4.4-src.zip.md5">MD5</a>
-                                                                 <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_4/XmlSchema-1.4.4-src.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_4/XmlSchema-1.4.4-src.zip.asc">PGP</a>
-                                                                  <br/>
-                                                                  Binary Distribution
-                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4_4/XmlSchema-1.4.4-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_4_4/XmlSchema-1.4.4-bin.zip">zip</a>
-                                                                 <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_4/XmlSchema-1.4.4-bin.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_4/XmlSchema-1.4.4-bin.zip.md5">MD5</a>
-                                                                 <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_4/XmlSchema-1.4.4-bin.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/XmlSchema/1_4_4/XmlSchema-1.4.4-bin.zip.asc">
-                                                                                    PGP</a>
-                                                                  <br/>
-                                                                  Documents Distribution
-                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4_4/XmlSchema-1.4.4-docs.zip" title="[preferred]/ws/commons/XmlSchema/1_4_4/XmlSchema-1.4.4-docs.zip">zip</a>
-                                                                 <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_4/XmlSchema-1.4.4-docs.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_4/XmlSchema-1.4.4-docs.zip.md5">MD5</a>
-                                                                 <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_4/XmlSchema-1.4.4-docs.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/XmlSchema/1_4_4/XmlSchema-1.4.4-docs.zip.asc">
-                                                                                    PGP</a>
-                                                                  <br/>
-                                                                  </td>
+                    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_4%2FXmlSchema-1.4.4-src.zip" class="externalLink">zip</a>
+                    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_4%2FXmlSchema-1.4.4-src.zip.md5" class="externalLink" >MD5</a>
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_4%2FXmlSchema-1.4.4-src.zip.asc" class="externalLink" >PGP</a>
+		    <br/>
+		    Binary Distribution
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_4%2FXmlSchema-1.4.4-bin.zip" class="externalLink">zip</a>
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_4%2FXmlSchema-1.4.4-bin.zip.md5" class="externalLink">MD5</a>
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_4%2FXmlSchema-1.4.4-bin.zip.asc" class="externalLink" >
+		    PGP</a>
+		    <br/>
+		    Documents Distribution
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_4%2FXmlSchema-1.4.4-docs.zip" class="externalLink">zip</a>
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_4%2FXmlSchema-1.4.4-docs.zip.md5" class="externalLink" >MD5</a>
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_4%2FXmlSchema-1.4.4-docs.zip.asc" class="externalLink" >
+		    PGP</a>
+		    <br/>
+	      </td>
               <td>2009 - 03 - 06</td>
               <td>1.4.4 Release (Mirrored)</td>
             </tr>
@@ -104,19 +143,19 @@
                                                        </td>
               <td align="center">Release</td>
               <td>Source Distribution
-                                                                <a href="[preferred]/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-src.zip" title="[preferred]/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-src.zip">zip</a>
+                                                                <a href="[preferred]/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-src.zip" title="[preferred]/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-src.zip" class="externalLink">zip</a>
 
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-src.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-src.zip.md5">MD5</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-src.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-src.zip.asc">PGP</a>
                                                                   <br/>
                                                                   Binary Distribution
-                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-bin.zip">zip</a>
+                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-bin.zip" class="externalLink">zip</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-bin.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-bin.zip.md5">MD5</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-bin.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-bin.zip.asc">
                                                                                     PGP</a>
                                                                   <br/>
                                                                   Documents Distribution
-                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-docs.zip" title="[preferred]/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-docs.zip">zip</a>
+                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-docs.zip" title="[preferred]/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-docs.zip" class="externalLink">zip</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-docs.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-docs.zip.md5">MD5</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-docs.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/XmlSchema/1_4_3/XmlSchema-1.4.3-docs.zip.asc">
                                                                                     PGP</a>
@@ -131,19 +170,19 @@
                                                        </td>
               <td align="center">Release</td>
               <td>Source Distribution
-                                                                <a href="[preferred]/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-src.zip" title="[preferred]/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-src.zip">zip</a>
+                                                                <a href="[preferred]/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-src.zip" title="[preferred]/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-src.zip" class="externalLink">zip</a>
 
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-src.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-src.zip.md5">MD5</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-src.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-src.zip.asc">PGP</a>
                                                                   <br/>
                                                                   Binary Distribution
-                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-bin.zip">zip</a>
+                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-bin.zip" class="externalLink">zip</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-bin.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-bin.zip.md5">MD5</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-bin.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-bin.zip.asc">
                                                                                     PGP</a>
                                                                   <br/>
                                                                   Documents Distribution
-                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-docs.zip" title="[preferred]/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-docs.zip">zip</a>
+                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-docs.zip" title="[preferred]/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-docs.zip" class="externalLink">zip</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-docs.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-docs.zip.md5">MD5</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-docs.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/XmlSchema/1_4_2/XmlSchema-1.4.2-docs.zip.asc">
                                                                                     PGP</a>
@@ -158,19 +197,19 @@
                                                        </td>
               <td align="center">Release</td>
               <td>Source Distribution
-                                                                <a href="[preferred]/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-src.zip" title="[preferred]/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-src.zip">zip</a>
+                                                                <a href="[preferred]/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-src.zip" title="[preferred]/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-src.zip" class="externalLink">zip</a>
 
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-src.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-src.zip.md5">MD5</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-src.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-src.zip.asc">PGP</a>
                                                                   <br/>
                                                                   Binary Distribution
-                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-bin.zip">zip</a>
+                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-bin.zip" class="externalLink">zip</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-bin.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-bin.zip.md5">MD5</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-bin.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-bin.zip.asc">
                                                                                     PGP</a>
                                                                   <br/>
                                                                   Documents Distribution
-                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-docs.zip" title="[preferred]/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-docs.zip">zip</a>
+                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-docs.zip" title="[preferred]/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-docs.zip" class="externalLink">zip</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-docs.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-docs.zip.md5">MD5</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-docs.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/XmlSchema/1_4_1/XmlSchema-1.4.1-docs.zip.asc">
                                                                                     PGP</a>
@@ -185,19 +224,19 @@
                                                        </td>
               <td align="center">Release</td>
               <td>Source Distribution
-                                                                <a href="[preferred]/ws/commons/XmlSchema/1_4/XmlSchema-1.4-src.zip" title="[preferred]/ws/commons/XmlSchema/1_4/XmlSchema-1.4-src.zip">zip</a>
+                                                                <a href="[preferred]/ws/commons/XmlSchema/1_4/XmlSchema-1.4-src.zip" title="[preferred]/ws/commons/XmlSchema/1_4/XmlSchema-1.4-src.zip" class="externalLink">zip</a>
 
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_3_2/XmlSchema-1.4-src.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4/XmlSchema-1.4-src.zip.md5">MD5</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4/XmlSchema-1.4-src.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4/XmlSchema-1.4-src.zip.asc">PGP</a>
                                                                   <br/>
                                                                   Binary Distribution
-                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4/XmlSchema-1.4-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_4/XmlSchema-1.4-bin.zip">zip</a>
+                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4/XmlSchema-1.4-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_4/XmlSchema-1.4-bin.zip" class="externalLink">zip</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4/XmlSchema-1.4-bin.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4/XmlSchema-1.4-bin.zip.md5">MD5</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4/XmlSchema-1.4-bin.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/XmlSchema/1_4/XmlSchema-1.4-bin.zip.asc">
                                                                                     PGP</a>
                                                                   <br/>
                                                                   Documents Distribution
-                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4/XmlSchema-1.4-docs.zip" title="[preferred]/ws/commons/XmlSchema/1_4/XmlSchema-1.4-docs.zip">zip</a>
+                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_4/XmlSchema-1.4-docs.zip" title="[preferred]/ws/commons/XmlSchema/1_4/XmlSchema-1.4-docs.zip" class="externalLink">zip</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4/XmlSchema-1.4-docs.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_4/XmlSchema-1.4-docs.zip.md5">MD5</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_4/XmlSchema-1.4-docs.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/XmlSchema/1_4/XmlSchema-1.4-docs.zip.asc">
                                                                                     PGP</a>
@@ -212,19 +251,19 @@
                                                        </td>
               <td align="center">Release</td>
               <td>Source Distribution
-                                                                <a href="[preferred]/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-src.zip" title="[preferred]/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-src.zip">zip</a>
+                                                                <a href="[preferred]/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-src.zip" title="[preferred]/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-src.zip" class="externalLink">zip</a>
 
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-src.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-src.zip.md5">MD5</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.2-src.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-src.zip.asc">PGP</a>
                                                                   <br/>
                                                                   Binary Distribution
-                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-bin.zip">zip</a>
+                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-bin.zip" class="externalLink">zip</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-bin.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-bin.zip.md5">MD5</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-bin.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-bin.zip.asc">
                                                                                     PGP</a>
                                                                   <br/>
                                                                   Documents Distribution
-                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-docs.zip" title="[preferred]/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-docs.zip">zip</a>
+                                                                  <a href="[preferred]/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-docs.zip" title="[preferred]/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-docs.zip" class="externalLink">zip</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-docs.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-docs.zip.md5">MD5</a>
                                                                  <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.2-docs.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/XmlSchema/1_3_2/XmlSchema-1.3.2-docs.zip.asc">
                                                                                     PGP</a>
@@ -239,19 +278,19 @@
                                </td>
               <td align="center">Release</td>
               <td>Source Distribution
-                                        <a href="[preferred]/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-src.zip" title="[preferred]/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-src.zip">zip</a>
+                                        <a href="[preferred]/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-src.zip" title="[preferred]/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-src.zip" class="externalLink">zip</a>
 
                                          <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-src.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-src.zip.md5">MD5</a>
                                          <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-src.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-src.zip.asc">PGP</a>
                                           <br/>
                                           Binary Distribution
-                                          <a href="[preferred]/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-bin.zip">zip</a>
+                                          <a href="[preferred]/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-bin.zip" class="externalLink">zip</a>
                                          <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-bin.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-bin.zip.md5">MD5</a>
                                          <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-bin.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-bin.zip.asc">
                                                             PGP</a>
                                           <br/>
                                           Documents Distribution
-                                          <a href="[preferred]/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-docs.zip" title="[preferred]/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-docs.zip">zip</a>
+                                          <a href="[preferred]/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-docs.zip" title="[preferred]/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-docs.zip" class="externalLink">zip</a>
                                          <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-docs.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-docs.zip.md5">MD5</a>
                                          <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-docs.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/XmlSchema/1_3_1/XmlSchema-1.3.1-docs.zip.asc">
                                                             PGP</a>
@@ -266,13 +305,13 @@
                                </td>
               <td align="center">Release</td>
               <td>Source Distribution
-                                        <a href="[preferred]/ws/commons/XmlSchema/1_2/XmlSchema-1.2-src.zip" title="[preferred]/ws/commons/XmlSchema/1_2/XmlSchema-1.2-src.zip">zip</a>
+                                        <a href="[preferred]/ws/commons/XmlSchema/1_2/XmlSchema-1.2-src.zip" title="[preferred]/ws/commons/XmlSchema/1_2/XmlSchema-1.2-src.zip" class="externalLink">zip</a>
 
                                          <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_2/XmlSchema-1.2-src.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_2/XmlSchema-1.2-src.zip.md5">MD5</a>
                                          <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_2/XmlSchema-1.2-src.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_2/XmlSchema-1.2-src.zip.asc">PGP</a>
                                           <br/>
                                           Binary Distribution
-                                          <a href="[preferred]/ws/commons/XmlSchema/1_2/XmlSchema-1.2-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_2/XmlSchema-1.2-bin.zip">zip</a>
+                                          <a href="[preferred]/ws/commons/XmlSchema/1_2/XmlSchema-1.2-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_2/XmlSchema-1.2-bin.zip" class="externalLink">zip</a>
                                          <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_2/XmlSchema-1.2-bin.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_2/XmlSchema-1.2-bin.zip.md5">MD5</a>
                                          <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_2/XmlSchema-1.2-bin.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/XmlSchema/1_2/XmlSchema-1.2-bin.zip.asc">
                                                             PGP</a>
@@ -288,13 +327,13 @@
                             </td>
               <td align="center">Release</td>
               <td>Source Distribution
-                                <a href="[preferred]/ws/commons/XmlSchema/1_1/XmlSchema-1.1-src.zip" title="[preferred]/ws/commons/XmlSchema/1_1/XmlSchema-1.1-src.zip">zip</a>
+                                <a href="[preferred]/ws/commons/XmlSchema/1_1/XmlSchema-1.1-src.zip" title="[preferred]/ws/commons/XmlSchema/1_1/XmlSchema-1.1-src.zip" class="externalLink">zip</a>
 
                                 <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_1/XmlSchema-1.1-src.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_1/XmlSchema-1.1-src.zip.md5">MD5</a>
                                 <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_1/XmlSchema-1.1-src.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_1/XmlSchema-1.1-src.zip.asc">PGP</a>
                                 <br/>
                                 Binary Distribution
-                                <a href="[preferred]/ws/commons/XmlSchema/1_1/XmlSchema-1.1-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_1/XmlSchema-1.1-bin.zip">zip</a>
+                                <a href="[preferred]/ws/commons/XmlSchema/1_1/XmlSchema-1.1-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_1/XmlSchema-1.1-bin.zip" class="externalLink">zip</a>
                                 <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_1/XmlSchema-1.1-bin.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_1/XmlSchema-1.1-bin.zip.md5">MD5</a>
                                 <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_1/XmlSchema-1.1-bin.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/XmlSchema/1_1/XmlSchema-1.1-bin.zip.asc">
                                     PGP</a>
@@ -310,13 +349,13 @@
                             </td>
               <td align="center">Release</td>
               <td>Source Distribution
-                                <a href="[preferred]/ws/commons/XmlSchema/1_0_3/XmlSchema-1.0.3-src.zip" title="[preferred]/ws/commons/XmlSchema/1_0_3/XmlSchema-1.0.3-src.zip">zip</a>
+                                <a href="[preferred]/ws/commons/XmlSchema/1_0_3/XmlSchema-1.0.3-src.zip" title="[preferred]/ws/commons/XmlSchema/1_0_3/XmlSchema-1.0.3-src.zip" class="externalLink">zip</a>
 
                                 <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_0_3/XmlSchema-1.0.3-src.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_0_3/XmlSchema-1.0.3-src.zip.md5">MD5</a>
                                 <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_0_3/XmlSchema-1.0.3-src.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_0_3/XmlSchema-1.0.3-src.zip.asc">PGP</a>
                                 <br/>
                                 Binary Distribution
-                                <a href="[preferred]/ws/commons/XmlSchema/1_0_3/XmlSchema-1.0.3-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_0_3/XmlSchema-1.0.3-bin.zip">zip</a>
+                                <a href="[preferred]/ws/commons/XmlSchema/1_0_3/XmlSchema-1.0.3-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_0_3/XmlSchema-1.0.3-bin.zip" class="externalLink">zip</a>
                                 <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_0_3/XmlSchema-1.0.3-bin.zip.md5" class="externalLink" title="http://www.apache.org/dist/ws/commons/XmlSchema/1_0_3/XmlSchema-1.0.3-bin.zip.md5">MD5</a>
                                 <a href="http://www.apache.org/dist/ws/commons/XmlSchema/1_0_3/XmlSchema-1.0.3-bin.zip.asc" class="externalLink" title="http://www.apache.org/dist/ws/ws/commons/XmlSchema/1_0_3/XmlSchema-1.0.3-bin.zip.asc">
                                     PGP</a>
@@ -333,7 +372,7 @@
                             </td>
               <td align="center">Release</td>
               <td>Source Distribution
-                                <a href="http://archive.apache.org/dist/ws/commons/XmlSchema/1_0_2/XmlSchema-1.0.2-src.zip" title="http://archive.apache.org/dist/ws/commons/XmlSchema/1_0_2/XmlSchema-1.0.2-src.zip">zip</a>
+                                <a href="http://archive.apache.org/dist/ws/commons/XmlSchema/1_0_2/XmlSchema-1.0.2-src.zip" title="http://archive.apache.org/dist/ws/commons/XmlSchema/1_0_2/XmlSchema-1.0.2-src.zip" class="externalLink">zip</a>
 
                                 <a href="http://archive.apache.org/dist/ws/commons/XmlSchema/1_0_2/XmlSchema-1.0.2-src.zip.md5" class="externalLink" title="http://archive.apache.org/dist/ws/commons/XmlSchema/1_0_2/XmlSchema-1.0.2-src.zip.md5">
                                     MD5</a>
@@ -368,7 +407,7 @@
                                     PGP</a>
                                 <br/>
                                 Binary Distribution
-                                <a href="[preferred]/ws/commons/XmlSchema/1_0_1/XmlSchema-1.0.1-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_0_1/XmlSchema-1.0.1-bin.zip">zip</a>
+                                <a href="[preferred]/ws/commons/XmlSchema/1_0_1/XmlSchema-1.0.1-bin.zip" title="[preferred]/ws/commons/XmlSchema/1_0_1/XmlSchema-1.0.1-bin.zip" class="externalLink">zip</a>
                                 <a href="http://archive.apache.org/dist/ws/commons/XmlSchema/1_0_1/XmlSchema-1.0.1-bin.zip.md5" class="externalLink" title="http://archive.apache.org/dist/ws/commons/XmlSchema/1_0_1/XmlSchema-1.0.1-bin.zip.md5">
                                     MD5</a>
                                 <a href="http://archive.apache.org/dist/ws/commons/XmlSchema/1_0_1/XmlSchema-1.0.1-bin.zip.asc" class="externalLink" title="http://archive.apache.org/dist/ws/ws/commons/XmlSchema/1_0_1/XmlSchema-1.0.1-bin.zip.asc">
