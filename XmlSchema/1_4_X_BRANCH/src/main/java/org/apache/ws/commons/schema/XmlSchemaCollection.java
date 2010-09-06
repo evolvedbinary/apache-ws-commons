@@ -53,6 +53,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
+import org.xml.sax.EntityResolver;
 
 /**
  * Contains a cache of XML Schema definition language (XSD).
@@ -377,6 +378,8 @@ public final class XmlSchemaCollection {
             DocumentBuilderFactory docFac = DocumentBuilderFactory.newInstance();
             docFac.setNamespaceAware(true);
             final DocumentBuilder builder = docFac.newDocumentBuilder();
+             /* specify ER on doc builder */ 
+            if (entityResolver != null) builder.setEntityResolver(entityResolver); 
             Document doc = null;
             doc = parse_doPriv(inputSource, builder, doc);
             return read(doc, inputSource.getSystemId(), veh, namespaceValidator);
@@ -711,4 +714,15 @@ public final class XmlSchemaCollection {
 	public String toString() {
     	return super.toString() + "[" + schemas.toString() + "]";
     }
+
+    private EntityResolver entityResolver;
+
+    public EntityResolver getEntityResolver() {
+        return entityResolver;
+    }
+
+    public void setEntityResolver(EntityResolver entityResolver) {
+        this.entityResolver = entityResolver;
+    }
+
 }
