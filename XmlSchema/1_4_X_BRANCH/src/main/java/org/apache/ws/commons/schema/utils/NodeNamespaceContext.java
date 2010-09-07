@@ -21,33 +21,37 @@ package org.apache.ws.commons.schema.utils;
 
 import org.apache.ws.commons.schema.constants.Constants;
 
+import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import javax.xml.namespace.NamespaceContext;
 
+import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
 /**
  * Implementation of {@link NamespaceContext}, which is based on a DOM node.
  */
-public class NodeNamespaceContext implements NamespacePrefixList {
-    private static final String NODE_NAMSPACE_CONTEXT = NamespacePrefixList.class.getName();
+public class NodeNamespaceContext implements NamespacePrefixList, Serializable {
     private static final Collection XML_NS_PREFIX_COLLECTION = Collections.singletonList(Constants.XML_NS_PREFIX);
     private static final Collection XMLNS_ATTRIBUTE_COLLECTION = Collections.singletonList(Constants.XMLNS_ATTRIBUTE);
     
-    static Method getUserData;
-    static Method setUserData;
+    static final boolean domLevel3;
+    
     static {
+        boolean level3 = false;
         try {
             Class cls = Class.forName("org.w3c.dom.UserDataHandler", false, Node.class.getClassLoader());
-            getUserData = Node.class.getMethod("getUserData", new Class[]{String.class});
-            setUserData = Node.class.getMethod("setUserData", new Class[]{String.class, Object.class, cls});
+            Node.class.getMethod("getUserData", new Class[]{String.class});
+            Node.class.getMethod("setUserData", new Class[]{String.class, Object.class, cls});
+            level3 = true;
         } catch (Throwable e) {
-            getUserData = null;
-            setUserData = null;
+            level3 = false;
         }
+        domLevel3 = level3;
     }
     
     
@@ -62,45 +66,31 @@ public class NodeNamespaceContext implements NamespacePrefixList {
         declarations = decls;
     }
     
-    public static NodeNamespaceContext getNamespaceContext(Node pNode) {
-        if (getUserData != null) {
-            try {
-                NodeNamespaceContext ctx = (NodeNamespaceContext)getUserData.invoke(pNode, new Object[] {NODE_NAMSPACE_CONTEXT});
-                if (ctx == null) {
-                    Map declarations = new HashMap();
-        
-                    Node parentNode = pNode.getParentNode();
-                    if (parentNode != null) {
-                        NodeNamespaceContext parent = 
-                            (NodeNamespaceContext)getUserData.invoke(parentNode, new Object[] {NODE_NAMSPACE_CONTEXT});
-                        if (parent == null) {
-                            parent = getNamespaceContext(parentNode);
-                        }
-                        declarations.putAll(parent.declarations);
-                    }
-                    
-                    NamedNodeMap map = pNode.getAttributes();
-                    if (map != null) {
-                        for (int i = 0; i < map.getLength(); i++) {
-                            Node attr = map.item(i);
-                            final String uri = attr.getNamespaceURI();
-                            if (Constants.XMLNS_ATTRIBUTE_NS_URI.equals(uri)) {
-                                String localName = attr.getLocalName();
-                                String prefix = Constants.XMLNS_ATTRIBUTE.equals(localName) ? Constants.DEFAULT_NS_PREFIX : localName;
-                                declarations.put(prefix, attr.getNodeValue());
-                            }
-                        }
-                    }
-                    ctx = new NodeNamespaceContext(declarations);
-                    setUserData.invoke(pNode, new Object[] {NODE_NAMSPACE_CONTEXT, ctx, null});
-                }
-                return ctx;
-            } catch (Throwable t) {
-                //ignore.  DOM level 2 implementation would not have the getUserData stuff.   
-                //Thus, fall back to the old, slower method.
-            }
+    public static String getNamespacePrefix(Element el, String ns) {
+        if (domLevel3) {
+            return getNamespacePrefixDomLevel3(el, ns);
         }
-        
+        return getNamespaceContext(el).getPrefix(ns);
+    }
+    private static String getNamespacePrefixDomLevel3(Element el, String ns) {
+        return el.lookupPrefix(ns);
+    }
+    
+    
+    public static String getNamespaceURI(Element el, String pfx) {
+        if (domLevel3) {
+            return getNamespaceURIDomLevel3(el, pfx);
+        }
+        return getNamespaceContext(el).getNamespaceURI(pfx);
+    }
+    private static String getNamespaceURIDomLevel3(Element el, String pfx) {
+        if ("".equals(pfx)) {
+            pfx = null;
+        }
+        return el.lookupNamespaceURI(pfx);
+    }
+    
+    public static NodeNamespaceContext getNamespaceContext(Node pNode) {
         final Map declarations = new HashMap();
         new PrefixCollector(){
             protected void declare(String pPrefix, String pNamespaceURI) {

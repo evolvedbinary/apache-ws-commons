@@ -191,8 +191,8 @@ public class SchemaBuilder {
 							+ "Please update the schema to the \""
 							+ XmlSchema.SCHEMA_NS + "\" namespace");
 		}
-		for (; el != null; el = XDOMUtil.getNextSiblingElementNS(el,
-				XmlSchema.SCHEMA_NS)) {
+		for (; el != null; 
+		    el = XDOMUtil.getNextSiblingElementNS(el, XmlSchema.SCHEMA_NS)) {
 
 			// String elPrefix = el.getPrefix() == null ? "" : el.getPrefix();
 			//if(elPrefix.equals(schema.schema_ns_prefix)) {
@@ -257,7 +257,7 @@ public class SchemaBuilder {
 
 		//add the extesibility components
 		processExtensibilityComponents(schema, schemaEl);
-
+		
 		return schema;
 	}
 
@@ -433,9 +433,8 @@ public class SchemaBuilder {
 					restrictionEl, XmlSchema.SCHEMA_NS, "simpleType");
 
 			if (restrictionEl.hasAttribute("base")) {
-				NamespaceContext ctx = NodeNamespaceContext.getNamespaceContext(restrictionEl);
 				restriction.baseTypeName = getRefQName(restrictionEl
-						.getAttribute("base"), ctx);
+						.getAttribute("base"), restrictionEl);
 			} else if (inlineSimpleType != null) {
 
 				restriction.baseType = handleSimpleType(schema,
@@ -562,17 +561,13 @@ public class SchemaBuilder {
 		return simpleType;
 	}
 
-	private QName getRefQName(String pName, Node pNode) {
-		return getRefQName(pName, NodeNamespaceContext.getNamespaceContext(pNode));
-	}
-
-	private QName getRefQName(String pName, NamespaceContext pContext) {
+	private QName getRefQName(String pName, Element pNode) {
 		final int offset = pName.indexOf(':');
 		String uri;
 		final String localName;
 		final String prefix;
 		if (offset == -1) {
-			uri = pContext.getNamespaceURI(Constants.DEFAULT_NS_PREFIX);
+			uri = NodeNamespaceContext.getNamespaceURI(pNode, Constants.DEFAULT_NS_PREFIX);
 			if (Constants.NULL_NS_URI.equals(uri)) {
 				return new QName(Constants.NULL_NS_URI, pName);
 			}
@@ -580,7 +575,7 @@ public class SchemaBuilder {
 			prefix = Constants.DEFAULT_NS_PREFIX;
 		} else {
 			prefix = pName.substring(0, offset);
-			uri = pContext.getNamespaceURI(prefix);
+			uri = NodeNamespaceContext.getNamespaceURI(pNode, prefix);
 			if (uri == null || Constants.NULL_NS_URI.equals(uri)) {
 				if (schema.parent != null
 						&& schema.parent.getNamespaceContext() != null) {
@@ -1297,7 +1292,6 @@ public class SchemaBuilder {
 
 		NamedNodeMap attrNodes = attrEl.getAttributes();
 		Vector attrs = new Vector();
-		NodeNamespaceContext ctx = null;
 		for (int i = 0; i < attrNodes.getLength(); i++) {
 			Attr att = (Attr) attrNodes.item(i);
 			String attName = att.getName();
@@ -1312,10 +1306,7 @@ public class SchemaBuilder {
 				if (value.indexOf(":") > -1) {
 					// there is a possiblily of some namespace mapping
 					String prefix = value.substring(0, value.indexOf(":"));
-					if (ctx == null) {
-						ctx = NodeNamespaceContext.getNamespaceContext(attrEl);
-					}
-					String namespace = ctx.getNamespaceURI(prefix);
+					String namespace = NodeNamespaceContext.getNamespaceURI(attrEl, prefix);
 					if (!Constants.NULL_NS_URI.equals(namespace)) {
 						Attr nsAttr = attrEl.getOwnerDocument()
 								.createAttribute("xmlns:" + prefix);
