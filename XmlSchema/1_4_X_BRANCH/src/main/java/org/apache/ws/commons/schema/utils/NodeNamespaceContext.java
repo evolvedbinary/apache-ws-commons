@@ -22,14 +22,11 @@ package org.apache.ws.commons.schema.utils;
 import org.apache.ws.commons.schema.constants.Constants;
 
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 import javax.xml.namespace.NamespaceContext;
 
 import java.io.Serializable;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.*;
 
 /**
@@ -39,7 +36,7 @@ public class NodeNamespaceContext implements NamespacePrefixList, Serializable {
     private static final Collection XML_NS_PREFIX_COLLECTION = Collections.singletonList(Constants.XML_NS_PREFIX);
     private static final Collection XMLNS_ATTRIBUTE_COLLECTION = Collections.singletonList(Constants.XMLNS_ATTRIBUTE);
     
-    static final boolean domLevel3;
+    private static final boolean DOM_LEVEL_3;
     
     static {
         boolean level3 = false;
@@ -51,7 +48,7 @@ public class NodeNamespaceContext implements NamespacePrefixList, Serializable {
         } catch (Throwable e) {
             level3 = false;
         }
-        domLevel3 = level3;
+        DOM_LEVEL_3 = level3;
     }
     
     
@@ -67,7 +64,7 @@ public class NodeNamespaceContext implements NamespacePrefixList, Serializable {
     }
     
     public static String getNamespacePrefix(Element el, String ns) {
-        if (domLevel3) {
+        if (DOM_LEVEL_3) {
             return getNamespacePrefixDomLevel3(el, ns);
         }
         return getNamespaceContext(el).getPrefix(ns);
@@ -78,7 +75,7 @@ public class NodeNamespaceContext implements NamespacePrefixList, Serializable {
     
     
     public static String getNamespaceURI(Element el, String pfx) {
-        if (domLevel3) {
+        if (DOM_LEVEL_3) {
             return getNamespaceURIDomLevel3(el, pfx);
         }
         return getNamespaceContext(el).getNamespaceURI(pfx);
@@ -92,7 +89,7 @@ public class NodeNamespaceContext implements NamespacePrefixList, Serializable {
     
     public static NodeNamespaceContext getNamespaceContext(Node pNode) {
         final Map declarations = new HashMap();
-        new PrefixCollector(){
+        new PrefixCollector() {
             protected void declare(String pPrefix, String pNamespaceURI) {
                 declarations.put(pPrefix, pNamespaceURI);
             }
