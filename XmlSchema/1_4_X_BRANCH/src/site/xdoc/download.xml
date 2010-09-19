@@ -32,7 +32,7 @@
       <h2>Releases</h2>
       <div align="left">
         <p>The latest official version available for download is
-           XmlSchema 1.4.6. All the releases are available for download as source or binary. For more information,
+           XmlSchema 1.4.7. All the releases are available for download as source or binary. For more information,
            please see
            <a href="http://www.apache.org/dev/release.html">Apache Release FAQ</a>
         </p>
@@ -47,6 +47,41 @@
               <td align="center" width="300">Distribution</td>
               <td align="center" width="100">Date</td>
               <td align="center" width="200">Description</td>
+            </tr>
+            <tr class="b">
+              <td align="center" valign="middle">
+                                                         1.4.7
+                                                       </td>
+              <td align="center">Release</td>
+              <td>Source Distribution
+                    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_6%2FXmlSchema-1.4.7-src.zip" class="externalLink">ZIP</a>
+                    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_6%2FXmlSchema-1.4.7-src.zip.md5" 
+                       class="externalLink" 
+                        >MD5</a>
+
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_6%2FXmlSchema-1.4.7-src.zip.asc" 
+		       class="externalLink"
+		       >PGP</a>
+		    <br/>
+		    Binary Distribution
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_6%2FXmlSchema-1.4.7-bin.zip" class="externalLink"
+		       >ZIP</a>
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_6%2FXmlSchema-1.4.7-bin.zip.md5" 
+		       class="externalLink">MD5</a>
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_6%2FXmlSchema-1.4.7-bin.zip.asc" 
+		       class="externalLink">PGP</a>
+		    <br/>
+		    Documents Distribution
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_6%2FXmlSchema-1.4.7-docs.zip" 
+		       class="externalLink">zip</a>
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_6%2FXmlSchema-1.4.7-docs.zip.md5" 
+		       class="externalLink" >MD5</a>
+		    <a href="http://www.apache.org/dyn/closer.cgi?path=%2Fws%2Fcommons%2FXmlSchema%2F1_4_6%2FXmlSchema-1.4.7-docs.zip.asc" class="externalLink">
+		    PGP</a>
+		    <br/>
+	      </td>
+              <td>2010 - 09 - 20 (approximately)</td>
+              <td>1.4.7 Release (Mirrored)</td>
             </tr>
             <tr class="b">
               <td align="center" valign="middle">
