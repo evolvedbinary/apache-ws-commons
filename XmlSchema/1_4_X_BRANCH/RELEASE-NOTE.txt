@@ -1,14 +1,20 @@
-====================================
-This is the release of XMLSchema 1.4.6 of Apache WS-Commons.
-====================================
 
-XMLSchema is a lightweight schema object model that can be used to manipulate 
-and generate XML schema representations. It has few external dependencies
-and can be easily integrated into an existing project.
+Release Notes - WS-Commons - Version XmlSchema 1.4.7
 
-You are welcome to kick the tires and get XMLSchema on the move.  Any
-contribution in the form of coding, testing, submitting improvements
-to the documentation, and reporting bugs are always welcome.
+Changes since 1.4.6:
+
+** Bug
+    * [WSCOMMONS-484] - Performance enhancement for build from DOM
+    * (WSCOMMONS-361) breaks Xerces DOM
+       Node's Java serializability
+    * [WSCOMMONS-537] - Cached NodeNamespaceContext  causes problems when a new namespace is added
+    * [WSCOMMONS-539] - Infinite loop in XmlSchemaSerializer. setupNamespaces
+
+** Improvement
+    * [WSCOMMONS-520] - Add a setEntityResolver() to be used in XmlSchemaCollection.read
+    * [WSCOMMONS-559] - Utils to ease use of XmlSchema in determining
+    * instance attribute types
+
 
 Bugs fixed since XmlSchema 1.4.5:
 
