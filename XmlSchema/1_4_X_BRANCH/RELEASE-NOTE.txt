@@ -12,8 +12,6 @@ Changes since 1.4.6:
 
 ** Improvement
     * [WSCOMMONS-520] - Add a setEntityResolver() to be used in XmlSchemaCollection.read
-    * [WSCOMMONS-559] - Utils to ease use of XmlSchema in determining
-    * instance attribute types
 
 
 Bugs fixed since XmlSchema 1.4.5:
