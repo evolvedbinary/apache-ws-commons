@@ -136,23 +136,4 @@ public class XmlSchemaAttribute extends XmlSchemaAnnotated {
 
         return xml;
     }
-
-    static final XmlSchemaAttribute getAttribute(final XmlSchemaObjectCollection attributes, final QName name) {
-        if ((attributes == null) || (name == null)) return null;
-        for (int i = 0; i < attributes.getCount(); i++) {
-            final XmlSchemaObject attrItem = attributes.getItem(i);
-            if (attrItem instanceof XmlSchemaAttributeGroupRef) {
-                final XmlSchemaAttributeGroup attrGroup = ((XmlSchemaAttributeGroupRef)attrItem).resolve();
-                if (attrGroup == null) continue;
-                final XmlSchemaAttribute attr = getAttribute(attrGroup.getAttributes(), name);
-                if (attr != null) return attr;
-            } else if (attrItem instanceof XmlSchemaAttribute) {
-                final XmlSchemaAttribute attr = (XmlSchemaAttribute)attrItem;
-                final QName attrQName = attr.getQName();
-                if ((attrQName != null) && (attrQName.equals(name))) return attr;
-            }
-        }
-        return null;
-    }
-
 }

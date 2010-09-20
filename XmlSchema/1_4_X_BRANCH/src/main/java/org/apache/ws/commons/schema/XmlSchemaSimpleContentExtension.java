@@ -33,8 +33,7 @@ public class XmlSchemaSimpleContentExtension extends XmlSchemaContent {
     /**
      * Creates new XmlSchemaSimpleContentExtension
      */
-    public XmlSchemaSimpleContentExtension(XmlSchema schema) {
-        super(schema);
+    public XmlSchemaSimpleContentExtension() {
         attributes = new XmlSchemaObjectCollection();
 
     }
@@ -66,10 +65,6 @@ public class XmlSchemaSimpleContentExtension extends XmlSchemaContent {
 
     public QName getBaseTypeName() {
         return this.baseTypeName;
-    }
-
-    public XmlSchemaSimpleType resolveBaseSimpleType() {
-        return (XmlSchemaSimpleType)resolveBaseType();
     }
 
 }

@@ -34,8 +34,7 @@ public class XmlSchemaComplexContentRestriction extends XmlSchemaContent {
     /**
      * Creates new XmlSchemaComplexContentRestriction
      */
-    public XmlSchemaComplexContentRestriction(XmlSchema schema) {
-        super(schema);
+    public XmlSchemaComplexContentRestriction() {
         attributes = new XmlSchemaObjectCollection();
     }
 
@@ -101,19 +100,5 @@ public class XmlSchemaComplexContentRestriction extends XmlSchemaContent {
         xml += "</" + prefix + "restriction>\n";
         return xml;
     }
-
-    public XmlSchemaComplexType resolveBaseComplexType() {
-        return (XmlSchemaComplexType)resolveBaseType();
-    }
-
-    XmlSchemaAttribute getAttribute(QName name) {
-        XmlSchemaAttribute attr = super.getAttribute(name);
-        if (attr == null) {
-            XmlSchemaComplexType baseType = resolveBaseComplexType();
-            if (baseType != null) attr = baseType.getAttribute(name);
-        }
-        return attr;
-    }
-
 }
 

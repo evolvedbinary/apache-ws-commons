@@ -19,9 +19,6 @@
 
 package org.apache.ws.commons.schema;
 
-import javax.xml.namespace.QName;
-
-
 /**
  * Class defines a simple type that determines the information and
  * constraints for the values of attributes or elements with text-only
@@ -67,14 +64,6 @@ public class XmlSchemaSimpleType extends XmlSchemaType {
 
         xml += "</" + prefix + "simpleType>\n";
         return xml;
-    }
-
-    public QName getRootTypeName() {
-        if (content == null) return getQName();
-        if (!(content instanceof XmlSchemaSimpleTypeRestriction)) return null;
-        XmlSchemaSimpleTypeRestriction typeRestriction = (XmlSchemaSimpleTypeRestriction)content;
-        if (typeRestriction.getBaseType() != null) return typeRestriction.getBaseType().getRootTypeName();
-        return typeRestriction.getBaseTypeName();
     }
 
 }

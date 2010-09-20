@@ -661,7 +661,7 @@ public class SchemaBuilder {
 			} else if (el.getLocalName().equals("attribute")) {
 				ct.attributes.add(handleAttribute(schema, el, schemaEl));
 			} else if (el.getLocalName().equals("attributeGroup")) {
-				ct.attributes.add(handleAttributeGroupRef(schema, el));
+				ct.attributes.add(handleAttributeGroupRef(el));
 			} else if (el.getLocalName().equals("group")) {
 				XmlSchemaGroupRef group = handleGroupRef(schema, el, schemaEl);
 				ct.particle = (group.particle == null) ? (XmlSchemaParticle) group
@@ -775,7 +775,7 @@ public class SchemaBuilder {
 	private XmlSchemaSimpleContentRestriction handleSimpleContentRestriction(
 			XmlSchema schema, Element restrictionEl, Element schemaEl) {
 
-		XmlSchemaSimpleContentRestriction restriction = new XmlSchemaSimpleContentRestriction(schema);
+		XmlSchemaSimpleContentRestriction restriction = new XmlSchemaSimpleContentRestriction();
 
 		if (restrictionEl.hasAttribute("base")) {
 			String name = restrictionEl.getAttribute("base");
@@ -794,7 +794,7 @@ public class SchemaBuilder {
 				XmlSchemaAttribute attr = handleAttribute(schema, el, schemaEl);
 				restriction.attributes.add(attr);
 			} else if (el.getLocalName().equals("attributeGroup")) {
-				XmlSchemaAttributeGroupRef attrGroup = handleAttributeGroupRef(schema, el);
+				XmlSchemaAttributeGroupRef attrGroup = handleAttributeGroupRef(el);
 				restriction.attributes.add(attrGroup);
 			} else if (el.getLocalName().equals("simpleType")) {
 				restriction.baseType = handleSimpleType(schema, el, schemaEl);
@@ -818,7 +818,7 @@ public class SchemaBuilder {
 	private XmlSchemaSimpleContentExtension handleSimpleContentExtension(
 			XmlSchema schema, Element extEl, Element schemaEl) {
 
-		XmlSchemaSimpleContentExtension ext = new XmlSchemaSimpleContentExtension(schema);
+		XmlSchemaSimpleContentExtension ext = new XmlSchemaSimpleContentExtension();
 
 		if (extEl.hasAttribute("base")) {
 			String name = extEl.getAttribute("base");
@@ -833,7 +833,7 @@ public class SchemaBuilder {
 				XmlSchemaAttribute attr = handleAttribute(schema, el, schemaEl);
 				ext.attributes.add(attr);
 			} else if (el.getLocalName().equals("attributeGroup")) {
-				XmlSchemaAttributeGroupRef attrGroup = handleAttributeGroupRef(schema, el);
+				XmlSchemaAttributeGroupRef attrGroup = handleAttributeGroupRef(el);
 				ext.attributes.add(attrGroup);
 			} else if (el.getLocalName().equals("anyAttribute")) {
 				ext.anyAttribute = handleAnyAttribute(schema, el, schemaEl);
@@ -848,7 +848,7 @@ public class SchemaBuilder {
 	private XmlSchemaComplexContentRestriction handleComplexContentRestriction(
 			XmlSchema schema, Element restrictionEl, Element schemaEl) {
 
-		XmlSchemaComplexContentRestriction restriction = new XmlSchemaComplexContentRestriction(schema);
+		XmlSchemaComplexContentRestriction restriction = new XmlSchemaComplexContentRestriction();
 
 		if (restrictionEl.hasAttribute("base")) {
 			String name = restrictionEl.getAttribute("base");
@@ -868,7 +868,7 @@ public class SchemaBuilder {
 				restriction.attributes
 						.add(handleAttribute(schema, el, schemaEl));
 			} else if (el.getLocalName().equals("attributeGroup")) {
-				restriction.attributes.add(handleAttributeGroupRef(schema, el));
+				restriction.attributes.add(handleAttributeGroupRef(el));
 			} else if (el.getLocalName().equals("group")) {
 				restriction.particle = handleGroupRef(schema, el, schemaEl);
 			} else if (el.getLocalName().equals("anyAttribute")) {
@@ -884,7 +884,7 @@ public class SchemaBuilder {
 	private XmlSchemaComplexContentExtension handleComplexContentExtension(
 			XmlSchema schema, Element extEl, Element schemaEl) {
 
-		XmlSchemaComplexContentExtension ext = new XmlSchemaComplexContentExtension(schema);
+		XmlSchemaComplexContentExtension ext = new XmlSchemaComplexContentExtension();
 
 		if (extEl.hasAttribute("base")) {
 			String name = extEl.getAttribute("base");
@@ -904,7 +904,7 @@ public class SchemaBuilder {
 			} else if (el.getLocalName().equals("attribute")) {
 				ext.attributes.add(handleAttribute(schema, el, schemaEl));
 			} else if (el.getLocalName().equals("attributeGroup")) {
-				ext.attributes.add(handleAttributeGroupRef(schema, el));
+				ext.attributes.add(handleAttributeGroupRef(el));
 			} else if (el.getLocalName().equals("group")) {
 				ext.particle = handleGroupRef(schema, el, schemaEl);
 			} else if (el.getLocalName().equals("anyAttribute")) {
@@ -916,10 +916,10 @@ public class SchemaBuilder {
 		return ext;
 	}
 
-	private XmlSchemaAttributeGroupRef handleAttributeGroupRef(XmlSchema schema,
+	private XmlSchemaAttributeGroupRef handleAttributeGroupRef(
 			Element attrGroupEl) {
 
-		XmlSchemaAttributeGroupRef attrGroup = new XmlSchemaAttributeGroupRef(schema);
+		XmlSchemaAttributeGroupRef attrGroup = new XmlSchemaAttributeGroupRef();
 
 		if (attrGroupEl.hasAttribute("ref")) {
 			String ref = attrGroupEl.getAttribute("ref");
@@ -1110,7 +1110,7 @@ public class SchemaBuilder {
 				XmlSchemaAttribute attr = handleAttribute(schema, el, schemaEl);
 				attrGroup.attributes.add(attr);
 			} else if (el.getLocalName().equals("attributeGroup")) {
-				XmlSchemaAttributeGroupRef attrGroupRef = handleAttributeGroupRef(schema, el);
+				XmlSchemaAttributeGroupRef attrGroupRef = handleAttributeGroupRef(el);
 				attrGroup.attributes.add(attrGroupRef);
 			} else if (el.getLocalName().equals("anyAttribute")) {
 				attrGroup.anyAttribute = handleAnyAttribute(schema, el,
