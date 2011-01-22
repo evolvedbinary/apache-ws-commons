@@ -22,7 +22,10 @@ package tests;
 import junit.framework.TestCase;
 import org.apache.ws.commons.schema.XmlSchema;
 import org.apache.ws.commons.schema.XmlSchemaCollection;
+import org.apache.ws.commons.schema.XmlSchemaImport;
+import org.apache.ws.commons.schema.XmlSchemaObjectCollection;
 import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.namespace.QName;
@@ -85,5 +88,22 @@ public class ImportTest extends TestCase {
 
         assertNotNull(schema.getTypeByName(new QName("http://soapinterop.org/xsd2","SOAPStruct")));
         assertNotNull(schema.getElementByName(new QName("http://soapinterop.org/xsd2","SOAPWrapper")));
+    }
+    
+    /**
+     * Tests that imports without <tt>schemaLocation</tt> are resolved if the corresponding schemas
+     * have been registered using {@link XmlSchemaCollection#getKnownNamespaceMap()}.
+     */
+    public void testImportWithKnownNamespace() {
+        XmlSchemaCollection schemaCol = new XmlSchemaCollection();
+        schemaCol.getKnownNamespaceMap().put("http://www.w3.org/XML/1998/namespace",
+                new XmlSchemaCollection().read(new InputSource(Resources.asURI("xml.xsd")), null));
+        XmlSchema schema = schemaCol.read(new InputSource(Resources.asURI("knownNamespace.xsd")), null);
+        XmlSchemaObjectCollection externals = schema.getIncludes();
+        assertEquals(1, externals.getCount());
+        XmlSchemaImport schemaImport = (XmlSchemaImport)externals.getItem(0);
+        assertEquals("http://www.w3.org/XML/1998/namespace", schemaImport.getNamespace());
+        XmlSchema schema2 = schemaImport.getSchema();
+        assertNotNull(schema2);
     }
 }

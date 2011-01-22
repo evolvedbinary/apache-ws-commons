@@ -1600,16 +1600,13 @@ public class SchemaBuilder {
 				}
 			}
 		};
-		if ((schemaImport.schemaLocation != null)
-				&& (!schemaImport.schemaLocation.equals(""))) {
-			if (schema.getSourceURI() != null) {
-				schemaImport.schema = resolveXmlSchema(uri,
-						schemaImport.schemaLocation, schema.getSourceURI(),
-						validator);
-			} else {
-				schemaImport.schema = resolveXmlSchema(schemaImport.namespace,
-						schemaImport.schemaLocation, validator);
-			}
+		if (schema.getSourceURI() != null) {
+			schemaImport.schema = resolveXmlSchema(uri,
+					schemaImport.schemaLocation, schema.getSourceURI(),
+					validator);
+		} else {
+			schemaImport.schema = resolveXmlSchema(schemaImport.namespace,
+					schemaImport.schemaLocation, validator);
 		}
 		return schemaImport;
 	}
