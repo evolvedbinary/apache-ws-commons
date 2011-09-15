@@ -2121,6 +2121,20 @@ public class XmlSchemaSerializer {
                     restrictionObj.annotation, schema);
             restriction.appendChild(annotation);
         }
+        if (restrictionObj.baseType != null) {
+            Element inlineSimpleType = serializeSimpleType(doc,
+                    restrictionObj.baseType, schema);
+            restriction.appendChild(inlineSimpleType);
+        }
+        XmlSchemaObjectCollection facets = restrictionObj.facets;
+        int facetLength = facets.getCount();
+        for (int i = 0; i < facetLength; i++) {
+            Element facet = serializeFacet(doc,
+                    (XmlSchemaFacet) facets.getItem(i), schema);
+            restriction.appendChild(facet);
+        }
+        // WEK: Moved attributes and anyAttributes to end where they
+        // are required to be.
         int attrCollLength = restrictionObj.attributes.getCount();
         for (int i = 0; i < attrCollLength; i++) {
             XmlSchemaObject obj = restrictionObj.attributes.getItem(i);
@@ -2135,22 +2149,10 @@ public class XmlSchemaSerializer {
                 restriction.appendChild(attributeGroup);
             }
         }
-        if (restrictionObj.baseType != null) {
-            Element inlineSimpleType = serializeSimpleType(doc,
-                    restrictionObj.baseType, schema);
-            restriction.appendChild(inlineSimpleType);
-        }
         if (restrictionObj.anyAttribute != null) {
             Element anyAttribute = serializeAnyAttribute(doc,
                     restrictionObj.anyAttribute, schema);
             restriction.appendChild(anyAttribute);
-        }
-        XmlSchemaObjectCollection facets = restrictionObj.facets;
-        int facetLength = facets.getCount();
-        for (int i = 0; i < facetLength; i++) {
-            Element facet = serializeFacet(doc,
-                    (XmlSchemaFacet) facets.getItem(i), schema);
-            restriction.appendChild(facet);
         }
 
             //process extension
