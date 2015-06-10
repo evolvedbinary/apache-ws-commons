@@ -1,8 +1,0 @@
-<?xml version="1.0"?>
-<root>
-   <?pi data?>
-   <?pi2
-      Another processing instructions with more surrounding spaces.
-      Regression test for AXIOM-359.
-   ?>
-</root>

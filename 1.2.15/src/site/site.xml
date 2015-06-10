@@ -1,0 +1,57 @@
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements. See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership. The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License. You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied. See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
+  -->
+<project name="Axiom">
+    <bannerLeft>
+        <name>Apache Axiom</name>
+        <src>images/logo.png</src>
+        <href>http://ws.apache.org/axiom/index.html</href>
+    </bannerLeft>
+    <body>
+        <head>
+            <script async='' src='//www.google-analytics.com/analytics.js'> </script>
+            <script>
+              window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+              ga('create', 'UA-56790914-3', {'cookieDomain': 'ws.apache.org', 'cookiePath': '/axiom' });
+              ga('send', 'pageview');
+            </script>
+        </head>
+        <menu name="About">
+            <item name="Introduction" href="index.html"/>
+            <item name="Mailing Lists" href="/mail-lists.html"/>
+            <item name="Project Team" href="/team-list.html"/>
+            <item name="Issue Tracking" href="issue-tracking.html"/>
+        </menu>
+        <menu name="Downloads">
+            <item name="Releases" href="download.cgi"/>
+            <item name="Source Code" href="source-repository.html"/>
+        </menu>
+        <menu name="Documentation">
+            <item name="Overview" href="documentation.html"/>
+            <item name="Quick start samples" href="quickstart-samples.html"/>
+            <item name="User guide" href="userguide/userguide.html"/>
+            <item name="Developer guide" href="devguide/devguide.html"/>
+            <item name="Articles" href="articles.html"/>
+            <item name="Javadocs" href="/apidocs/index.html"/>
+            <item name="FAQ" href="faq.html"/>
+            <item name="View Source" href="http://svn.apache.org/viewvc/webservices/axiom/trunk/?root=Apache-SVN"/>
+            <item name="Code Coverage" href="code-coverage/index.html"/>
+            <item name="Privacy Policy" href="privacy-policy.html"/>
+        </menu>
+    </body>
+</project>
