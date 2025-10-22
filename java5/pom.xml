@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.evolvedbinary.thirdparty.org.apache.ws.commons</groupId>
+        <artifactId>ws-commons</artifactId>
+        <version>1.1.0-SNAPSHOT</version>
+    </parent>
+
+    <groupId>com.evolvedbinary.thirdparty.org.apache.ws.commons.java5</groupId>
+    <artifactId>ws-commons-java5</artifactId>
+    <packaging>jar</packaging>
+
+    <name>Apache WebServices Java 5 Classes</name>
+<!-- Be sure, that the following is a single line. See 
+     http://jira.codehaus.org/browse/MJAR-39
+     for the reason. -->
+    <description>This is a small collection of classes, which are part of the Java 5 Core. In other words, you do not need this library, if you are running Java 5, or later. The Java 5 classes are used by projects like Apache JaxMe, Apache XML-RPC, or the the ws-common-utils.</description>
+    <url>https://ws.apache.org/commons/ws-commons-java5/</url>
+
+    <scm>
+        <connection>scm:git:https://github.com/evolvedbinary/apache-ws-commons.git</connection>
+        <developerConnection>scm:git:https://github.com/evolvedbinary/apache-ws-commons.git</developerConnection>
+        <url>scm:git:https://github.com/evolvedbinary/apache-ws-commons.git</url>
+    </scm>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.github.monkeywie</groupId>
+                <artifactId>copy-rename-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-supporting-files-for-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <fileSets>
+                                <fileSet>
+                                    <sourceFile>${project.basedir}/../LICENSE</sourceFile>
+                                    <destinationFile>${project.build.directory}/LICENSE</destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>${project.basedir}/../README.md</sourceFile>
+                                    <destinationFile>${project.build.directory}/README.md</destinationFile>
+                                </fileSet>
+                                <fileSet>
+                                    <sourceFile>${project.basedir}/../.gitignore</sourceFile>
+                                    <destinationFile>${project.build.directory}/.gitignore</destinationFile>
+                                </fileSet>
+                            </fileSets>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>create-java5-assemblies</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/main/assembly/bin.xml</descriptor>
+                                <descriptor>src/main/assembly/src.xml</descriptor>
+                            </descriptors>
+                            <tarLongFileMode>gnu</tarLongFileMode>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+        </dependency>
+    </dependencies>
+
+</project>
