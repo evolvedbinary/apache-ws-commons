@@ -1,0 +1,24 @@
+<project name="ws-commons-util">
+  <skin>
+    <groupId>org.apache.maven.skins</groupId>
+    <artifactId>maven-fluido-skin</artifactId>
+    <version>2.1.0</version>
+  </skin>
+  <bannerLeft>
+    <name>Apache Webservices Java 5 Classes</name>
+    <src>http://ws.apache.org/images/project-logo.jpg</src>
+    <href>http://ws.apache.org/commons/ws-commons-java5/</href>
+  </bannerLeft>
+  <body>
+    <links>
+      <item name="Apache" href="http://www.apache.org/"/>
+      <item name="Webservices" href="http://ws.apache.org/"/>
+      <item name="WS Commons" href="http://ws.apache.org/commons/"/>
+      <item name="Java 5 Classes" href="http://ws.apache.org/commons/ws-commons-java5/"/>
+    </links>
+    <menu name="WS Commons Java5 Classes">
+      <item name="Overview" href="index.html"/>
+    </menu>
+    <menu ref="reports"/>
+  </body>
+</project>

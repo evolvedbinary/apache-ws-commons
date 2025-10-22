@@ -1,0 +1,25 @@
+<assembly>
+  <id>src</id>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
+  <fileSets>
+    <fileSet>
+      <includes>
+        <include>pom.xml</include>
+      </includes>
+    </fileSet>
+      <fileSet>
+      <outputDirectory></outputDirectory>
+      <includes>
+        <include>LICENSE</include>
+        <include>README.md</include>
+        <include>.gitignore</include>
+      </includes>
+      <directory>${project.build.directory}</directory>
+    </fileSet>
+    <fileSet>
+      <directory>src</directory>
+    </fileSet>
+  </fileSets>
+</assembly>
