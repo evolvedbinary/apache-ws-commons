@@ -37,9 +37,9 @@ package javax.xml.namespace;
  * @since JAXB 1.0
  */
 public interface NamespaceContext {
-  /** <p>Given a prefix, returns the namespace URI associated with the prefix.
+  /** Given a prefix, returns the namespace URI associated with the prefix.
    * More precisely, the following rules apply:
-   * <table border="1">
+   * <table border="1" summary="Rules governing Prefix to URI lookup">
    *   <tr><th>Prefix (Input)</th><th>Namespace URI (Output)</th></tr>
    *   <tr><th>{@link javax.xml.XMLConstants#DEFAULT_NS_PREFIX} ("")</th>
    *     <td>The current default namespace URI or null, if there is no
@@ -52,7 +52,7 @@ public interface NamespaceContext {
    *   </tr>
    *   <tr><th>Any other prefix</th><td>The namespace URI currently mapped to the
    *     prefix or null, if no such mapping is established.</td></tr>
-   * </table></p>
+   * </table>
    * @param pPrefix The prefix being looked up in the list of mappings.
    * @return The Namespace URI to which the input prefix is currently mapped
    *   or null, if there is no such mapping.
@@ -61,12 +61,12 @@ public interface NamespaceContext {
   public String getNamespaceURI(String pPrefix);
 
 
-  /** <p>This method returns a prefix, which is currently mapped to the given
+  /** This method returns a prefix, which is currently mapped to the given
    * namespace URI. Note, that multiple prefixes may be mapped to the namespace
    * URI, in which case the returned prefix is undetermined. Do not make any
    * assumptions on the order in such cases. It is a better choice to use
    * {@link #getPrefixes(String)} instead, if you depend on some order
-   * <table border="1">
+   * <table border="1" summary="Rules governing URI to Prefix lookup">
    *   <tr><th>Namespace URI (Input)</th><th>Prefix (Output)</th></tr>
    *   <tr><th>Current default namespace URI</th>
    *     <td>{@link javax.xml.XMLConstants#DEFAULT_NS_PREFIX} ("")</td></tr>
@@ -74,7 +74,7 @@ public interface NamespaceContext {
    *     <td>{@link javax.xml.XMLConstants#XML_NS_PREFIX} ("xml")</td></tr>
    *   <tr><th>{@link javax.xml.XMLConstants#XMLNS_ATTRIBUTE_NS_URI} ("http://www.w3.org/2000/xmlns/")</th>
    *     <td>{@link javax.xml.XMLConstants#XMLNS_ATTRIBUTE}</td></tr>
-   * </table></p>
+   * </table>
    *
    * @param pNamespaceURI The namespace URI being looked up in the list of mappings.
    * @return A prefix currently mapped to the given namespace URI or null, if there
@@ -84,19 +84,19 @@ public interface NamespaceContext {
   public java.lang.String getPrefix(java.lang.String pNamespaceURI);
 
 
-  /** <p>This method returns a collection of prefixes, which are currently mapped
+  /** This method returns a collection of prefixes, which are currently mapped
    * to the given namespace URI. Note, that the collection may contain more than
    * one prefix, in which case the order is undetermined. If you do not depend
    * on a certain order and any prefix will do, you may choose to use
    * {@link #getPrefix(String)} instead. The following table describes the
    * returned values in more details:
-   * <table border="1">
+   * <table border="1" summary="Rules governing URI to Prefixes lookup">
    *   <tr><th>Namespace URI (Input)</th><th>Prefix collection (Output)</th></tr>
    *   <tr><th>{@link javax.xml.XMLConstants#XML_NS_URI} ("http://www.w3.org/XML/1998/namespace")</th>
    *     <td>Collection with a single element: {@link javax.xml.XMLConstants#XML_NS_PREFIX} ("xml")</td></tr>
    *   <tr><th>{@link javax.xml.XMLConstants#XMLNS_ATTRIBUTE_NS_URI} ("http://www.w3.org/2000/xmlns/")</th>
    *     <td>Collection with a single element: {@link javax.xml.XMLConstants#XMLNS_ATTRIBUTE}</td></tr>
-   * </table></p>
+   * </table>
    *
    * @param pNamespaceURI The namespace URI being looked up in the list of
    *   mappings or null, if there is no such mapping.

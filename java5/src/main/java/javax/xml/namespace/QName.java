@@ -113,13 +113,13 @@ public class QName implements Serializable {
 		return prefix;
 	}
 	
-	/** <p>Returns true, if
+	/** Returns true, if
 	 * <ul>
 	 *   <li><code>pOther</code> instanceof QName</li>
 	 *   <li>getNamespaceURI().equals(pOther.getNamespaceURI())</li>
 	 *   <li>getLocalPart().equals(pOther.getLocalPart())</li>
 	 * </ul>
-	 * <em>Note</em>: The prefix is ignored.</p>
+	 * <em>Note</em>: The prefix is ignored.
 	 */
 	public boolean equals(Object pOther) {
 		if (!(pOther instanceof QName)) {

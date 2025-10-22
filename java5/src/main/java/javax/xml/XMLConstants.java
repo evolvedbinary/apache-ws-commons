@@ -54,9 +54,9 @@ public class XMLConstants {
   public static final java.lang.String XML_NS_URI =
       "http://www.w3.org/XML/1998/namespace";
 
-  /** <p>Constant holding the attribute name for declaration
-   * of new prefixes. The constant value is "xmlns".</p>
-   * <p><em>Note</em>: This is both an attribute name
+  /** Constant holding the attribute name for declaration
+   * of new prefixes. The constant value is "xmlns".
+   * <em>Note</em>: This is both an attribute name
    * and a namespace prefix: For example, to assign the empty
    * prefix to a namespace, one would use
    * <pre>
@@ -66,7 +66,7 @@ public class XMLConstants {
    * one would use
    * <pre>
    *   xmlns:pre="http://my.namespace/..."
-   * </pre></p>
+   * </pre>
    */
   public static final java.lang.String XMLNS_ATTRIBUTE = "xmlns";
 

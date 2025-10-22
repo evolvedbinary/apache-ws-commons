@@ -49,7 +49,9 @@ public class NamespaceContextImpl implements NamespaceContext {
     }
     
 	/** Declares a new prefix. Typically called from within
-	 * {@link org.xml.sax.ContextHandler#startPrefixMapping(java.lang.String, java.lang.String)}.
+	 * {@link org.xml.sax.ContentHandler#startPrefixMapping(String, String)}.
+     * @param pPrefix The namespace prefix.
+     * @param pURI The namespace URI.
 	 * @throws IllegalArgumentException Prefix or URI are null.
      */
     public void startPrefixMapping(String pPrefix, String pURI) {
@@ -70,7 +72,8 @@ public class NamespaceContextImpl implements NamespaceContext {
 
 	/** Removes the declaration of the prefix, which has been defined
 	 * last. Typically called from within
-	 * {@link org.xml.sax.ContextHandler#endPrefixMapping(java.lang.String)}.
+	 * {@link org.xml.sax.ContentHandler#endPrefixMapping(String)}.
+     * @param pPrefix The namespace prefix.
 	 * @throws IllegalArgumentException The prefix is null.
 	 * @throws IllegalStateException The prefix is not the prefix, which
 	 * has been defined last. In other words, the calls to
@@ -94,10 +97,10 @@ public class NamespaceContextImpl implements NamespaceContext {
         }
     }
     
-    /** Given a prefix, returns the URI to which the prefix is
+    /** <p>Given a prefix, returns the URI to which the prefix is
      * currently mapped or null, if there is no such mapping.</p>
      * <p><em>Note</em>: This methods behaviour is precisely
-     * defined by {@link NamespaceContext#getNamespaceURI(java.lang.String)}.
+     * defined by {@link NamespaceContext#getNamespaceURI(java.lang.String)}</p>.
      * @param pPrefix The prefix in question
      */
     public String getNamespaceURI(String pPrefix) {
@@ -157,7 +160,8 @@ public class NamespaceContextImpl implements NamespaceContext {
      * URL or null, if there is no such mapping. This method may be
      * used to find a possible prefix for an attributes namespace
      * URI. For elements you should use {@link #getPrefix(String)}.
-     * @param pURI Thhe namespace URI in question
+     * @param pURI The namespace URI in question
+     * @return the attribute prefix or null
      * @throws IllegalArgumentException The namespace URI is null.
      */
     public String getAttributePrefix(String pURI) {
@@ -220,6 +224,9 @@ public class NamespaceContextImpl implements NamespaceContext {
     }
     
 	/** Returns whether a given prefix is currently declared.
+     *
+     * @param pPrefix the namespace prefix.
+     * @return true if the prefix is declared, false otherwise.
      */
     public boolean isPrefixDeclared(String pPrefix) {
         if (cachedURI != null) {
@@ -245,6 +252,8 @@ public class NamespaceContextImpl implements NamespaceContext {
 	 * invoking 
 	 * {@link org.xml.sax.ContentHandler#endElement(String, String, String)},
 	 * the state is restored by calling {@link #checkContext(int)}.
+     *
+     * @return the current number of assigned prefixes.
 	 */
     public int getContext() {
         return (prefixList == null ? 0 : prefixList.size()) +
@@ -272,6 +281,9 @@ public class NamespaceContextImpl implements NamespaceContext {
 	 *     h.endPrefixMapping(prefix);
 	 *   }
 	 * </pre>
+     *
+     * @param i the input state.
+     * @return the prefix.
 	 */
 	public String checkContext(int i) {
         if (getContext() == i) {
@@ -292,6 +304,8 @@ public class NamespaceContextImpl implements NamespaceContext {
 	 * in the order of declaration. Duplicates are possible, if a
 	 * prefix has been assigned to more than one URI, or repeatedly to
 	 * the same URI.
+     *
+     * @return a list of all prefixes.
 	 */
 	public List getPrefixes() {
 		if (cachedPrefix == null) {
