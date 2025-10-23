@@ -19,8 +19,11 @@ import junit.framework.TestCase;
 import org.apache.ws.commons.util.NamespaceContextImpl;
 
 import javax.xml.XMLConstants;
+import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Random;
 
 public class NamespaceContextTest extends TestCase {
 
@@ -460,5 +463,197 @@ public class NamespaceContextTest extends TestCase {
         namespaceContext.endPrefixMapping(ns2Prefix);
         namespaceContext.endPrefixMapping(XMLConstants.XML_NS_PREFIX);
         namespaceContext.endPrefixMapping(ns3Prefix);
+    }
+
+    public void testPopScopeEmpty() {
+        final NamespaceContextImpl namespaceContext = new NamespaceContextImpl();
+        try {
+            namespaceContext.popScope();
+            fail("Expected NoSuchElementException");
+        } catch (final NoSuchElementException e) {
+            assertEquals("There are no scopes to pop.", e.getMessage());
+        }
+    }
+
+    public void testPushPopScopeEmpty() {
+        final NamespaceContextImpl namespaceContext = new NamespaceContextImpl();
+
+        namespaceContext.pushScope();
+
+        final List prefixes = namespaceContext.popScope();
+        assertTrue(prefixes.isEmpty());
+    }
+
+    public void testPushPopScopeNonEmpty1() {
+        final NamespaceContextImpl namespaceContext = new NamespaceContextImpl();
+
+        final String ns1Prefix = "pfx1";
+        final String ns1Uri = "ns1";
+        namespaceContext.startPrefixMapping(ns1Prefix, ns1Uri);
+
+        final String ns2Prefix = "pfx2";
+        final String ns2Uri = "ns2";
+        namespaceContext.startPrefixMapping(ns2Prefix, ns2Uri);
+
+        namespaceContext.pushScope();
+
+        final List prefixes = namespaceContext.popScope();
+        assertTrue(prefixes.isEmpty());
+    }
+
+    public void testPushPopScopeNonEmpty2() {
+        final NamespaceContextImpl namespaceContext = new NamespaceContextImpl();
+
+        namespaceContext.pushScope();
+
+        final String ns1Prefix = "pfx1";
+        final String ns1Uri = "ns1";
+        namespaceContext.startPrefixMapping(ns1Prefix, ns1Uri);
+
+        final String ns2Prefix = "pfx2";
+        final String ns2Uri = "ns2";
+        namespaceContext.startPrefixMapping(ns2Prefix, ns2Uri);
+
+        List prefixes = namespaceContext.popScope();
+        assertEquals(2, prefixes.size());
+        assertEquals(ns2Prefix, prefixes.get(0));
+        assertEquals(ns1Prefix, prefixes.get(1));
+
+    }
+
+    public void testPushPopScopeNonEmpty3() {
+        final NamespaceContextImpl namespaceContext = new NamespaceContextImpl();
+
+        namespaceContext.pushScope();
+
+        final String ns1Prefix = "pfx1";
+        final String ns1Uri = "ns1";
+        namespaceContext.startPrefixMapping(ns1Prefix, ns1Uri);
+
+        final String ns2Prefix = "pfx2";
+        final String ns2Uri = "ns2";
+        namespaceContext.startPrefixMapping(ns2Prefix, ns2Uri);
+
+        namespaceContext.pushScope();
+
+        final String ns3Prefix = "pfx3";
+        final String ns3Uri = "ns3";
+        namespaceContext.startPrefixMapping(ns3Prefix, ns3Uri);
+
+        namespaceContext.startPrefixMapping(ns2Prefix, ns2Uri);
+
+        List prefixes = namespaceContext.popScope();
+        assertEquals(2, prefixes.size());
+        assertEquals(ns2Prefix, prefixes.get(0));
+        assertEquals(ns3Prefix, prefixes.get(1));
+
+        prefixes = namespaceContext.popScope();
+        assertEquals(2, prefixes.size());
+        assertEquals(ns2Prefix, prefixes.get(0));
+        assertEquals(ns1Prefix, prefixes.get(1));
+    }
+
+    public void testCompactLinearFirst() {
+        final int compactThreshold = 10;
+        final NamespaceContextImpl namespaceContext = new NamespaceContextImpl(compactThreshold);
+
+        // Add 2x mappings
+        for (int i = 0; i < compactThreshold * 2; i++) {
+            final String nsPrefix = "pfx" + i;
+            final String nsUri = "ns" + i;
+            namespaceContext.startPrefixMapping(nsPrefix, nsUri);
+        }
+
+        // Remove first 1x mappings
+        for (int i = 0; i < compactThreshold; i++) {
+            final String nsPrefix = "pfx" + i;
+            namespaceContext.endPrefixMapping(nsPrefix);
+        }
+
+        // Check new mappings
+        for (int i = 0; i < compactThreshold * 2; i++) {
+            final String nsPrefix = "pfx" + i;
+            final String nsUri = "ns" + i;
+
+            if (i < compactThreshold) {
+                assertEquals(XMLConstants.NULL_NS_URI, namespaceContext.getNamespaceURI(nsPrefix));
+                assertNull(namespaceContext.getPrefix(nsUri));
+            } else {
+                assertEquals(nsUri, namespaceContext.getNamespaceURI(nsPrefix));
+                assertEquals(nsPrefix, namespaceContext.getPrefix(nsUri));
+            }
+        }
+    }
+
+    public void testCompactLinearLast() {
+        final int compactThreshold = 10;
+        final NamespaceContextImpl namespaceContext = new NamespaceContextImpl(compactThreshold);
+
+        // Add 2x mappings
+        for (int i = 0; i < compactThreshold * 2; i++) {
+            final String nsPrefix = "pfx" + i;
+            final String nsUri = "ns" + i;
+            namespaceContext.startPrefixMapping(nsPrefix, nsUri);
+        }
+
+        // Remove last 1x mappings
+        for (int i = compactThreshold; i < compactThreshold * 2; i++) {
+            final String nsPrefix = "pfx" + i;
+            namespaceContext.endPrefixMapping(nsPrefix);
+        }
+
+        // Check new mappings
+        for (int i = 0; i < compactThreshold * 2; i++) {
+            final String nsPrefix = "pfx" + i;
+            final String nsUri = "ns" + i;
+
+            if (i < compactThreshold) {
+                assertEquals(nsUri, namespaceContext.getNamespaceURI(nsPrefix));
+                assertEquals(nsPrefix, namespaceContext.getPrefix(nsUri));
+            } else {
+                assertEquals(XMLConstants.NULL_NS_URI, namespaceContext.getNamespaceURI(nsPrefix));
+                assertNull(namespaceContext.getPrefix(nsUri));
+            }
+        }
+    }
+
+    public void testCompactLinearRandom() {
+        final int compactThreshold = 10;
+        final NamespaceContextImpl namespaceContext = new NamespaceContextImpl(compactThreshold);
+
+        // Add 2x mappings
+        for (int i = 0; i < compactThreshold * 2; i++) {
+            final String nsPrefix = "pfx" + i;
+            final String nsUri = "ns" + i;
+            namespaceContext.startPrefixMapping(nsPrefix, nsUri);
+        }
+
+        // Remove 1x random mappings
+        final BitSet removed = new BitSet(compactThreshold * 2);
+        final Random random = new Random();
+        int removedCount = 0;
+        while (removedCount < 10) {
+            final int idx = random.nextInt(compactThreshold * 2);
+            if (!removed.get(idx)) {
+                final String nsPrefix = "pfx" + idx;
+                namespaceContext.endPrefixMapping(nsPrefix);
+                removed.set(idx);
+                removedCount++;
+            }
+        }
+
+        // Check new mappings
+        for (int i = 0; i < compactThreshold * 2; i++) {
+            final String nsPrefix = "pfx" + i;
+            final String nsUri = "ns" + i;
+
+            if (removed.get(i)) {
+                assertEquals(XMLConstants.NULL_NS_URI, namespaceContext.getNamespaceURI(nsPrefix));
+                assertNull(namespaceContext.getPrefix(nsUri));
+            } else {
+                assertEquals(nsUri, namespaceContext.getNamespaceURI(nsPrefix));
+                assertEquals(nsPrefix, namespaceContext.getPrefix(nsUri));
+            }
+        }
     }
 }
