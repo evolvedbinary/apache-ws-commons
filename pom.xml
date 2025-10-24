@@ -209,6 +209,8 @@
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <tagNameFormat>${project.artifactId}-@{project.version}</tagNameFormat>
                     <releaseProfiles>ws-commons-release</releaseProfiles>
+                    <preparationGoals>site</preparationGoals>
+                    <goals>site deploy</goals>
                 </configuration>
             </plugin>
         </plugins>
