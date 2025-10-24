@@ -29,7 +29,7 @@ import java.util.NoSuchElementException;
  * Stores each Prefix and Namespace only once in {@link #namespacePrefixes}
  * and {@link #namespaceUris} respectively.
  *
- * Each Prefix -> Namespace mapping then has an entry in {@link #scopedPrefixUriMappings}.
+ * Each Prefix to Namespace mapping then has an entry in {@link #scopedPrefixUriMappings}.
  *
  * Mappings that are removed are initially marked as deleted, the underlying
  * storage will be resized after the number of deletions reaches a threshold.
